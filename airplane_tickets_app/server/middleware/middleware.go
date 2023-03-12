@@ -37,14 +37,9 @@ func CheckIsRoleRegular() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		claims, err := token.ValidateToken(ClientToken)
-		if err != "" {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err})
-			c.Abort()
-			return
-		}
+		claims, _ := token.ValidateToken(ClientToken)
 		if claims.Role != "REGULAR" {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Not allowed for that role"})
 			c.Abort()
 			return
 		}
@@ -63,14 +58,9 @@ func CheckIsRoleAdmin() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		claims, err := token.ValidateToken(ClientToken)
-		if err != "" {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err})
-			c.Abort()
-			return
-		}
+		claims, _ := token.ValidateToken(ClientToken)
 		if claims.Role != "ADMIN" {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "you are not allowed here!"})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Not allowed for that role"})
 			c.Abort()
 			return
 		}

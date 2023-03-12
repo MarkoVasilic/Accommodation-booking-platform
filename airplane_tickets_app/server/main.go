@@ -53,15 +53,15 @@ func main() {
 	publicRoutes := router.Group("/")
 	routes.PublicRoutes(publicRoutes, public_controller)
 
-	adminRoutes := router.Group("/")
-	adminRoutes.Use(middleware.Authentication())
-	adminRoutes.Use(middleware.CheckIsRoleAdmin())
-	routes.AdminRoutes(adminRoutes, admin_controller)
-
 	regularRoutes := router.Group("/")
 	regularRoutes.Use(middleware.Authentication())
 	regularRoutes.Use(middleware.CheckIsRoleRegular())
 	routes.RegularRoutes(regularRoutes, regular_controller)
+
+	adminRoutes := router.Group("/")
+	adminRoutes.Use(middleware.Authentication())
+	adminRoutes.Use(middleware.CheckIsRoleAdmin())
+	routes.AdminRoutes(adminRoutes, admin_controller)
 
 	log.Fatal(router.Run("127.0.0.1:" + port))
 }
