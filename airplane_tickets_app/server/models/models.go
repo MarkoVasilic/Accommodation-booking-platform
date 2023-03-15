@@ -33,7 +33,7 @@ type Flight struct {
 	Name              *string            `bson:"name" json:"name"`
 	Taking_Off_Date   time.Time          `bson:"taking_off_date" json:"taking_off_date" validate:"required"`
 	Start_Location    *string            `bson:"start_location" json:"start_location"  validate:"required"`
-	End_Location      *string            `bson:"end_location" json:"end_location"   validate:"required,min=6"`
+	End_Location      *string            `bson:"end_location" json:"end_location"   validate:"required,min=3"`
 	Price             *float64           `bson:"price" json:"price"`
 	Number_Of_Tickets *uint64            `bson:"number_of_tickets" json:"number_of_tickets"`
 }

@@ -1,8 +1,10 @@
 package services
 
 import (
+	"context"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/MarkoVasilic/Accommodation-booking-platform/airplane_tickets_app/server/models"
 	"github.com/MarkoVasilic/Accommodation-booking-platform/airplane_tickets_app/server/repositories"
@@ -32,4 +34,17 @@ func (service *AdminService) CreateFlight(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusCreated, "Successfully created flight!!")
+}
+
+func (service *AdminService) GetFlightById(c *gin.Context, id string) {
+	var _, cancel = context.WithTimeout(context.Background(), 100*time.Second)
+	defer cancel()
+	foundflight, err := service.AdminRepository.GetFlightById(id)
+
+	if err != nil {
+		fmt.Println(id)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Flight with that id doesn't exist."})
+		return
+	}
+	c.JSON(http.StatusOK, foundflight)
 }
