@@ -15,3 +15,10 @@ func (controller *AdminController) CreateFlight() gin.HandlerFunc {
 		controller.AdminService.CreateFlight(c)
 	}
 }
+
+func (controller *AdminController) GetFlightById() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		id := c.Param("id")
+		controller.AdminService.GetFlightById(c, id)
+	}
+}
