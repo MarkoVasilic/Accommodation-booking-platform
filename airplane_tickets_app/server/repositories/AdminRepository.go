@@ -15,7 +15,7 @@ type AdminRepository struct {
 }
 
 func (repo *AdminRepository) CreateFlight(flight *models.Flight) error {
-	var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
+	var ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	flight.ID = primitive.NewObjectID()
 	_, inserterr := repo.FlightCollection.InsertOne(ctx, flight)
