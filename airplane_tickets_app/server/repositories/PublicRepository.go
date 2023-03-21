@@ -28,7 +28,7 @@ func HashPassword(password string) string {
 }
 
 func (repo *PublicRepository) CreateUser(user *models.User) error {
-	var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
+	var ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	password := HashPassword(*user.Password)
 	user.Password = &password
@@ -41,18 +41,17 @@ func (repo *PublicRepository) CreateUser(user *models.User) error {
 	user.Refresh_Token = &refreshtoken
 	user.UserTickets = make([]primitive.ObjectID, 0)
 	_, inserterr := repo.UserCollection.InsertOne(ctx, user)
-	defer cancel()
 	return inserterr
 }
 
 func (repo *PublicRepository) CountByEmail(email string) (int64, error) {
-	var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
+	var ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	return repo.UserCollection.CountDocuments(ctx, bson.M{"email": email})
 }
 
 func (repo *PublicRepository) GetUserByEmail(email string) (models.User, error) {
-	var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
+	var ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
 	var founduser models.User
 	err := repo.UserCollection.FindOne(ctx, bson.M{"email": email}).Decode(&founduser)
 	defer cancel()
@@ -60,7 +59,7 @@ func (repo *PublicRepository) GetUserByEmail(email string) (models.User, error) 
 }
 
 func (repo *PublicRepository) GetUserById(id string) (models.User, error) {
-	var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
+	var ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
 	var founduser models.User
 	err := repo.UserCollection.FindOne(ctx, bson.M{"user_id": id}).Decode(&founduser)
 	defer cancel()

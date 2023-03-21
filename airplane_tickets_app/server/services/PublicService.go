@@ -86,8 +86,6 @@ func (service *PublicService) VerifyUser(c *gin.Context) {
 		return
 	}
 	token, refreshToken, _ := generate.TokenGenerator(*founduser.Email, *founduser.First_Name, *founduser.Last_Name, founduser.User_ID, models.Role(*founduser.Role))
-	defer cancel()
-	fmt.Println(token)
 	generate.UpdateAllTokens(service.PublicRepository.UserCollection, token, refreshToken, founduser.User_ID)
 	c.JSON(http.StatusOK, founduser)
 }

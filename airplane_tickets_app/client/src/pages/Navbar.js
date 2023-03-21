@@ -10,7 +10,7 @@ import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@material-ui/core";
+import { Button } from "@mui/material";
 import { useState, useEffect, useMemo } from "react";
 import axiosApi from "../api/axios";
 
@@ -41,7 +41,7 @@ export default function Navbar() {
             });
     useEffect(() => {
         getData();
-    }, []);
+    });
     const sidemenu = useMemo(() => chooseSideMenu(user.role), [user.role]);
     const button1 = useMemo(() => chooseButton1(user.role), [user.role]);
     const button2 = useMemo(() => chooseButton2(user.role), [user.role]);
@@ -107,7 +107,7 @@ export default function Navbar() {
                      m={1}
                      display="flex"
                      justifyContent="flex-end"
-                     alignItem="flex-end"
+                     alignItems="flex-end"
                 >
                 <Button color="inherit" onClick={() => navigate("/")}>
                         Home
