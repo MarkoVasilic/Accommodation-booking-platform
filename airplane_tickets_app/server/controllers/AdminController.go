@@ -22,3 +22,10 @@ func (controller *AdminController) GetFlightById() gin.HandlerFunc {
 		controller.AdminService.GetFlightById(c, id)
 	}
 }
+
+func (controller *AdminController) DeleteFlight() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		id := c.Param("id")
+		controller.AdminService.DeleteFlightById(c, id)
+	}
+}

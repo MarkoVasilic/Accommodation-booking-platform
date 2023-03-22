@@ -2,7 +2,6 @@ package repositories
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/MarkoVasilic/Accommodation-booking-platform/airplane_tickets_app/server/models"
@@ -31,9 +30,18 @@ func (repo *AdminRepository) GetFlightById(id string) (models.Flight, error) {
 	if err_hex != nil {
 		panic(err_hex)
 	}
-	fmt.Println(id)
-	fmt.Println(bson.M{"_id": id})
 	err := repo.FlightCollection.FindOne(ctx, bson.M{"_id": objID}).Decode(&foundflight)
 	defer cancel()
 	return foundflight, err
+}
+
+func (repo *AdminRepository) DeleteFlightById(id string) error {
+	var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		panic(err)
+	}
+	_, err = repo.FlightCollection.DeleteOne(ctx, bson.M{"_id": objID})
+	defer cancel()
+	return err
 }

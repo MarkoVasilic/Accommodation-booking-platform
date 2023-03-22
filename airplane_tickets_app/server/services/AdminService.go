@@ -42,9 +42,20 @@ func (service *AdminService) GetFlightById(c *gin.Context, id string) {
 	foundflight, err := service.AdminRepository.GetFlightById(id)
 
 	if err != nil {
-		fmt.Println(id)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Flight with that id doesn't exist."})
 		return
 	}
 	c.JSON(http.StatusOK, foundflight)
+}
+
+func (service *AdminService) DeleteFlightById(c *gin.Context, id string) {
+	var _, cancel = context.WithTimeout(context.Background(), 100*time.Second)
+	defer cancel()
+	err := service.AdminRepository.DeleteFlightById(id)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to delete flight. "})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "Flight deleted successfully. "})
 }
