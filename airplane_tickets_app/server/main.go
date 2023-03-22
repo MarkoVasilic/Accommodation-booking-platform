@@ -16,7 +16,9 @@ import (
 )
 
 func main() {
-	initializers.LoadEnvVariables()
+	if os.Getenv("RUN_ENV") != "production" {
+		initializers.LoadEnvVariables()
+	}
 	client := initializers.ConnectToDatabase()
 
 	port := os.Getenv("PORT")

@@ -23,7 +23,7 @@ type SignedDetails struct {
 	jwt.StandardClaims
 }
 
-var SECRET_KEY = os.Getenv("SECRET_KEY")
+var SECRET_KEY = []byte(os.Getenv("SECRET_KEY"))
 
 func TokenGenerator(email string, firstname string, lastname string, uid string, role models.Role) (signedtoken string, signedrefreshtoken string, err error) {
 	claims := &SignedDetails{
