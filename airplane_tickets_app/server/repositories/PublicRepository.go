@@ -66,3 +66,22 @@ func (repo *PublicRepository) GetUserById(id string) (models.User, error) {
 	defer cancel()
 	return founduser, err
 }
+
+func (repo *PublicRepository) SearchedFlights(filter primitive.M) ([]models.SearchedFlights, error) {
+	var flights []models.SearchedFlights
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	cursor, err := repo.FlightCollection.Find(ctx, filter)
+
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	if err := cursor.All(ctx, &flights); err != nil {
+		return nil, err
+	}
+
+	return flights, nil
+}

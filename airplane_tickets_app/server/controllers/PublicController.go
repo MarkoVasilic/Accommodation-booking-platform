@@ -42,3 +42,9 @@ func (controller *PublicController) GetUserById() gin.HandlerFunc {
 		controller.PublicService.GetUserById(c, claims.Uid)
 	}
 }
+
+func (controller *PublicController) SearchedFlights() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		controller.PublicService.SearchedFlights(c)
+	}
+}
