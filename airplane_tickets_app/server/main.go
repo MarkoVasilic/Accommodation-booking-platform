@@ -65,5 +65,9 @@ func main() {
 	adminRoutes.Use(middleware.CheckIsRoleAdmin())
 	routes.AdminRoutes(adminRoutes, admin_controller)
 
-	log.Fatal(router.Run("127.0.0.1:" + port))
+	if os.Getenv("RUN_ENV") == "production" {
+		log.Fatal(router.Run("0.0.0.0:" + port))
+	} else {
+		log.Fatal(router.Run("127.0.0.1:" + port))
+	}
 }

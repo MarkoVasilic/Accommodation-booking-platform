@@ -7,4 +7,5 @@ COPY . ./
 RUN npm run build
 
 FROM nginx as production
-COPY --from=build /app/build /usr/share/nginx/html
+COPY ./nginx.conf /etc/nginx/nginx.conf
+COPY --from=build /app/build app/build
