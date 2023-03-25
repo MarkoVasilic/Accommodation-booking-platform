@@ -53,6 +53,7 @@ func main() {
 	}))
 
 	publicRoutes := router.Group("/")
+	publicRoutes.Use(middleware.CORSMiddleware())
 	routes.PublicRoutes(publicRoutes, public_controller)
 
 	regularRoutes := router.Group("/")

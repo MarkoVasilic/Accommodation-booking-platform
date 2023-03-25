@@ -106,20 +106,24 @@ func (service *PublicService) SearchedFlights(c *gin.Context) {
 	var flights []models.SearchedFlights
 
 	var flight models.SearchedFlights
-	if err := c.BindJSON(&flight); err != nil {
+	if err := c.BindQuery(&flight); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	filter := bson.M{
-		"start_location": flight.Start_Location,
-		"end_location":   flight.End_Location,
+	filter := bson.M{}
+	if *flight.Start_Location != "" {
+		filter["start_location"] = flight.Start_Location
+	}
+
+	if *flight.End_Location != "" {
+		filter["end_location"] = flight.End_Location
 	}
 
 	flights, err := service.PublicRepository.SearchedFlights(filter)
 
 	if err != nil || flights == nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "There is no flights for choosen parameters!"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "There is no flights for choosen destinations!"})
 		return
 	}
 	var searchedFlights []models.SearchedFlights
@@ -140,7 +144,7 @@ func (service *PublicService) SearchedFlights(c *gin.Context) {
 	}
 
 	if len(searchedFlights) == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "There are no flights with enough tickets available!"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "There are no tickets for choosen dates!"})
 		return
 	}
 
