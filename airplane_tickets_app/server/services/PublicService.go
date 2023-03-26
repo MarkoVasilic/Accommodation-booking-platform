@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/MarkoVasilic/Accommodation-booking-platform/airplane_tickets_app/server/models"
@@ -114,11 +115,11 @@ func (service *PublicService) SearchedFlights(c *gin.Context) {
 
 	filter := bson.M{}
 	if *flight.Start_Location != "" {
-		filter["start_location"] = flight.Start_Location
+		filter["start_location"] = strings.Title(strings.ToLower(*(flight.Start_Location)))
 	}
 
 	if *flight.End_Location != "" {
-		filter["end_location"] = flight.End_Location
+		filter["end_location"] = strings.Title(strings.ToLower(*(flight.End_Location)))
 	}
 
 	flights, err := service.PublicRepository.SearchedFlights(filter)
