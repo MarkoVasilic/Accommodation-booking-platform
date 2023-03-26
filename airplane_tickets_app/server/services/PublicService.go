@@ -123,13 +123,19 @@ func (service *PublicService) SearchedFlights(c *gin.Context) {
 
 	flights, err := service.PublicRepository.SearchedFlights(filter)
 
+	year, month, day := flight.Taking_Off_Date.Date()
+	chDate := time.Date(year, month, day, int(0), int(0), int(0), int(0), time.UTC)
+	num := float64(*flight.Number_Of_Tickets)
+
+	if chDate.Before(time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), int(0), int(0), int(0), int(0), time.UTC)) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Cannot choose date in the past! Please choose another date."})
+		return
+	}
+
 	if err != nil || flights == nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "There is no flights for choosen destinations!"})
 		return
 	}
-	year, month, day := flight.Taking_Off_Date.Date()
-	chDate := time.Date(year, month, day, int(0), int(0), int(0), int(0), time.UTC)
-	num := float64(*flight.Number_Of_Tickets)
 
 	for _, fl := range flights {
 		if *(fl.Number_Of_Tickets) >= *(flight.Number_Of_Tickets) {

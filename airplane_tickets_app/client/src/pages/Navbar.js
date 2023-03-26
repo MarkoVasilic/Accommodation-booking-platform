@@ -146,17 +146,17 @@ export default function Navbar() {
 }
 
 const chooseSideMenu = (role) => {
-    if (!role) return { "Check Transfusion Centers": "/list-centers" };
+    if (!role) return { "Search flights": "/flights/all" };
     if (role[0] === "ADMIN") {
         return {
-            "List Transfusion Centers": "/list-centers",
+            "Search flights": "/flights/all",
         };
     } else if (role[0] === "REGULAR") {
         return {
-            "List Transfusion Centers": "/list-centers",
+            "Search flights": "/flights/all",
         };
     } else {
-        return { "List Transfusion Centers": "/list-centers" };
+        return { "Search flights": "/flights/all" };
     }
 };
 

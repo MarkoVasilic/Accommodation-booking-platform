@@ -21,18 +21,10 @@ import Collapse from "@mui/material/Collapse";
 
 const columns = [
     {
-        field: "ID",
-        headerName: "ID",
-        width: 200,
-        sortable: false,
-        filterable: false,
-        editable: false,
-    },
-    {
         field: "Name",
         headerName: "Name",
         type: "string",
-        width: 200,
+        width: 220,
         sortable: false,
         filterable: false,
         editable: false,
@@ -41,7 +33,7 @@ const columns = [
         field: "Taking_Off_Date",
         headerName: "Taking off date",
         type: "datetime-local",
-        width: 200,
+        width: 220,
         sortable: false,
         filterable: false,
         editable: false,
@@ -51,7 +43,7 @@ const columns = [
         field: "Start_Location",
         headerName: "Start location",
         type: "string",
-        width: 200,
+        width: 220,
         sortable: false,
         filterable: false,
         editable: false,
@@ -60,7 +52,7 @@ const columns = [
         field: "End_Location",
         headerName: "End location",
         type: "string",
-        width: 200,
+        width: 220,
         sortable: false,
         filterable: false,
         editable: false,
@@ -69,7 +61,7 @@ const columns = [
         field: "Price",
         headerName: "Price per passenger",
         type: "number",
-        width: 200,
+        width: 220,
         headerAlign: "left",
         align: "left",
         sortable: false,
@@ -80,7 +72,7 @@ const columns = [
         field: "Total_Price",
         headerName: "Total Price",
         type: "number",
-        width: 200,
+        width: 220,
         headerAlign: "left",
         align: "left",
         sortable: false,
@@ -137,9 +129,18 @@ function ListSearchedFlights() {
     const [er, setEr] = React.useState("");
     const navigate = useNavigate();
     useEffect(() => {
-        //getData();
+        getData();
       //  onSubmit();
     }, [flights, er, error]);
+    const date = new Date().toISOString()
+
+        let getData = async () => { //izmeniti da dodaje sve?
+        axiosApi
+            .get(`/flights/all/?${`taking_off_date=${date}&`}${`start_location=&`}${`end_location=&`}${`number_of_tickets=1`}`)
+            .then((response) => {
+                setFlights(response.data);
+            });
+        };
 
     const onSubmit = async (data) => {
         try {
