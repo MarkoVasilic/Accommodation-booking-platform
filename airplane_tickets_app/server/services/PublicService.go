@@ -132,6 +132,11 @@ func (service *PublicService) SearchedFlights(c *gin.Context) {
 		return
 	}
 
+	if *(flight.Number_Of_Tickets) < 1 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Cannot buy less than 1 ticket!"})
+		return
+	}
+
 	if err != nil || flights == nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "There is no flights for choosen destinations!"})
 		return

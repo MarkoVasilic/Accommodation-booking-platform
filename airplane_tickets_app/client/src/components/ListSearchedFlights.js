@@ -170,6 +170,7 @@ function ListSearchedFlights() {
             console.log(err)
             setFlights([]);
             setError(true);
+            setEr(er.response.data.error)
         }
     };
 
@@ -229,7 +230,7 @@ function ListSearchedFlights() {
                                 name="number_of_tickets"
                                 control={control}
                                 type="number"
-                                rules={{ required: "This field is required" }}
+                                rules={{ required: "This field is required"}}
                             />
                         </Grid>
                     </Grid>
