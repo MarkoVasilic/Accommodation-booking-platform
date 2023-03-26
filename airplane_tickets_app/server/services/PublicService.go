@@ -12,6 +12,7 @@ import (
 	generate "github.com/MarkoVasilic/Accommodation-booking-platform/airplane_tickets_app/server/tokens"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"go.mongodb.org/mongo-driver/bson"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -99,4 +100,59 @@ func (service *PublicService) GetUserById(c *gin.Context, id string) {
 		return
 	}
 	c.JSON(http.StatusOK, founduser)
+}
+
+func (service *PublicService) SearchedFlights(c *gin.Context) {
+	var flights []models.SearchedFlights
+	var searchedFlights []models.SearchedFlights
+
+	var flight models.SearchedFlights
+	if err := c.BindQuery(&flight); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	filter := bson.M{}
+	if *flight.Start_Location != "" {
+		filter["start_location"] = flight.Start_Location
+	}
+
+	if *flight.End_Location != "" {
+		filter["end_location"] = flight.End_Location
+	}
+
+	flights, err := service.PublicRepository.SearchedFlights(filter)
+
+	year, month, day := flight.Taking_Off_Date.Date()
+	chDate := time.Date(year, month, day, int(0), int(0), int(0), int(0), time.UTC)
+	num := float64(*flight.Number_Of_Tickets)
+
+	if chDate.Before(time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), int(0), int(0), int(0), int(0), time.UTC)) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Cannot choose date in the past! Please choose another date."})
+		return
+	}
+
+	if err != nil || flights == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "There is no flights for choosen destinations!"})
+		return
+	}
+
+	for _, fl := range flights {
+		if *(fl.Number_Of_Tickets) >= *(flight.Number_Of_Tickets) {
+			yearF, monthF, dayF := fl.Taking_Off_Date.Date()
+			flDate := time.Date(yearF, monthF, dayF, int(0), int(0), int(0), int(0), time.UTC)
+			if flDate.Equal(chDate) {
+				total_Price := *(fl.Price) * num
+				fl.Total_Price = &total_Price
+				searchedFlights = append(searchedFlights, fl)
+			}
+		}
+	}
+
+	if len(searchedFlights) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "There are no tickets for choosen dates!"})
+		return
+	}
+
+	c.JSON(http.StatusOK, searchedFlights)
 }

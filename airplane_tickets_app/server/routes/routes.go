@@ -9,7 +9,7 @@ func PublicRoutes(incomingRoutes *gin.RouterGroup, PublicController *controllers
 	incomingRoutes.POST("/users/signup/", PublicController.SignUp())
 	incomingRoutes.POST("/users/login/", PublicController.Login())
 	incomingRoutes.GET("/users/logged/", PublicController.GetUserById())
-	//incomingRoutes.GET("/flights/all/", PublicController.GetAllFlights()) sa filtriranjem i sortiranjem, koristiti dto zbog cijena
+	incomingRoutes.GET("/flights/all/", PublicController.SearchedFlights()) //sa filtriranjem i sortiranjem, koristiti dto zbog cijena
 }
 
 func AdminRoutes(incomingRoutes *gin.RouterGroup, AdminController *controllers.AdminController) {

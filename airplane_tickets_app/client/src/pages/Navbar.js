@@ -14,16 +14,11 @@ import { Button } from "@mui/material";
 import { useState, useEffect, useMemo } from "react";
 import axiosApi from "../api/axios";
 
-export default function Navbar() {
-    const [state, setState] = React.useState(false);
-    let navigate = useNavigate();
-    const [user, setUser] = useState("");
-
-    const getData = async () =>
+const getData = async () =>
         axiosApi
             .get(`/users/logged/`)
             .then((response) => {
-                setUser(response.data);
+                return response.data
             })
             .catch(function (error) {
                 if (error.response) {
@@ -38,10 +33,18 @@ export default function Navbar() {
                     // Something happened in setting up the request that triggered an Error
                     console.log("Error", error.message);
                 }
+                return {};
             });
+
+export default function Navbar() {
+    const [state, setState] = React.useState(false);
+    let navigate = useNavigate();
+    const [user, setUser] = useState("");
+
+    
     useEffect(() => {
-        getData();
-    });
+        getData().then(setUser);
+    },[]);
     const sidemenu = useMemo(() => chooseSideMenu(user.role), [user.role]);
     const button1 = useMemo(() => chooseButton1(user.role), [user.role]);
     const button2 = useMemo(() => chooseButton2(user.role), [user.role]);
@@ -143,17 +146,17 @@ export default function Navbar() {
 }
 
 const chooseSideMenu = (role) => {
-    if (!role) return { "Check Transfusion Centers": "/list-centers" };
+    if (!role) return { "Search flights": "/flights/all" };
     if (role[0] === "ADMIN") {
         return {
-            "List Transfusion Centers": "/list-centers",
+            "Search flights": "/flights/all",
         };
     } else if (role[0] === "REGULAR") {
         return {
-            "List Transfusion Centers": "/list-centers",
+            "Search flights": "/flights/all",
         };
     } else {
-        return { "List Transfusion Centers": "/list-centers" };
+        return { "Search flights": "/flights/all" };
     }
 };
 
