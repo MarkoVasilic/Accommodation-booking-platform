@@ -104,6 +104,7 @@ func (service *PublicService) GetUserById(c *gin.Context, id string) {
 
 func (service *PublicService) SearchedFlights(c *gin.Context) {
 	var flights []models.SearchedFlights
+	var searchedFlights []models.SearchedFlights
 
 	var flight models.SearchedFlights
 	if err := c.BindQuery(&flight); err != nil {
@@ -126,7 +127,6 @@ func (service *PublicService) SearchedFlights(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "There is no flights for choosen destinations!"})
 		return
 	}
-	var searchedFlights []models.SearchedFlights
 	year, month, day := flight.Taking_Off_Date.Date()
 	chDate := time.Date(year, month, day, int(0), int(0), int(0), int(0), time.UTC)
 	num := float64(*flight.Number_Of_Tickets)

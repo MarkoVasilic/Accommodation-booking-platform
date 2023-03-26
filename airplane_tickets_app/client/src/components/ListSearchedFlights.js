@@ -18,37 +18,43 @@ import { useNavigate } from "react-router-dom";
 import InputTextField from "./InputTextField";
 import Grid from "@mui/material/Grid";
 import { useForm } from "react-hook-form";
+import moment from "moment";
+import CloseIcon from "@mui/icons-material/Close";
+import Alert from "@mui/material/Alert";
+import Collapse from "@mui/material/Collapse";
+
 
 
 const columns = [
     {
-        field: "_id",
+        field: "ID",
         headerName: "ID",
-        width: 80,
+        width: 200,
         sortable: false,
         filterable: false,
         editable: false,
     },
     {
-        field: "name",
+        field: "Name",
         headerName: "Name",
         type: "string",
-        width: 180,
+        width: 200,
         sortable: false,
         filterable: false,
         editable: false,
     },
     {
-        field: "taking_off_date",
+        field: "Taking_Off_Date",
         headerName: "Taking off date",
-        type: "date",
-        width: 150,
+        type: "datetime-local",
+        width: 200,
         sortable: false,
         filterable: false,
         editable: false,
+        valueFormatter: params => moment(params?.value).format("DD/MM/YYYY hh:mm A"),
     },
     {
-        field: "start_location",
+        field: "Start_Location",
         headerName: "Start location",
         type: "string",
         width: 200,
@@ -57,7 +63,7 @@ const columns = [
         editable: false,
     },
     {
-        field: "end_location",
+        field: "End_Location",
         headerName: "End location",
         type: "string",
         width: 200,
@@ -66,30 +72,23 @@ const columns = [
         editable: false,
     },
     {
-        field: "price",
-        headerName: "Price number",
+        field: "Price",
+        headerName: "Price per passenger",
         type: "number",
-        width: 150,
+        width: 200,
+        headerAlign: "left",
+        align: "left",
         sortable: false,
         filterable: false,
         editable: false,
     },
     {
-        field: "number_of_tickets",
-        headerName: "Number of tickets",
-        type: "number",
-        min: "1",
-        max: "150",
-        width: 300,
-        sortable: false,
-        filterable: false,
-        editable: false,
-    },
-    {
-        field: "total_price",
+        field: "Total_Price",
         headerName: "Total Price",
         type: "number",
-        width: 150,
+        width: 200,
+        headerAlign: "left",
+        align: "left",
         sortable: false,
         filterable: false,
         editable: false,
@@ -98,10 +97,10 @@ const columns = [
 
 function rowAction(navigate, buttonName, buttonUrl) {
     return {
-        field: "action",
+        field: "Details",
         headerName: buttonName,
         align: "center",
-        headerAlign: "center",
+        headerAlign: "left",
         sortable: false,
         renderCell: (params) => {
             const onClick = (e) => {
@@ -139,23 +138,14 @@ function rowAction(navigate, buttonName, buttonUrl) {
 
 function ListSearchedFlights() {
     const { handleSubmit, control } = useForm();
-    const [date, setDate] = useState(new Date().toISOString());
-    const [start, setStart] = useState("");
-    const [end, setEnd] = useState("");
-    const [tickets, setTickets] = useState(1);  //obrisati
     const [flights, setFlights ] = useState([]);
+    const [ error, setError ] = React.useState(false);
+    const [er, setEr] = React.useState("");
     const navigate = useNavigate();
     useEffect(() => {
-        getData();
-    }, [date, start, end, tickets, flights]);
-
-    let getData = async () => { //izmeniti da dodaje sve?
-        axiosApi
-            .get(`/flights/all?${`taking_off_date=${date}&`}${`start_location=${start}&`}${`end_location=${end}&`}${`number_of_tickets=${tickets}`}`)
-            .then((response) => {
-                setFlights(response.data);
-            });
-    };
+        //getData();
+      //  onSubmit();
+    }, [flights, er, error]);
 
     const onSubmit = async (data) => {
         try {
@@ -164,14 +154,22 @@ function ListSearchedFlights() {
             //console.log(data)
             let searchDate = new Date(Date.parse(data.taking_off_date))
             let res = await axiosApi
-            .get(`/flights/all?${`taking_off_date=${searchDate.toISOString()}&`}${`start_location=${data.start_location}&`}${`end_location=${data.end_location}&`}${`number_of_tickets=${data.number_of_tickets}`}`)
+            .get(`/flights/all/?${`taking_off_date=${searchDate.toISOString()}&`}${`start_location=${data.start_location}&`}${`end_location=${data.end_location}&`}${`number_of_tickets=${data.number_of_tickets}`}`)
             .then((response) => {
                 setFlights(response.data);
+                console.log(response.data);
+                console.log("LETOVI POSLE: ", flights);
+            }).catch(er => {
+                console.log(er.response);
+                setFlights([]);
+                setError(true)
+                setEr(er.response.data.error)
             });
         }
         catch (err) {
             console.log(err)
-            //setError(true);
+            setFlights([]);
+            setError(true);
         }
     };
 
@@ -193,7 +191,7 @@ function ListSearchedFlights() {
                     container
                     rowSpacing={2}
                     marginTop={2}
-                    sx={{ padding: "5px 20px 10px 50px", textAlign: "left" }}
+                    sx={{ padding: "0px 0px 10px 180px", textAlign: "left" }}
                 >
                     <Grid container spacing={5}>
                         <Grid item xs={12} md={2}>
@@ -213,7 +211,6 @@ function ListSearchedFlights() {
                                 name="start_location"
                                 control={control}
                                 type="text"
-                                rules={{ required: "This field is required" }}
                             />
                         </Grid>
                         <Grid item xs={12} md={2}>
@@ -223,7 +220,6 @@ function ListSearchedFlights() {
                                 name="end_location"
                                 control={control}
                                 type="text"
-                                rules={{ required: "This field is required" }}
                             />
                         </Grid>
                         <Grid item xs={12} md={2}>
@@ -260,9 +256,32 @@ function ListSearchedFlights() {
                 </Grid>
             </form>
             <Paper>
-                <Box sx={{ height: 700, width: "100%", marginTop: "20px" }}>
+            <Box sx={{ width: "100%" }}>
+                    <Collapse in={error}>
+                        <Alert
+                            severity="error"
+                            action={
+                                <IconButton
+                                    aria-label="close"
+                                    color="inherit"
+                                    size="small"
+                                    onClick={() => {
+                                        setError(false);
+                                    }}
+                                >
+                                    <CloseIcon fontSize="inherit" />
+                                </IconButton>
+                            }
+                            sx={{ mb: 2 }}
+                        >
+                            {er}
+                        </Alert>
+                    </Collapse>
+                </Box>
+                <Box sx={{ height: 700, width: "100%", marginTop: "20px", marginBottom: "20px"}}>
                     <DataGrid
                         rows={flights}
+                        getRowId={(row) => row.ID}
                         disableColumnFilter
                         columns={[...columns, rowAction(navigate)]}
                         autoHeight
@@ -271,6 +290,8 @@ function ListSearchedFlights() {
                         rowHeight={50}
                         pageSize={5}
                         headerHeight={35}
+                        headerAlign= "left"
+                        align="left"
                     />
                 </Box>
             </Paper>
