@@ -230,7 +230,15 @@ function ListSearchedFlights() {
                                 name="number_of_tickets"
                                 control={control}
                                 type="number"
-                                rules={{ required: "This field is required"}}
+                                min="0"
+                                rules={{
+                                    required: "This field is required",
+                                    min: {
+                                      value: 0,
+                                      message: "The value cannot be less that 1"
+                                    }
+                                  }}
+
                             />
                         </Grid>
                     </Grid>
@@ -239,12 +247,13 @@ function ListSearchedFlights() {
                             variant="contained"
                             sx={{
                                 background: "#5B63F5",
-                                marginTop: "-50px",
+                                marginTop: "30px",
                                 marginRight: "50px",
                                 marginLeft: "1000px",
                                 marginBottom: "5px",
                                 width: "160px",
                                 height: "40px",
+                                position: "fixed",
                                 "&.MuiButtonBase-root": {
                                     "&:hover": {
                                         backgroundColor: blue[600],

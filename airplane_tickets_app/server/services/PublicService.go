@@ -138,7 +138,7 @@ func (service *PublicService) SearchedFlights(c *gin.Context) {
 	}
 
 	if err != nil || flights == nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "There is no flights for choosen destinations!"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "There is no flights for chosen destinations!"})
 		return
 	}
 
@@ -155,7 +155,7 @@ func (service *PublicService) SearchedFlights(c *gin.Context) {
 	}
 
 	if len(searchedFlights) == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "There are no tickets for choosen dates!"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "There are no tickets for chosen destinations on chosen dates!"})
 		return
 	}
 
