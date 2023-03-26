@@ -17,6 +17,6 @@ type SearchedFlights struct {
 	Start_Location    *string            `bson:"start_location" form:"start_location"  validate:"required"`
 	End_Location      *string            `bson:"end_location" form:"end_location"   validate:"required,min=3"`
 	Price             *float64           `bson:"price" form:"price"`
-	Number_Of_Tickets *uint64            `bson:"number_of_tickets" form:"number_of_tickets"`
+	Number_Of_Tickets *uint64            `bson:"number_of_tickets" form:"number_of_tickets" validate:"required"`
 	Total_Price       *float64           `bson:"total_price" form:"total_price"`
 }
