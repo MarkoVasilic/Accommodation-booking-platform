@@ -16,7 +16,7 @@ func AdminRoutes(incomingRoutes *gin.RouterGroup, AdminController *controllers.A
 	incomingRoutes.POST("/flights/create/", AdminController.CreateFlight())
 	incomingRoutes.GET("/flights/info/:id", AdminController.GetFlightById())
 	//incomingRoutes.GET("/flights/tickets_left/:id", AdminController.TicketsLeft()) moze i na frontu samo
-	incomingRoutes.DELETE("/flights/delete/:id", AdminController.DeleteFlight()) //vidjeti kako da se obrisu i sve postojece karte za let koji se brise, moraju se obrisati i kod usera
+	incomingRoutes.DELETE("/flights/delete/:id", AdminController.DeleteFlight())
 }
 
 func RegularRoutes(incomingRoutes *gin.RouterGroup, RegularController *controllers.RegularController) {

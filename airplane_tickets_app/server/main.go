@@ -32,7 +32,7 @@ func main() {
 	public_service := &services.PublicService{PublicRepository: public_repository}
 	public_controller := &controllers.PublicController{PublicService: public_service}
 
-	admin_repository := &repositories.AdminRepository{UserCollection: user_collection, FlightCollection: flight_collection}
+	admin_repository := &repositories.AdminRepository{UserCollection: user_collection, FlightCollection: flight_collection, TicketCollection: ticket_collection}
 	admin_service := &services.AdminService{AdminRepository: admin_repository}
 	admin_controller := &controllers.AdminController{AdminService: admin_service}
 
