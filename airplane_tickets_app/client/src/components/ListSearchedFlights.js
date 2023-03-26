@@ -131,22 +131,27 @@ function ListSearchedFlights() {
     useEffect(() => {
         getData();
       //  onSubmit();
-    }, [flights, er, error]);
-    const date = new Date().toISOString()
+    }, []);
+    const date = new Date().toISOString();
 
-        let getData = async () => { //izmeniti da dodaje sve?
+        let getData = async () => {
+        try{
         axiosApi
             .get(`/flights/all/?${`taking_off_date=${date}&`}${`start_location=&`}${`end_location=&`}${`number_of_tickets=1`}`)
             .then((response) => {
                 setFlights(response.data);
+            }).catch(er => {
+                console.log(er.response);
+                setFlights([]);
             });
+        }catch (err) {
+                console.log(err)
+                setFlights([]);
+            }
         };
 
     const onSubmit = async (data) => {
         try {
-            //data.transfusion_center = user.userprofile.tranfusion_center
-            //data.staff = [data.staff]
-            //console.log(data)
             let searchDate = new Date(Date.parse(data.taking_off_date))
             let res = await axiosApi
             .get(`/flights/all/?${`taking_off_date=${searchDate.toISOString()}&`}${`start_location=${data.start_location}&`}${`end_location=${data.end_location}&`}${`number_of_tickets=${data.number_of_tickets}`}`)
@@ -262,6 +267,7 @@ function ListSearchedFlights() {
                                     size="small"
                                     onClick={() => {
                                         setError(false);
+                                        setFlights([])
                                     }}
                                 >
                                     <CloseIcon fontSize="inherit" />
