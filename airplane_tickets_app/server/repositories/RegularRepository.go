@@ -64,3 +64,47 @@ func (repo *RegularRepository) GetFlightById(id primitive.ObjectID) (models.Flig
 	defer cancel()
 	return foundFlight, err
 }
+
+func (repo *RegularRepository) GetUserTicketsWithFlights(userID string) ([]models.TicketWithFlight, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
+	defer cancel()
+
+	userId, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println(userId)
+
+	var user models.User
+	err = repo.UserCollection.FindOne(ctx, bson.M{"_id": userId}).Decode(&user)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println("user:", user, "err", err)
+
+	var ticketsWithFlights []models.TicketWithFlight
+	for _, ticketID := range user.UserTickets {
+		var ticket models.Ticket
+		err1 := repo.TicketCollection.FindOne(ctx, bson.M{"_id": ticketID}).Decode(&ticket)
+		if err1 != nil {
+			return nil, err1
+		}
+		fmt.Println("ticket:", ticket, "err", err1)
+
+		var flight models.Flight
+		err2 := repo.FlightCollection.FindOne(ctx, bson.M{"_id": ticket.Flight}).Decode(&flight)
+		if err != nil {
+			return nil, err2
+		}
+		fmt.Println("flight", flight, "err", err2)
+
+		ticketWithFlight := models.TicketWithFlight{
+			Ticket: ticket,
+			Flight: flight,
+		}
+		ticketsWithFlights = append(ticketsWithFlights, ticketWithFlight)
+		fmt.Println("final", ticketWithFlight)
+	}
+
+	return ticketsWithFlights, nil
+}

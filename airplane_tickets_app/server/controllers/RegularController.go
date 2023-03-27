@@ -15,3 +15,10 @@ func (controller *RegularController) BookFlightTickets() gin.HandlerFunc {
 		controller.RegularService.BookFlightTickets(c, userID)
 	}
 }
+
+func (controller *RegularController) GetUserTicketsWithFlights() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userID := c.Param("id")
+		controller.RegularService.GetUserTicketsWithFlights(c, userID)
+	}
+}

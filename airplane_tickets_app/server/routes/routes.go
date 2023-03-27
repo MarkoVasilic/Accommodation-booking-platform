@@ -21,5 +21,5 @@ func AdminRoutes(incomingRoutes *gin.RouterGroup, AdminController *controllers.A
 
 func RegularRoutes(incomingRoutes *gin.RouterGroup, RegularController *controllers.RegularController) {
 	incomingRoutes.PUT("/tickets/buy/:id", RegularController.BookFlightTickets())
-	//incomingRoutes.GET("/ticket/all/:id", RegularController.GetAllTickets()) na osnovu id usera dobaviti sve karte, i informacije izvuci iz leta za koju je karta vezana
+	incomingRoutes.GET("/ticket/all/:id", RegularController.GetUserTicketsWithFlights())
 }

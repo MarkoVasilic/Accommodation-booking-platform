@@ -73,3 +73,16 @@ func (service *RegularService) BookFlightTickets(c *gin.Context, userID string) 
 	c.JSON(http.StatusOK, gin.H{"message": "Ticket booked successfully."})
 
 }
+
+func (service *RegularService) GetUserTicketsWithFlights(c *gin.Context, userID string) {
+	var _, cancel = context.WithTimeout(context.Background(), 100*time.Second)
+	defer cancel()
+
+	ticketsWithFlights, err := service.RegularRepository.GetUserTicketsWithFlights(userID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err})
+		return
+	}
+
+	c.JSON(http.StatusOK, ticketsWithFlights)
+}
