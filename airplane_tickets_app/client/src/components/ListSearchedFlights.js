@@ -131,22 +131,27 @@ function ListSearchedFlights() {
     useEffect(() => {
         getData();
       //  onSubmit();
-    }, [flights, er, error]);
-    const date = new Date().toISOString()
+    }, []);
+    const date = new Date().toISOString();
 
-        let getData = async () => { //izmeniti da dodaje sve?
+        let getData = async () => {
+        try{
         axiosApi
             .get(`/flights/all/?${`taking_off_date=${date}&`}${`start_location=&`}${`end_location=&`}${`number_of_tickets=1`}`)
             .then((response) => {
                 setFlights(response.data);
+            }).catch(er => {
+                console.log(er.response);
+                setFlights([]);
             });
+        }catch (err) {
+                console.log(err)
+                setFlights([]);
+            }
         };
 
     const onSubmit = async (data) => {
         try {
-            //data.transfusion_center = user.userprofile.tranfusion_center
-            //data.staff = [data.staff]
-            //console.log(data)
             let searchDate = new Date(Date.parse(data.taking_off_date))
             let res = await axiosApi
             .get(`/flights/all/?${`taking_off_date=${searchDate.toISOString()}&`}${`start_location=${data.start_location}&`}${`end_location=${data.end_location}&`}${`number_of_tickets=${data.number_of_tickets}`}`)
@@ -165,6 +170,7 @@ function ListSearchedFlights() {
             console.log(err)
             setFlights([]);
             setError(true);
+            setEr(er.response.data.error)
         }
     };
 
@@ -224,7 +230,15 @@ function ListSearchedFlights() {
                                 name="number_of_tickets"
                                 control={control}
                                 type="number"
-                                rules={{ required: "This field is required" }}
+                                min="0"
+                                rules={{
+                                    required: "This field is required",
+                                    min: {
+                                      value: 0,
+                                      message: "The value cannot be less that 1"
+                                    }
+                                  }}
+
                             />
                         </Grid>
                     </Grid>
@@ -233,12 +247,13 @@ function ListSearchedFlights() {
                             variant="contained"
                             sx={{
                                 background: "#5B63F5",
-                                marginTop: "-50px",
+                                marginTop: "30px",
                                 marginRight: "50px",
                                 marginLeft: "1000px",
                                 marginBottom: "5px",
                                 width: "160px",
                                 height: "40px",
+                                position: "fixed",
                                 "&.MuiButtonBase-root": {
                                     "&:hover": {
                                         backgroundColor: blue[600],
@@ -262,6 +277,7 @@ function ListSearchedFlights() {
                                     size="small"
                                     onClick={() => {
                                         setError(false);
+                                        setFlights([])
                                     }}
                                 >
                                     <CloseIcon fontSize="inherit" />

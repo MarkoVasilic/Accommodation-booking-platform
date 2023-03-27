@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/MarkoVasilic/Accommodation-booking-platform/airplane_tickets_app/server/models"
@@ -114,11 +115,11 @@ func (service *PublicService) SearchedFlights(c *gin.Context) {
 
 	filter := bson.M{}
 	if *flight.Start_Location != "" {
-		filter["start_location"] = flight.Start_Location
+		filter["start_location"] = strings.Title(strings.ToLower(*(flight.Start_Location)))
 	}
 
 	if *flight.End_Location != "" {
-		filter["end_location"] = flight.End_Location
+		filter["end_location"] = strings.Title(strings.ToLower(*(flight.End_Location)))
 	}
 
 	flights, err := service.PublicRepository.SearchedFlights(filter)
@@ -132,8 +133,13 @@ func (service *PublicService) SearchedFlights(c *gin.Context) {
 		return
 	}
 
+	if *(flight.Number_Of_Tickets) < 1 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Cannot buy less than 1 ticket!"})
+		return
+	}
+
 	if err != nil || flights == nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "There is no flights for choosen destinations!"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "There is no flights for chosen destinations!"})
 		return
 	}
 
@@ -150,7 +156,7 @@ func (service *PublicService) SearchedFlights(c *gin.Context) {
 	}
 
 	if len(searchedFlights) == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "There are no tickets for choosen dates!"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "There are no tickets for chosen destinations on chosen dates!"})
 		return
 	}
 

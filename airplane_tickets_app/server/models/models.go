@@ -34,8 +34,8 @@ type Flight struct {
 	Taking_Off_Date   time.Time          `bson:"taking_off_date" json:"taking_off_date" validate:"required"`
 	Start_Location    *string            `bson:"start_location" json:"start_location"  validate:"required"`
 	End_Location      *string            `bson:"end_location" json:"end_location"   validate:"required,min=3"`
-	Price             *float64           `bson:"price" json:"price" validate:"gte=0"`
-	Number_Of_Tickets *uint64            `bson:"number_of_tickets" json:"number_of_tickets" validate:"gte=0"`
+	Price             *float64           `bson:"price" json:"price" validate:"required,gte=0"`
+	Number_Of_Tickets *uint64            `bson:"number_of_tickets" json:"number_of_tickets" validate:"required,min=1,gte=0"`
 }
 
 type Ticket struct {
