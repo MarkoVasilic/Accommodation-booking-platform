@@ -5,6 +5,7 @@ import UserRegistration from "./pages/UserRegistration";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { setAuthToken } from "./helpers/sethAuthToken";
 import Login from "./pages/Login";
+import FlightDetails from "./pages/FlightDetails";
 import SearchhFlights from "./pages/SearchFlights"
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
                         <Route path="/" element={<Dashboard />} />
                         <Route path="/signup" element={<UserRegistration />} />
                         <Route path="/login" element={<Login />} />
+                        <Route path="/flight-details" element={<FlightDetails />} />
                         <Route path="/flights/all" element={<SearchhFlights />} />
                     </Routes>
                 </div>
