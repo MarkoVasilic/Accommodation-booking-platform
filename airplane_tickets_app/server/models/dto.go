@@ -20,3 +20,8 @@ type SearchedFlights struct {
 	Number_Of_Tickets *uint64            `bson:"number_of_tickets" form:"number_of_tickets" validate:"required, min=1"`
 	Total_Price       *float64           `bson:"total_price" form:"total_price"`
 }
+
+type UserTickets struct {
+	Flight            *string `bson:"flight" form:"flight"`
+	Number_Of_Tickets *uint64 `bson:"number_of_tickets" form:"number_of_tickets" validate:"required, min=1"`
+}

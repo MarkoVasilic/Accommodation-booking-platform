@@ -20,8 +20,6 @@ func AdminRoutes(incomingRoutes *gin.RouterGroup, AdminController *controllers.A
 }
 
 func RegularRoutes(incomingRoutes *gin.RouterGroup, RegularController *controllers.RegularController) {
-	//incomingRoutes.PUT("/tickets/buy/:id", RegularController.UpdateFlight())  kupovina karata, trebalo bi da se posalje id leta, usera i broj kupljenih karata
-	//zatim napraviti nove objekte karata i uvezati ih sa letom i sa userom, znaci treba biti ukljucen update usera posto sadrzi listu kupljenih karata
-	//azurirati let tako da se smanji number_of_tickets ako ima dostupnih (ne mora ovako url da izgleda i zahtjev moze da bude post)
+	incomingRoutes.PUT("/tickets/buy/:id", RegularController.BookFlightTickets())
 	//incomingRoutes.GET("/ticket/all/:id", RegularController.GetAllTickets()) na osnovu id usera dobaviti sve karte, i informacije izvuci iz leta za koju je karta vezana
 }
