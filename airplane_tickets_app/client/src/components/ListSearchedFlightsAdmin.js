@@ -62,7 +62,7 @@ const columns = [
         sortable: false,
         filterable: false,
         editable: false,
-        valueFormatter: params => moment(params?.value).format("DD/MM/YYYY hh:mm A"),
+        valueFormatter: params => moment(params?.value).add(-2, 'h').format("DD/MM/YYYY hh:mm:ss A"),
     },
     {
         field: "Start_Location",
