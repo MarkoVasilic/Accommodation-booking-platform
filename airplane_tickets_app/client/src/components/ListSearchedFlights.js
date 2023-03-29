@@ -37,7 +37,8 @@ const columns = [
         sortable: false,
         filterable: false,
         editable: false,
-        valueFormatter: params => moment(params?.value).format("DD/MM/YYYY hh:mm A"),
+        //format:"DD/MM/YYYY hh:mm A",
+        valueFormatter: params => moment(params?.value).add(-2, 'h').format("DD/MM/YYYY hh:mm:ss A"),
     },
     {
         field: "Start_Location",
@@ -253,7 +254,7 @@ function ListSearchedFlights() {
                                 marginBottom: "5px",
                                 width: "160px",
                                 height: "40px",
-                                position: "fixed",
+                                position: "absolute",
                                 "&.MuiButtonBase-root": {
                                     "&:hover": {
                                         backgroundColor: blue[600],
