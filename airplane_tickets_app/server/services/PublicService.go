@@ -122,6 +122,11 @@ func (service *PublicService) SearchedFlights(c *gin.Context) {
 		filter["end_location"] = strings.Title(strings.ToLower(*(flight.End_Location)))
 	}
 
+	if *flight.Start_Location != "" && *flight.End_Location != "" {
+		filter["start_location"] = strings.Title(strings.ToLower(*(flight.Start_Location)))
+		filter["end_location"] = strings.Title(strings.ToLower(*(flight.End_Location)))
+	}
+
 	flights, err := service.PublicRepository.SearchedFlights(filter)
 
 	year, month, day := flight.Taking_Off_Date.Date()
