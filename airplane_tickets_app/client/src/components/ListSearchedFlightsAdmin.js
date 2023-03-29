@@ -18,6 +18,31 @@ import Alert from "@mui/material/Alert";
 import Collapse from "@mui/material/Collapse";
 
 
+function refreshPage(){
+    window.location.reload();
+}
+
+const RenderDeleteButton = (params) => {
+    let navigate = useNavigate();
+        return (
+        <strong>
+            <Button
+                variant="contained"
+                color="error"
+                size="small"
+                style={{ marginLeft: 16 }}
+                onClick={() => {
+                    axiosApi.delete(`/flights/delete/${params.row.ID}`);
+                    refreshPage();
+                }}
+            >
+                Delete
+            </Button>
+        </strong>
+    )
+};
+
+
 
 const columns = [
     {
@@ -37,8 +62,7 @@ const columns = [
         sortable: false,
         filterable: false,
         editable: false,
-        //format:"DD/MM/YYYY hh:mm A",
-        valueFormatter: params => moment(params?.value).add(-2, 'h').format("DD/MM/YYYY hh:mm:ss A"),
+        valueFormatter: params => moment(params?.value).format("DD/MM/YYYY hh:mm A"),
     },
     {
         field: "Start_Location",
@@ -70,16 +94,12 @@ const columns = [
         editable: false,
     },
     {
-        field: "Total_Price",
-        headerName: "Total Price",
-        type: "number",
-        width: 220,
-        headerAlign: "left",
-        align: "left",
-        sortable: false,
-        filterable: false,
-        editable: false,
-    },
+        field: "delete",
+        headerName: "Delete flight",
+        width: 150,
+        renderCell: RenderDeleteButton,
+        disableClickEventBubbling: true
+    }
 ];
 
 function rowAction(navigate, buttonName, buttonUrl) {
@@ -95,7 +115,7 @@ function rowAction(navigate, buttonName, buttonUrl) {
 
                 const api = params.api;
                 const thisRow = params.row;
-
+               
                 return navigate(buttonUrl, { state: thisRow });
             };
             return (
@@ -113,7 +133,7 @@ function rowAction(navigate, buttonName, buttonUrl) {
     };
 }
 
-function ListSearchedFlights(props) {
+function ListSearchedFlightsAdmin(props) {
     const { handleSubmit, control } = useForm();
     const [flights, setFlights ] = useState([]);
     const [ error, setError ] = React.useState(false);
@@ -145,7 +165,7 @@ function ListSearchedFlights(props) {
         try {
             let searchDate = new Date(Date.parse(data.taking_off_date))
             let res = await axiosApi
-            .get(`/flights/all/?${`taking_off_date=${searchDate.toISOString()}&`}${`start_location=${data.start_location}&`}${`end_location=${data.end_location}&`}${`number_of_tickets=${data.number_of_tickets}`}`)
+            .get(`/flights/all/?${`taking_off_date=${searchDate.toISOString()}&`}${`start_location=${data.start_location}&`}${`end_location=${data.end_location}&`}${`number_of_tickets=1`}`)
             .then((response) => {
                 setFlights(response.data);
                 console.log(response.data);
@@ -183,7 +203,7 @@ function ListSearchedFlights(props) {
                     container
                     rowSpacing={2}
                     marginTop={2}
-                    sx={{ padding: "0px 0px 10px 180px", textAlign: "left" }}
+                    sx={{ padding: "0px 0px 10px 300px", textAlign: "left" }}
                 >
                     <Grid container spacing={5}>
                         <Grid item xs={12} md={2}>
@@ -214,24 +234,7 @@ function ListSearchedFlights(props) {
                                 type="text"
                             />
                         </Grid>
-                        <Grid item xs={12} md={2}>
-                            <Typography>
-                                Choose number of tickets:</Typography>
-                            <InputTextField
-                                name="number_of_tickets"
-                                control={control}
-                                type="number"
-                                min="0"
-                                rules={{
-                                    required: "This field is required",
-                                    min: {
-                                      value: 0,
-                                      message: "The value cannot be less that 1"
-                                    }
-                                  }}
-
-                            />
-                        </Grid>
+                        
                     </Grid>
                         <Button
                             type="submit"
@@ -240,7 +243,7 @@ function ListSearchedFlights(props) {
                                 background: "#5B63F5",
                                 marginTop: "30px",
                                 marginRight: "50px",
-                                marginLeft: "1000px",
+                                marginLeft: "700px",
                                 marginBottom: "5px",
                                 width: "160px",
                                 height: "40px",
@@ -301,4 +304,4 @@ function ListSearchedFlights(props) {
     );
 }
 
-export default ListSearchedFlights;
+export default ListSearchedFlightsAdmin;
