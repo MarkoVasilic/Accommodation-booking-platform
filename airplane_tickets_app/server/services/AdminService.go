@@ -84,34 +84,37 @@ func (service *AdminService) DeleteUserTickets(c *gin.Context, flightId string) 
 		return
 	}
 
-	users, err := service.AdminRepository.GetAllUsers()
+	if len(tickets) > 0 {
 
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "There are no users."})
-		return
-	}
+		users, err := service.AdminRepository.GetAllUsers()
 
-	//prolazim kroz sve usere
-	for _, user := range users {
-
-		userTickets := user.UserTickets
-
-		for _, ticket := range tickets {
-
-			index := findIndex(userTickets, ticket.ID)
-
-			if index != -1 {
-				//uklanjam id karte iz user-ovih karata
-				userTickets = removeIndex(userTickets, index)
-			}
-
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "There are no users."})
+			return
 		}
 
-		//update u bazi
-		err = service.AdminRepository.UpdateUserTickets(user.ID.Hex(), userTickets)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update user tickets."})
-			return
+		//prolazim kroz sve usere
+		for _, user := range users {
+
+			userTickets := user.UserTickets
+
+			for _, ticket := range tickets {
+
+				index := findIndex(userTickets, ticket.ID)
+
+				if index != -1 {
+					//uklanjam id karte iz user-ovih karata
+					userTickets = removeIndex(userTickets, index)
+				}
+
+			}
+
+			//update u bazi
+			err = service.AdminRepository.UpdateUserTickets(user.ID.Hex(), userTickets)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update user tickets."})
+				return
+			}
 		}
 	}
 
@@ -123,15 +126,31 @@ func (service *AdminService) DeleteFlightById(c *gin.Context, id string) {
 	var _, cancel = context.WithTimeout(context.Background(), 100*time.Second)
 	defer cancel()
 
-	//brisem sve karte kod user-a
-	service.DeleteUserTickets(c, id)
+	objID, err := primitive.ObjectIDFromHex(id)
 
-	//brisem sve karte
-	err1 := service.AdminRepository.DeleteTicketsByFlightId(id)
-
-	if err1 != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to delete tickets for the given flight."})
+	hasTickets, err := service.AdminRepository.HasTicketsForFlight(objID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to get information about user's tickets."})
 		return
+	}
+
+	if hasTickets {
+		service.DeleteUserTickets(c, id)
+	}
+
+	tickets, err := service.AdminRepository.GetTicketsByFlightId(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to get tickets for the given flight."})
+		return
+	}
+
+	// brisem karte ako ih ima
+	if len(tickets) > 0 {
+		err1 := service.AdminRepository.DeleteTicketsByFlightId(id)
+		if err1 != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to delete tickets for the given flight."})
+			return
+		}
 	}
 
 	//na kraju brisem let

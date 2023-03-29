@@ -147,11 +147,12 @@ export default function Navbar() {
 
 const chooseSideMenu = (role) => {
     if (!role) return { "Search flights": "/flights/all" };
-    if (role[0] === "ADMIN") {
+    if (role === "ADMIN") {
         return {
-            "Search flights": "/flights/all",
+            "Search flights": "/flights-admin/all",
+            "Create flight": "/flights/create/"
         };
-    } else if (role[0] === "REGULAR") {
+    } else if (role === "REGULAR") {
         return {
             "Search flights": "/flights/all",
         };

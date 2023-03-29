@@ -47,6 +47,18 @@ func (repo *AdminRepository) DeleteFlightById(id string) error {
 	return err
 }
 
+func (repo *AdminRepository) GetTicketById(id string) (models.Ticket, error) {
+	var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
+	var foundticket models.Ticket
+	objID, err_hex := primitive.ObjectIDFromHex(id)
+	if err_hex != nil {
+		panic(err_hex)
+	}
+	err := repo.TicketCollection.FindOne(ctx, bson.M{"_id": objID}).Decode(&foundticket)
+	defer cancel()
+	return foundticket, err
+}
+
 func (repo *AdminRepository) GetTicketsByFlightId(id string) ([]models.Ticket, error) {
 	var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
 	defer cancel()
@@ -121,4 +133,30 @@ func (repo *AdminRepository) UpdateUserTickets(userID string, tickets []primitiv
 	}
 
 	return nil
+}
+
+func (repo *AdminRepository) HasTicketsForFlight(flightID primitive.ObjectID) (bool, error) {
+
+	users, err := repo.GetAllUsers()
+	if err != nil {
+		return false, err
+	}
+
+	//prolazim kroz sve usere i gledam da li imaju kartu za taj let
+	for _, user := range users {
+		for _, ticketID := range user.UserTickets {
+			ticket, err := repo.GetTicketById(ticketID.Hex())
+			if err != nil {
+				return false, err
+			}
+
+			//imaju -> true
+			if ticket.Flight == flightID {
+				return true, nil
+			}
+		}
+	}
+
+	//nije nista nasao -> false
+	return false, nil
 }

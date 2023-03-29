@@ -5,7 +5,7 @@ export default function SearchUsers(){
     return(
         <div>
             <Navbar/>
-            <ListSearchedFlights></ListSearchedFlights>
+            <ListSearchedFlights buttonUrl={"/flight-details/"}></ListSearchedFlights>
         </div>
     );
 }
