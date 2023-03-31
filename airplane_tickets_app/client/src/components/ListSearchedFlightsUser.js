@@ -131,7 +131,7 @@ function BookAFlight(navigate, buttonName, buttonUrl) {
         console.log(buttonName,buttonUrl)
 
         const flight_data = {
-            flight: '64232c3f06f2fe9a5f68b9ff',
+            flight: '6414735b1cac2fb568f48f94',
             number_of_tickets: numTickets
           };
         console.log('flight_data:',flight_data)
@@ -325,7 +325,7 @@ function ListSearchedFlightsUser() {
                                 marginBottom: "5px",
                                 width: "160px",
                                 height: "40px",
-                                position: "fixed",
+                                position: "absolute",
                                 "&.MuiButtonBase-root": {
                                     "&:hover": {
                                         backgroundColor: blue[600],
