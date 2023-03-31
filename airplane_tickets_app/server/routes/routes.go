@@ -15,7 +15,6 @@ func PublicRoutes(incomingRoutes *gin.RouterGroup, PublicController *controllers
 func AdminRoutes(incomingRoutes *gin.RouterGroup, AdminController *controllers.AdminController) {
 	incomingRoutes.POST("/flights/create/", AdminController.CreateFlight())
 	incomingRoutes.GET("/flights/info/:id", AdminController.GetFlightById())
-	//incomingRoutes.GET("/flights/tickets_left/:id", AdminController.TicketsLeft()) moze i na frontu samo
 	incomingRoutes.DELETE("/flights/delete/:id", AdminController.DeleteFlight())
 }
 

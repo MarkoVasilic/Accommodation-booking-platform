@@ -8,6 +8,9 @@ import Login from "./pages/Login";
 import FlightDetails from "./pages/FlightDetails";
 import SearchhFlights from "./pages/SearchFlights";
 import SearchhFlightsUser from "./pages/SearchFlightsUser";
+import SearchFlightsAdmin from "./pages/SearchFlightsAdmin";
+import CreateFlight from "./pages/CreateFlight";
+
 
 function App() {
     const token = localStorage.getItem("token");
@@ -26,6 +29,8 @@ function App() {
                         <Route path="/flight-details" element={<FlightDetails />} />
                         <Route path="/flights/all" element={<SearchhFlights />} />
                         <Route path="/flights/all-user" element={<SearchhFlightsUser />} />
+                        <Route path="/flights-admin/all" element={<SearchFlightsAdmin />} />
+                        <Route path="/flights/create/" element={<CreateFlight />} />
                     </Routes>
                 </div>
             </Router>
