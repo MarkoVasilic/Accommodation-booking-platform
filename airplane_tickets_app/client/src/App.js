@@ -6,7 +6,8 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { setAuthToken } from "./helpers/sethAuthToken";
 import Login from "./pages/Login";
 import FlightDetails from "./pages/FlightDetails";
-import SearchhFlights from "./pages/SearchFlights"
+import SearchhFlights from "./pages/SearchFlights";
+import SearchhFlightsUser from "./pages/SearchFlightsUser";
 
 function App() {
     const token = localStorage.getItem("token");
@@ -24,6 +25,7 @@ function App() {
                         <Route path="/login" element={<Login />} />
                         <Route path="/flight-details" element={<FlightDetails />} />
                         <Route path="/flights/all" element={<SearchhFlights />} />
+                        <Route path="/flights/all-user" element={<SearchhFlightsUser />} />
                     </Routes>
                 </div>
             </Router>

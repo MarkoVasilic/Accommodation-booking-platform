@@ -153,7 +153,7 @@ const chooseSideMenu = (role) => {
         };
     } else if (role[0] === "REGULAR") {
         return {
-            "Search flights": "/flights/all",
+            "Search flights": "/flights/all-user",
         };
     } else {
         return { "Search flights": "/flights/all" };
