@@ -3,7 +3,7 @@ import * as React from "react";
 import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
 import Paper from "@mui/material/Paper";
-import { useEffect, useState, Controller } from "react";
+import { useEffect, useState, Controller,useRef } from "react";
 import Stack from "@mui/material/Stack";
 import { blue } from "@mui/material/colors";
 import axiosApi from "../api/axios";
@@ -17,72 +17,6 @@ import CloseIcon from "@mui/icons-material/Close";
 import Alert from "@mui/material/Alert";
 import Collapse from "@mui/material/Collapse";
 
-
-
-
-const columns = [
-    {
-        field: "Name",
-        headerName: "Name",
-        type: "string",
-        width: 220,
-        sortable: false,
-        filterable: false,
-        editable: false,
-    },
-    {
-        field: "Taking_Off_Date",
-        headerName: "Taking off date",
-        type: "datetime-local",
-        width: 220,
-        sortable: false,
-        filterable: false,
-        editable: false,
-        valueFormatter: params => moment(params?.value).format("DD/MM/YYYY hh:mm A"),
-    },
-    {
-        field: "Start_Location",
-        headerName: "Start location",
-        type: "string",
-        width: 220,
-        sortable: false,
-        filterable: false,
-        editable: false,
-    },
-    {
-        field: "End_Location",
-        headerName: "End location",
-        type: "string",
-        width: 220,
-        sortable: false,
-        filterable: false,
-        editable: false,
-    },
-    {
-        field: "Price",
-        headerName: "Price per passenger",
-        type: "number",
-        width: 220,
-        headerAlign: "left",
-        align: "left",
-        sortable: false,
-        filterable: false,
-        editable: false,
-    },
-    {
-        field: "Total_Price",
-        headerName: "Total Price",
-        type: "number",
-        width: 220,
-        headerAlign: "left",
-        align: "left",
-        sortable: false,
-        filterable: false,
-        editable: false,
-    }
-];
-
-
 function rowAction(navigate, buttonName, buttonUrl) {
     return {
         field: "Details",
@@ -95,18 +29,8 @@ function rowAction(navigate, buttonName, buttonUrl) {
                 e.stopPropagation(); // don't select this row after clicking
 
                 const api = params.api;
-                const thisRow = {};
-
-                api.getAllColumns()
-                    .filter((c) => c.field !== "__check__" && !!c)
-                    .forEach(
-                        (c) =>
-                        (thisRow[c.field] = params.getValue(
-                            params.id,
-                            c.field
-                        ))
-                    );
-
+                const thisRow = params.row;
+               
                 return navigate(buttonUrl, { state: thisRow });
             };
             return (
@@ -124,107 +48,42 @@ function rowAction(navigate, buttonName, buttonUrl) {
     };
 }
 
-function BookAFlight(navigate, buttonName, buttonUrl) {
-    const [numTickets, setNumTickets] = useState(0);
-
-    const handleBook = async() => {
-        console.log(buttonName,buttonUrl)
-
-        const flight_data = {
-            flight: '64232c3f06f2fe9a5f68b9ff',
-            number_of_tickets: numTickets
-          };
-        console.log('flight_data:',flight_data)
-
-        try { 
-            axiosApi.get(`/users/logged/`).then((response) => {
-                setTimeout(3000);
-                axiosApi.put(`/tickets/buy/${response.data.user_id}`, flight_data)
-                    .then(response => {
-                        console.log(response)
-                    })
-                    .catch(error => {
-                        console.error('Problem with the booking request:', error);
-                    });
-            });  
-        }
-        catch (err) {
-            console.log(err)
-            const errMes = err.response.data
-            
-        }
-    };
-
-    const handleNumTicketsChange = (event) => {
-        setNumTickets(parseInt(event.target.value));
-      };
-
-    return {
-        field: "Book a flight",
-        headerName: buttonName,
-        align: "center",
-        headerAlign: "left",
-        sortable: false,
-        renderCell: (params) => {
-            return (
-                <div>
-                     <Input
-                        type="number"
-                        inputProps={{ min: 0 }}
-                        value={numTickets}
-                        onChange={handleNumTicketsChange}
-                        sx={{ width: "50px", textAlign: "center" }}
-                    />
-                    <Button
-                        variant="contained"
-                        color="secondary"
-                        size="small"
-                        onClick={handleBook}
-                    >
-                        {" "}
-                        <ReadMoreIcon />{" "}
-                    </Button>
-                </div>
-               
-            );
-       },
-    };
-}
-
-
 function ListSearchedFlightsUser() {
     const { handleSubmit, control } = useForm();
     const [flights, setFlights ] = useState([]);
     const [ error, setError ] = React.useState(false);
     const [er, setEr] = React.useState("");
+    const [ proba, setProba] = useState(0);
+
     const navigate = useNavigate();
     useEffect(() => {
         getData();
-      //  onSubmit();
+        
     }, [],{});
     const date = new Date().toISOString();
 
-        let getData = async () => {
-        try{
-        axiosApi
-            .get(`/flights/all/?${`taking_off_date=${date}&`}${`start_location=&`}${`end_location=&`}${`number_of_tickets=1`}`)
-            .then((response) => {
-                setFlights(response.data);
-            }).catch(er => {
-                console.log(er.response);
-                setFlights([]);
-            });
+    let getData = async () => {
+    try{
+    axiosApi
+        .get(`/flights/all/?${`taking_off_date=${date}&`}${`start_location=&`}${`end_location=&`}${`number_of_tickets=1`}`)
+        .then((response) => {
+            setFlights(response.data);
+        }).catch(er => {
+            console.log(er.response);
+            setFlights([]);
+        });
 
-    
-        }catch (err) {
-                console.log(err)
-                
-            }
-        };
+
+    }catch (err) {
+            console.log(err)
+            
+        }
+    };
 
     const onSubmit = async (data) => {
         try {
             let searchDate = new Date(Date.parse(data.taking_off_date))
+            setProba(data.number_of_tickets)
             let res = await axiosApi
             .get(`/flights/all/?${`taking_off_date=${searchDate.toISOString()}&`}${`start_location=${data.start_location}&`}${`end_location=${data.end_location}&`}${`number_of_tickets=${data.number_of_tickets}`}`)
             .then((response) => {
@@ -245,6 +104,99 @@ function ListSearchedFlightsUser() {
             setEr(er.response.data.error)
         }
     };
+
+    const columns = [
+        {
+            field: "Name",
+            headerName: "Name",
+            type: "string",
+            width: 220,
+            sortable: false,
+            filterable: false,
+            editable: false,
+        },
+        {
+            field: "Taking_Off_Date",
+            headerName: "Taking off date",
+            type: "datetime-local",
+            width: 220,
+            sortable: false,
+            filterable: false,
+            editable: false,
+            valueFormatter: params => moment(params?.value).format("DD/MM/YYYY hh:mm A"),
+        },
+        {
+            field: "Start_Location",
+            headerName: "Start location",
+            type: "string",
+            width: 220,
+            sortable: false,
+            filterable: false,
+            editable: false,
+        },
+        {
+            field: "End_Location",
+            headerName: "End location",
+            type: "string",
+            width: 220,
+            sortable: false,
+            filterable: false,
+            editable: false,
+        },
+        {
+            field: "Price",
+            headerName: "Price per passenger",
+            type: "number",
+            width: 220,
+            headerAlign: "left",
+            align: "left",
+            sortable: false,
+            filterable: false,
+            editable: false,
+        },
+        {
+            field: "Total_Price",
+            headerName: "Total Price",
+            type: "number",
+            width: 220,
+            headerAlign: "left",
+            align: "left",
+            sortable: false,
+            filterable: false,
+            editable: false,
+        },
+        {
+            field: "delete",
+            headerName: "Book a flight",
+            width: 150,
+            renderCell: (params) => {
+                return (
+                    <Button
+                        variant="contained"
+                        color="error"
+                        size="small"
+                        style={{ marginLeft: 16 }}
+                        onClick={() => {
+                            axiosApi.get(`/users/logged/`).then((response) => {
+                                axiosApi.put(`/tickets/buy/${response.data.user_id}`,{ flight: params.row.ID,
+                                    number_of_tickets: parseInt(proba)} )
+                                    .then(response => {
+                                        console.log(response)
+                                    })
+                                    .catch(error => {
+                                        console.error('Problem with the booking request:', error);
+                                    });
+                            }); 
+                            
+                        }}
+                    >
+                        Book a flight
+                    </Button>
+            )
+        },
+            disableClickEventBubbling: true
+        }
+    ];
 
     return (
         <div>
@@ -325,7 +277,7 @@ function ListSearchedFlightsUser() {
                                 marginBottom: "5px",
                                 width: "160px",
                                 height: "40px",
-                                position: "fixed",
+                                position: "absolute",
                                 "&.MuiButtonBase-root": {
                                     "&:hover": {
                                         backgroundColor: blue[600],
@@ -366,13 +318,13 @@ function ListSearchedFlightsUser() {
                         rows={flights}
                         getRowId={(row) => row.ID}
                         disableColumnFilter
-                        columns={[...columns, rowAction(navigate),BookAFlight(navigate)]}
+                        columns={[...columns,rowAction(navigate)]}
                         autoHeight
                         density="comfortable"
                         disableSelectionOnClick
                         rowHeight={50}
                         pageSize={5}
-                        headerHeight={35}
+                        headerHeight={45}
                         headerAlign= "left"
                         align="left"
                     />
