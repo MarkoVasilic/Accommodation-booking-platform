@@ -48,7 +48,7 @@ function rowAction(navigate, buttonName, buttonUrl) {
     };
 }
 
-function ListSearchedFlightsUser() {
+function ListSearchedFlightsUser(props) {
     const { handleSubmit, control } = useForm();
     const [flights, setFlights ] = useState([]);
     const [ error, setError ] = React.useState(false);
@@ -110,7 +110,7 @@ function ListSearchedFlightsUser() {
             field: "Name",
             headerName: "Name",
             type: "string",
-            width: 220,
+            width: 210,
             sortable: false,
             filterable: false,
             editable: false,
@@ -119,7 +119,7 @@ function ListSearchedFlightsUser() {
             field: "Taking_Off_Date",
             headerName: "Taking off date",
             type: "datetime-local",
-            width: 220,
+            width: 210,
             sortable: false,
             filterable: false,
             editable: false,
@@ -129,7 +129,7 @@ function ListSearchedFlightsUser() {
             field: "Start_Location",
             headerName: "Start location",
             type: "string",
-            width: 220,
+            width: 210,
             sortable: false,
             filterable: false,
             editable: false,
@@ -138,7 +138,7 @@ function ListSearchedFlightsUser() {
             field: "End_Location",
             headerName: "End location",
             type: "string",
-            width: 220,
+            width: 210,
             sortable: false,
             filterable: false,
             editable: false,
@@ -147,7 +147,7 @@ function ListSearchedFlightsUser() {
             field: "Price",
             headerName: "Price per passenger",
             type: "number",
-            width: 220,
+            width: 210,
             headerAlign: "left",
             align: "left",
             sortable: false,
@@ -158,7 +158,7 @@ function ListSearchedFlightsUser() {
             field: "Total_Price",
             headerName: "Total Price",
             type: "number",
-            width: 220,
+            width: 210,
             headerAlign: "left",
             align: "left",
             sortable: false,
@@ -318,7 +318,7 @@ function ListSearchedFlightsUser() {
                         rows={flights}
                         getRowId={(row) => row.ID}
                         disableColumnFilter
-                        columns={[...columns,rowAction(navigate)]}
+                        columns={[...columns,rowAction(navigate, props.buttonName, props.buttonUrl)]}
                         autoHeight
                         density="comfortable"
                         disableSelectionOnClick
