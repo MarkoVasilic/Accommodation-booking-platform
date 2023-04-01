@@ -10,6 +10,7 @@ import SearchhFlights from "./pages/SearchFlights";
 import SearchhFlightsUser from "./pages/SearchFlightsUser";
 import SearchFlightsAdmin from "./pages/SearchFlightsAdmin";
 import CreateFlight from "./pages/CreateFlight";
+import ListTicketsUserPage from "./pages/ListTicketsUserPage";
 
 
 function App() {
@@ -31,6 +32,7 @@ function App() {
                         <Route path="/flights/all-user" element={<SearchhFlightsUser />} />
                         <Route path="/flights-admin/all" element={<SearchFlightsAdmin />} />
                         <Route path="/flights/create/" element={<CreateFlight />} />
+                        <Route path="/tickets-user" element={<ListTicketsUserPage />} />
                     </Routes>
                 </div>
             </Router>

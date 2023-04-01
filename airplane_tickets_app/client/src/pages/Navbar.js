@@ -155,6 +155,7 @@ const chooseSideMenu = (role) => {
     } else if (role === "REGULAR") {
         return {
             "Search flights": "/flights/all-user",
+            "My tickets":"/tickets-user"
         };
     } else {
         return { "Search flights": "/flights/all" };
