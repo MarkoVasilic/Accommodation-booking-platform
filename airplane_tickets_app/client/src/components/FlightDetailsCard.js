@@ -2,6 +2,8 @@ import React from 'react';
 import Typography from '@mui/material/Typography';
 import { useLocation } from 'react-router-dom';
 import Grid from '@mui/material/Grid';
+import moment from "moment";
+
 
 export default function FlightDetailsCard(props) {
     const { state } = useLocation(); 
@@ -17,7 +19,7 @@ export default function FlightDetailsCard(props) {
             <Typography variant="h5" align='left' marginLeft={"100px"}>Taking off date: </Typography>
             </Grid>
             <Grid item xs={9}>
-            <Typography variant="h5" color="text.secondary" align='left' marginLeft={"80px"}>{state.Taking_Off_Date}</Typography>
+            <Typography variant="h5" color="text.secondary" align='left' marginLeft={"80px"}>{moment(state.Taking_Off_Date).add(-2, 'h').format("DD/MM/YYYY hh:mm:ss A")}</Typography>
             </Grid>
             <Grid item xs={3}>
             <Typography variant="h5" align='left' marginLeft={"100px"}>Start location: </Typography>

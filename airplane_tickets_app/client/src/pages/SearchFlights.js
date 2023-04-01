@@ -1,7 +1,7 @@
 import Navbar from "../pages/Navbar";
 import ListSearchedFlights from "../components/ListSearchedFlights";
 
-export default function SearchUsers(){
+export default function SearchFlights(){
     return(
         <div>
             <Navbar/>
