@@ -83,6 +83,7 @@ const columns = [
 ];
 
 
+
 function ListTicketsUser(props) {
     const [flights, setFlights ] = useState([]);
     useEffect(() => {
@@ -92,21 +93,27 @@ function ListTicketsUser(props) {
 
         let getData = async () => {
         try{
-            //dobavi usera i karte umesto ovog zahteva
-        axiosApi
-            .get(`/flights/all/?${`taking_off_date=${date}&`}${`start_location=&`}${`end_location=&`}${`number_of_tickets=1`}`)
-            .then((response) => {
-                setFlights(response.data);
-            }).catch(er => {
-                console.log(er.response);
-                setFlights([]);
+            
+            axiosApi.get(`/users/logged/`).then((response) => {
+                axiosApi.get(`/ticket/all/${response.data.user_id}` )
+                    .then(response => {
+                        console.log(response)
+                        setFlights(response.data);
+                    })
+                    .catch(error => {
+                        console.log(error.response);
+                        setFlights([]);
+                    });
             });
+
         }catch (err) {
                 console.log(err)
                 setFlights([]);
             }
         };
 
+        
+        
 
     return (
         <div>

@@ -182,6 +182,7 @@ function ListSearchedFlightsUser(props) {
                                     number_of_tickets: parseInt(proba)} )
                                     .then(response => {
                                         console.log(response)
+                                        navigate("/tickets-user");
                                     })
                                     .catch(error => {
                                         console.error('Problem with the booking request:', error);

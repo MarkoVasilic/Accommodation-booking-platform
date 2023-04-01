@@ -89,22 +89,30 @@ func (repo *RegularRepository) GetUserTicketsWithFlights(userID string) ([]model
 		if err1 != nil {
 			return nil, err1
 		}
-		fmt.Println("ticket:", ticket, "err", err1)
+		//fmt.Println("ticket:", ticket, "err", err1)
 
 		var flight models.Flight
 		err2 := repo.FlightCollection.FindOne(ctx, bson.M{"_id": ticket.Flight}).Decode(&flight)
 		if err != nil {
 			return nil, err2
 		}
-		fmt.Println("flight", flight, "err", err2)
+		//fmt.Println("flight", flight, "err", err2)
 
 		ticketWithFlight := models.TicketWithFlight{
-			Ticket: ticket,
-			Flight: flight,
+			ID:                ticket.ID,
+			IDF:               ticket.Flight,
+			Name:              flight.Name,
+			Taking_Off_Date:   flight.Taking_Off_Date,
+			Start_Location:    flight.Start_Location,
+			End_Location:      flight.End_Location,
+			Price:             flight.Price,
+			Number_Of_Tickets: flight.Number_Of_Tickets,
+			Total_Price:       flight.Price,
 		}
 		ticketsWithFlights = append(ticketsWithFlights, ticketWithFlight)
-		fmt.Println("final", ticketWithFlight)
+
 	}
 
+	fmt.Println("final", ticketsWithFlights)
 	return ticketsWithFlights, nil
 }
