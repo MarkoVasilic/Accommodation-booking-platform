@@ -19,11 +19,12 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	AccommodationService_GetUser_FullMethodName    = "/accommodation_service.AccommodationService/GetUser"
-	AccommodationService_CreateUser_FullMethodName = "/accommodation_service.AccommodationService/CreateUser"
-	AccommodationService_Login_FullMethodName      = "/accommodation_service.AccommodationService/Login"
-	AccommodationService_UpdateUser_FullMethodName = "/accommodation_service.AccommodationService/UpdateUser"
-	AccommodationService_DeleteUser_FullMethodName = "/accommodation_service.AccommodationService/DeleteUser"
+	AccommodationService_GetUser_FullMethodName       = "/accommodation_service.AccommodationService/GetUser"
+	AccommodationService_GetLoggedUser_FullMethodName = "/accommodation_service.AccommodationService/GetLoggedUser"
+	AccommodationService_CreateUser_FullMethodName    = "/accommodation_service.AccommodationService/CreateUser"
+	AccommodationService_Login_FullMethodName         = "/accommodation_service.AccommodationService/Login"
+	AccommodationService_UpdateUser_FullMethodName    = "/accommodation_service.AccommodationService/UpdateUser"
+	AccommodationService_DeleteUser_FullMethodName    = "/accommodation_service.AccommodationService/DeleteUser"
 )
 
 // AccommodationServiceClient is the client API for AccommodationService service.
@@ -31,6 +32,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AccommodationServiceClient interface {
 	GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*GetUserResponse, error)
+	GetLoggedUser(ctx context.Context, in *GetLoggedUserRequest, opts ...grpc.CallOption) (*GetLoggedUserResponse, error)
 	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateUserResponse, error)
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 	UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*UpdateUserResponse, error)
@@ -48,6 +50,15 @@ func NewAccommodationServiceClient(cc grpc.ClientConnInterface) AccommodationSer
 func (c *accommodationServiceClient) GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*GetUserResponse, error) {
 	out := new(GetUserResponse)
 	err := c.cc.Invoke(ctx, AccommodationService_GetUser_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accommodationServiceClient) GetLoggedUser(ctx context.Context, in *GetLoggedUserRequest, opts ...grpc.CallOption) (*GetLoggedUserResponse, error) {
+	out := new(GetLoggedUserResponse)
+	err := c.cc.Invoke(ctx, AccommodationService_GetLoggedUser_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -95,6 +106,7 @@ func (c *accommodationServiceClient) DeleteUser(ctx context.Context, in *DeleteU
 // for forward compatibility
 type AccommodationServiceServer interface {
 	GetUser(context.Context, *GetUserRequest) (*GetUserResponse, error)
+	GetLoggedUser(context.Context, *GetLoggedUserRequest) (*GetLoggedUserResponse, error)
 	CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error)
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
 	UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserResponse, error)
@@ -108,6 +120,9 @@ type UnimplementedAccommodationServiceServer struct {
 
 func (UnimplementedAccommodationServiceServer) GetUser(context.Context, *GetUserRequest) (*GetUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUser not implemented")
+}
+func (UnimplementedAccommodationServiceServer) GetLoggedUser(context.Context, *GetLoggedUserRequest) (*GetLoggedUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetLoggedUser not implemented")
 }
 func (UnimplementedAccommodationServiceServer) CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateUser not implemented")
@@ -148,6 +163,24 @@ func _AccommodationService_GetUser_Handler(srv interface{}, ctx context.Context,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AccommodationServiceServer).GetUser(ctx, req.(*GetUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AccommodationService_GetLoggedUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetLoggedUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccommodationServiceServer).GetLoggedUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AccommodationService_GetLoggedUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccommodationServiceServer).GetLoggedUser(ctx, req.(*GetLoggedUserRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -234,6 +267,10 @@ var AccommodationService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetUser",
 			Handler:    _AccommodationService_GetUser_Handler,
+		},
+		{
+			MethodName: "GetLoggedUser",
+			Handler:    _AccommodationService_GetLoggedUser_Handler,
 		},
 		{
 			MethodName: "CreateUser",

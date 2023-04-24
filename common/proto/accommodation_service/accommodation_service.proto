@@ -12,6 +12,11 @@ service AccommodationService{
 			get: "/accommodation/user/{id}"
 		};
         }
+        rpc GetLoggedUser(GetLoggedUserRequest) returns(GetLoggedUserResponse) {
+        	option (google.api.http) = {
+			get: "/accommodation/user/logged"
+		};
+        }
         rpc CreateUser(CreateUserRequest) returns (CreateUserResponse) {
                 option (google.api.http) = {
                     post: "/accommodation/user"
@@ -54,6 +59,13 @@ message GetUserRequest {
 }
 
 message GetUserResponse {
+        User user = 1;
+}
+
+message GetLoggedUserRequest {
+}
+
+message GetLoggedUserResponse {
         User user = 1;
 }
 
