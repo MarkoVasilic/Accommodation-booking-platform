@@ -28,6 +28,11 @@ func (handler *AccommodationHandler) Init(mux *runtime.ServeMux) {
 		panic(err)
 	}
 
+	err = mux.HandlePath("GET", "/user/logged", handler.GetLoggedUser)
+	if err != nil {
+		panic(err)
+	}
+
 	err = mux.HandlePath("POST", "/user", handler.CreateUser)
 	if err != nil {
 		panic(err)
@@ -63,6 +68,22 @@ func (handler *AccommodationHandler) GetUser(w http.ResponseWriter, r *http.Requ
 		return
 	}
 	user, err := handler.accommodationService.GetUser(createContextForAuthorization(r.Header["Authorization"]), &accommodation.GetUserRequest{Id: id})
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	response, err := json.Marshal(user)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write(response)
+}
+
+func (handler *AccommodationHandler) GetLoggedUser(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+	user, err := handler.accommodationService.GetLoggedUser(createContextForAuthorization(r.Header["Authorization"]), &accommodation.GetLoggedUserRequest{})
 	if err != nil {
 		fmt.Println(err)
 		w.WriteHeader(http.StatusNotFound)

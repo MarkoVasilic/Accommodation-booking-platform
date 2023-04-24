@@ -76,6 +76,7 @@ func checkRoles(fullMethod string, skipMethods []string) bool {
 
 func shouldSkipInterceptor(fullMethod string) bool {
 	skipMethods := []string{
+		"GetLoggedUser",
 		"GetUser",
 		"CreateUser",
 		"Login",

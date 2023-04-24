@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/server/models"
 	"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/server/service"
@@ -90,6 +91,25 @@ func (handler *UserHandler) DeleteUser(ctx context.Context, request *pb.DeleteUs
 	}
 	response := &pb.DeleteUserResponse{
 		Message: "Success",
+	}
+	return response, nil
+}
+
+func (handler *UserHandler) GetLoggedUser(ctx context.Context, request *pb.GetLoggedUserRequest) (*pb.GetLoggedUserResponse, error) {
+	ClientToken, _ := grpc_auth.AuthFromMD(ctx, "Bearer")
+	if len(ClientToken) < 1 {
+		return nil, fmt.Errorf("No token provided")
+	}
+	claims, _ := token.ValidateToken(ClientToken)
+	objectId, err := primitive.ObjectIDFromHex(claims.Uid)
+	user, err := handler.service.GetUserById(objectId)
+
+	if err != nil {
+		return nil, err
+	}
+	userPb := mapUser(&user)
+	response := &pb.GetLoggedUserResponse{
+		User: userPb,
 	}
 	return response, nil
 }

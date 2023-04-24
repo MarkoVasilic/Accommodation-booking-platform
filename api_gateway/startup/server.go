@@ -10,6 +10,7 @@ import (
 	"github.com/MarkoVasilic/Accommodation-booking-platform/api_gateway/infrastructure/services"
 	cfg "github.com/MarkoVasilic/Accommodation-booking-platform/api_gateway/startup/config"
 	accommodationGw "github.com/MarkoVasilic/Accommodation-booking-platform/common/proto/accommodation_service"
+	"github.com/gorilla/handlers"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -42,5 +43,15 @@ func (server *Server) initHandlers() {
 }
 
 func (server *Server) Start() {
-	log.Fatal(http.ListenAndServe(fmt.Sprintf("localhost:%s", server.config.Port), server.mux))
+	// Define the allowed origins
+	allowedOrigins := handlers.AllowedOrigins([]string{"*"})
+	// Define the allowed methods
+	allowedMethods := handlers.AllowedMethods([]string{"PUT", "PATCH", "POST", "GET", "OPTIONS", "DELETE"})
+	// Define the allowed headers
+	allowedHeaders := handlers.AllowedHeaders([]string{"Origin", "X-Api-Key", "X-Requested-With", "Content-Type", "Accept", "Authorization"})
+
+	// Wrap the server.mux with CORS handlers
+	handler := handlers.CORS(allowedOrigins, allowedMethods, allowedHeaders)(server.mux)
+
+	log.Fatal(http.ListenAndServe(fmt.Sprintf("localhost:%s", server.config.Port), handler))
 }
