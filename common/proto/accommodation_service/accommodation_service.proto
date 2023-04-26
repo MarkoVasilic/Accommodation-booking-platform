@@ -5,111 +5,155 @@ option go_package = "github.com/MarkoVasilic/Accommodation-booking-platform/comm
 package accommodation_service;
 
 import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
 
 service AccommodationService{
-        rpc GetUser(GetUserRequest) returns(GetUserResponse) {
-        	option (google.api.http) = {
-			get: "/accommodation/user/{id}"
-		};
-        }
-        rpc GetLoggedUser(GetLoggedUserRequest) returns(GetLoggedUserResponse) {
-        	option (google.api.http) = {
-			get: "/accommodation/user/logged"
-		};
-        }
-        rpc CreateUser(CreateUserRequest) returns (CreateUserResponse) {
+        rpc GetAllAccommodations(GetAllAccommodationsRequest) returns(GetAllAccommodationsResponse) {
                 option (google.api.http) = {
-                    post: "/accommodation/user"
+                get: "/accommodation/accommodation"
+            };
+        }
+        rpc CreateAccommodation(CreateAccommodationRequest) returns (CreateAccommodationResponse) {
+                option (google.api.http) = {
+                    post: "/accommodation/accommodation"
                     body: "*"
                 };
         }
-        rpc Login(LoginRequest) returns (LoginResponse) {
+
+        rpc GetAllAvailabilities(GetAllAvailabilitiesRequest) returns(GetAllAvailabilitiesResponse) {
                 option (google.api.http) = {
-                        post: "/accommodation/login"
+                get: "/accommodation/availability"
+            };
+            }
+        rpc CreateAvailability(CreateAvailabilityRequest) returns (CreateAvailabilityResponse) {
+                option (google.api.http) = {
+                    post: "/accommodation/availability"
+                    body: "*"
+                };
+        }
+        rpc UpdateAvailability(UpdateAvailabilityRequest) returns (UpdateAvailabilityResponse) {
+                option (google.api.http) = {
+                        put: "/accommodation/availability/{id}"
                         body: "*"
                 };
         }
-        rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse) {
+        rpc SearchAvailability(SearchAvailabilityRequest) returns (SearchAvailabilityResponse) {
                 option (google.api.http) = {
-                        put: "/accommodation/user/{id}"
+                        post: "/accommodation/availability/search"
                         body: "*"
-                };
-        }
-        rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse) {
-                option (google.api.http) = {
-                        delete: "/accommodation/user/{id}"
                 };
         }
 }
 
-message User {
+message Accommodation {
         string Id = 1;
-        string Username = 2;
-        string FirstName = 3;
-        string LastName = 4;
-        string Password = 5;
-        string Email = 6;
-        string Address = 7;
-        string Token = 8;
-        string Role = 9;
+        string HostId = 2;
+        string Name = 3;
+        string Location = 4;
+        bool Wifi = 5;
+        bool Kitchen = 6;
+        bool AC = 7;
+        bool ParkingLot = 8;
+        int32 MinGuests = 9;
+        int32 MaxGuests = 10;
+        repeated string Images = 11;
+        bool AutoAccept = 12;
 }
 
-message GetUserRequest {
+message GetAllAccommodationsRequest {
         string id = 1;
 }
 
-message GetUserResponse {
-        User user = 1;
+message GetAllAccommodationsResponse {
+        repeated Accommodation accommodations = 1;
+}
+    
+
+message CreateAccommodationRequest {
+        string Id = 1;
+        string HostId = 2;
+        string Name = 3;
+        string Location = 4;
+        bool Wifi = 5;
+        bool Kitchen = 6;
+        bool AC = 7;
+        bool ParkingLot = 8;
+        int32 MinGuests = 9;
+        int32 MaxGuests = 10;
+        repeated string Images = 11;
+        bool AutoAccept = 12;
 }
 
-message GetLoggedUserRequest {
-}
-
-message GetLoggedUserResponse {
-        User user = 1;
-}
-
-message LoginRequest {
-        string Password = 1;
-        string Username = 2;
-}
-
-message LoginResponse {
-        User user = 1;
-}
-
-message CreateUserRequest {
-        string Username = 1;
-        string FirstName = 2;
-        string LastName = 3;
-        string Password = 4;
-        string Email = 5;
-        string Address = 6;
-        string Role = 7;
-}
-
-message CreateUserResponse {
+message CreateAccommodationResponse {
         string message = 1;
 }
 
-message UpdateUserRequest {
-        string id = 1;
-        string Username = 2;
-        string FirstName = 3;
-        string LastName = 4;
-        string Password = 5;
-        string Email = 6;
-        string Address = 7;
+message Availability {
+        string Id = 1;
+        string AccommodationID = 2;
+        google.protobuf.Timestamp StartDate = 3;
+        google.protobuf.Timestamp EndDate = 4;
+        double Price = 5;
+        bool IsPricePerGuest = 6;
 }
 
-message UpdateUserResponse {
-        string message = 1;
-}
-
-message DeleteUserRequest {
+message GetAllAvailabilitiesRequest {
         string id = 1;
 }
 
-message DeleteUserResponse {
+message GetAllAvailabilitiesResponse {
+        repeated Availability availabilities = 1;
+}
+
+message CreateAvailabilityRequest {
+        string Id = 1;
+        string AccommodationID = 2;
+        google.protobuf.Timestamp StartDate = 3;
+        google.protobuf.Timestamp EndDate = 4;
+        double Price = 5;
+        bool IsPricePerGuest = 6;
+}
+
+message CreateAvailabilityResponse {
         string message = 1;
+}
+
+message UpdateAvailabilityRequest {
+        string id = 1;
+        google.protobuf.Timestamp StartDate = 3;
+        google.protobuf.Timestamp EndDate = 4;
+        double Price = 5;
+        bool IsPricePerGuest = 6;
+}
+
+message UpdateAvailabilityResponse {
+        string message = 1;
+}
+
+message FindAvailability {
+        string AccommodationId = 1;
+        string AvailabilityID = 2;
+        string HostId = 3;
+        string Name = 4;
+        bool Wifi = 5;
+        bool Kitchen = 6;
+        bool AC = 7;
+        bool ParkingLot = 8;
+        repeated string Images = 9;
+        google.protobuf.Timestamp StartDate = 10;
+        google.protobuf.Timestamp EndDate = 11;
+        double TotalPrice = 12;
+        double SinglePrice = 13;
+        bool IsPricePerGuest = 14;
+}
+
+message SearchAvailabilityRequest {
+        string Location = 1;
+        int32 GuestsNum = 2;
+        google.protobuf.Timestamp StartDate = 3;
+        google.protobuf.Timestamp EndDate = 4;
+}
+
+message SearchAvailabilityResponse {
+        repeated FindAvailability FindAvailability = 1;
 }

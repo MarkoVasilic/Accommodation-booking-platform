@@ -1,0 +1,148 @@
+syntax = "proto3";
+
+option go_package = "github.com/MarkoVasilic/Accommodation-booking-platform/common/proto/reservation_service";
+
+package reservation_service;
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+service ReservationService{
+    rpc GetAllReservations(GetAllReservationsRequest) returns(GetAllReservationsResponse) {
+        option (google.api.http) = {
+        get: "/accommodation/reservation"
+    };
+    }
+    rpc CreateReservation(CreateReservationRequest) returns (CreateReservationResponse) {
+            option (google.api.http) = {
+                post: "/accommodation/reservation"
+                body: "*"
+            };
+    }
+    rpc GetFindReservationPendingGuest(GetFindReservationPendingGuestRequest) returns(GetFindReservationPendingGuestResponse) {
+        option (google.api.http) = {
+        get: "/accommodation/reservation/guest/pending/{id}"
+    };
+    }
+    rpc GetFindReservationAcceptedGuest(GetFindReservationAcceptedGuestRequest) returns(GetFindReservationAcceptedGuestResponse) {
+        option (google.api.http) = {
+        get: "/accommodation/reservation/guest/accepted/{id}"
+    };
+    }
+    rpc GetFindReservationHost(GetFindReservationHostRequest) returns(GetFindReservationHostResponse) {
+        option (google.api.http) = {
+        get: "/accommodation/reservation/host/{id}"
+    };
+    }
+    rpc CancelReservation(CancelReservationRequest) returns (CancelReservationResponse) {
+            option (google.api.http) = {
+                    put: "/accommodation/reservation/cancel/{id}"
+                    body: "*"
+            };
+    }
+    rpc DeleteLogicallyReservation(DeleteLogicallyReservationRequest) returns (DeleteLogicallyReservationResponse) {
+            option (google.api.http) = {
+                    put: "/accommodation/reservation/ldelete/{id}"
+                    body: "*"
+            };
+    }
+    rpc AcceptReservation(AcceptReservationRequest) returns (AcceptReservationResponse) {
+            option (google.api.http) = {
+                    put: "/accommodation/reservation/accept/{id}"
+                    body: "*"
+            };
+    }
+}
+
+message Reservation {
+        string Id = 1;
+        string AvailabilityID = 2;
+        string GuestId = 3;
+        google.protobuf.Timestamp StartDate = 4;
+        google.protobuf.Timestamp EndDate = 5;
+        int32 NumGuests = 6;
+        bool IsAccepted = 7;
+        bool IsCanceled = 8;
+        bool IsDeleted = 9;
+}
+
+message GetAllReservationsRequest {
+    string id = 1;
+}
+
+message GetAllReservationsResponse {
+    repeated Reservation reservations = 1;
+}
+
+message FindReservation {
+        string ReservationId = 1;
+        string GuestId = 2;
+        string Name = 3;
+        string Location = 4;
+        google.protobuf.Timestamp StartDate = 5;
+        google.protobuf.Timestamp EndDate = 6;
+        int32 NumOfCancelation = 7;
+        bool IsAccepted = 8;
+        bool IsCanceled = 9; 
+}
+
+message CreateReservationRequest {
+        string Id = 1;
+        string AvailabilityID = 2;
+        string GuestId = 3;
+        google.protobuf.Timestamp StartDate = 4;
+        google.protobuf.Timestamp EndDate = 5;
+        int32 NumGuests = 6;
+}
+
+message CreateReservationResponse {
+        string message = 1;
+}
+
+message GetFindReservationPendingGuestRequest {
+        string id = 1;
+}
+
+message GetFindReservationPendingGuestResponse {
+        repeated FindReservation FindReservation = 1;
+}
+
+message GetFindReservationAcceptedGuestRequest {
+        string id = 1;
+}
+
+message GetFindReservationAcceptedGuestResponse {
+        repeated FindReservation FindReservation = 1;
+}
+
+message GetFindReservationHostRequest {
+        string id = 1;
+}
+
+message GetFindReservationHostResponse {
+        repeated FindReservation FindReservation = 1;
+}
+
+message CancelReservationRequest {
+        string id = 1;
+}
+
+message CancelReservationResponse {
+        string message = 1;
+}
+
+message DeleteLogicallyReservationRequest {
+        string id = 1;
+}
+
+message DeleteLogicallyReservationResponse {
+        string message = 1;
+}
+
+message AcceptReservationRequest {
+        string id = 1;
+}
+
+message AcceptReservationResponse {
+        string message = 1;
+}

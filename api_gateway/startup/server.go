@@ -10,6 +10,8 @@ import (
 	"github.com/MarkoVasilic/Accommodation-booking-platform/api_gateway/infrastructure/services"
 	cfg "github.com/MarkoVasilic/Accommodation-booking-platform/api_gateway/startup/config"
 	accommodationGw "github.com/MarkoVasilic/Accommodation-booking-platform/common/proto/accommodation_service"
+	reservationGw "github.com/MarkoVasilic/Accommodation-booking-platform/common/proto/reservation_service"
+	userGw "github.com/MarkoVasilic/Accommodation-booking-platform/common/proto/user_service"
 	"github.com/gorilla/handlers"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
@@ -37,9 +39,21 @@ func (server *Server) initHandlers() {
 	if err != nil {
 		panic(err)
 	}
+	userEndpoint := fmt.Sprintf("%s:%s", server.config.UserHost, server.config.UserPort)
+	err = userGw.RegisterUserServiceHandlerFromEndpoint(context.TODO(), server.mux, userEndpoint, opts)
+	if err != nil {
+		panic(err)
+	}
+	reservationEndpoint := fmt.Sprintf("%s:%s", server.config.ReservationHost, server.config.ReservationPort)
+	err = reservationGw.RegisterReservationServiceHandlerFromEndpoint(context.TODO(), server.mux, reservationEndpoint, opts)
+	if err != nil {
+		panic(err)
+	}
 	accommodationClient := services.NewAccommodationClient(accommodationEndpoint)
-	accommodationHandler := api.NewAccommodationHandler(accommodationClient)
-	accommodationHandler.Init(server.mux)
+	userClient := services.NewUserClient(userEndpoint)
+	reservationClient := services.NewReservationClient(userEndpoint)
+	globalHandler := api.NewGlobalHandler(accommodationClient, userClient, reservationClient)
+	globalHandler.Init(server.mux)
 }
 
 func (server *Server) Start() {

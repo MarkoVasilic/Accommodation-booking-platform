@@ -19,24 +19,24 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	AccommodationService_GetUser_FullMethodName       = "/accommodation_service.AccommodationService/GetUser"
-	AccommodationService_GetLoggedUser_FullMethodName = "/accommodation_service.AccommodationService/GetLoggedUser"
-	AccommodationService_CreateUser_FullMethodName    = "/accommodation_service.AccommodationService/CreateUser"
-	AccommodationService_Login_FullMethodName         = "/accommodation_service.AccommodationService/Login"
-	AccommodationService_UpdateUser_FullMethodName    = "/accommodation_service.AccommodationService/UpdateUser"
-	AccommodationService_DeleteUser_FullMethodName    = "/accommodation_service.AccommodationService/DeleteUser"
+	AccommodationService_GetAllAccommodations_FullMethodName = "/accommodation_service.AccommodationService/GetAllAccommodations"
+	AccommodationService_CreateAccommodation_FullMethodName  = "/accommodation_service.AccommodationService/CreateAccommodation"
+	AccommodationService_GetAllAvailabilities_FullMethodName = "/accommodation_service.AccommodationService/GetAllAvailabilities"
+	AccommodationService_CreateAvailability_FullMethodName   = "/accommodation_service.AccommodationService/CreateAvailability"
+	AccommodationService_UpdateAvailability_FullMethodName   = "/accommodation_service.AccommodationService/UpdateAvailability"
+	AccommodationService_SearchAvailability_FullMethodName   = "/accommodation_service.AccommodationService/SearchAvailability"
 )
 
 // AccommodationServiceClient is the client API for AccommodationService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AccommodationServiceClient interface {
-	GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*GetUserResponse, error)
-	GetLoggedUser(ctx context.Context, in *GetLoggedUserRequest, opts ...grpc.CallOption) (*GetLoggedUserResponse, error)
-	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateUserResponse, error)
-	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
-	UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*UpdateUserResponse, error)
-	DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...grpc.CallOption) (*DeleteUserResponse, error)
+	GetAllAccommodations(ctx context.Context, in *GetAllAccommodationsRequest, opts ...grpc.CallOption) (*GetAllAccommodationsResponse, error)
+	CreateAccommodation(ctx context.Context, in *CreateAccommodationRequest, opts ...grpc.CallOption) (*CreateAccommodationResponse, error)
+	GetAllAvailabilities(ctx context.Context, in *GetAllAvailabilitiesRequest, opts ...grpc.CallOption) (*GetAllAvailabilitiesResponse, error)
+	CreateAvailability(ctx context.Context, in *CreateAvailabilityRequest, opts ...grpc.CallOption) (*CreateAvailabilityResponse, error)
+	UpdateAvailability(ctx context.Context, in *UpdateAvailabilityRequest, opts ...grpc.CallOption) (*UpdateAvailabilityResponse, error)
+	SearchAvailability(ctx context.Context, in *SearchAvailabilityRequest, opts ...grpc.CallOption) (*SearchAvailabilityResponse, error)
 }
 
 type accommodationServiceClient struct {
@@ -47,54 +47,54 @@ func NewAccommodationServiceClient(cc grpc.ClientConnInterface) AccommodationSer
 	return &accommodationServiceClient{cc}
 }
 
-func (c *accommodationServiceClient) GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*GetUserResponse, error) {
-	out := new(GetUserResponse)
-	err := c.cc.Invoke(ctx, AccommodationService_GetUser_FullMethodName, in, out, opts...)
+func (c *accommodationServiceClient) GetAllAccommodations(ctx context.Context, in *GetAllAccommodationsRequest, opts ...grpc.CallOption) (*GetAllAccommodationsResponse, error) {
+	out := new(GetAllAccommodationsResponse)
+	err := c.cc.Invoke(ctx, AccommodationService_GetAllAccommodations_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *accommodationServiceClient) GetLoggedUser(ctx context.Context, in *GetLoggedUserRequest, opts ...grpc.CallOption) (*GetLoggedUserResponse, error) {
-	out := new(GetLoggedUserResponse)
-	err := c.cc.Invoke(ctx, AccommodationService_GetLoggedUser_FullMethodName, in, out, opts...)
+func (c *accommodationServiceClient) CreateAccommodation(ctx context.Context, in *CreateAccommodationRequest, opts ...grpc.CallOption) (*CreateAccommodationResponse, error) {
+	out := new(CreateAccommodationResponse)
+	err := c.cc.Invoke(ctx, AccommodationService_CreateAccommodation_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *accommodationServiceClient) CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateUserResponse, error) {
-	out := new(CreateUserResponse)
-	err := c.cc.Invoke(ctx, AccommodationService_CreateUser_FullMethodName, in, out, opts...)
+func (c *accommodationServiceClient) GetAllAvailabilities(ctx context.Context, in *GetAllAvailabilitiesRequest, opts ...grpc.CallOption) (*GetAllAvailabilitiesResponse, error) {
+	out := new(GetAllAvailabilitiesResponse)
+	err := c.cc.Invoke(ctx, AccommodationService_GetAllAvailabilities_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *accommodationServiceClient) Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error) {
-	out := new(LoginResponse)
-	err := c.cc.Invoke(ctx, AccommodationService_Login_FullMethodName, in, out, opts...)
+func (c *accommodationServiceClient) CreateAvailability(ctx context.Context, in *CreateAvailabilityRequest, opts ...grpc.CallOption) (*CreateAvailabilityResponse, error) {
+	out := new(CreateAvailabilityResponse)
+	err := c.cc.Invoke(ctx, AccommodationService_CreateAvailability_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *accommodationServiceClient) UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*UpdateUserResponse, error) {
-	out := new(UpdateUserResponse)
-	err := c.cc.Invoke(ctx, AccommodationService_UpdateUser_FullMethodName, in, out, opts...)
+func (c *accommodationServiceClient) UpdateAvailability(ctx context.Context, in *UpdateAvailabilityRequest, opts ...grpc.CallOption) (*UpdateAvailabilityResponse, error) {
+	out := new(UpdateAvailabilityResponse)
+	err := c.cc.Invoke(ctx, AccommodationService_UpdateAvailability_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *accommodationServiceClient) DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...grpc.CallOption) (*DeleteUserResponse, error) {
-	out := new(DeleteUserResponse)
-	err := c.cc.Invoke(ctx, AccommodationService_DeleteUser_FullMethodName, in, out, opts...)
+func (c *accommodationServiceClient) SearchAvailability(ctx context.Context, in *SearchAvailabilityRequest, opts ...grpc.CallOption) (*SearchAvailabilityResponse, error) {
+	out := new(SearchAvailabilityResponse)
+	err := c.cc.Invoke(ctx, AccommodationService_SearchAvailability_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -105,12 +105,12 @@ func (c *accommodationServiceClient) DeleteUser(ctx context.Context, in *DeleteU
 // All implementations must embed UnimplementedAccommodationServiceServer
 // for forward compatibility
 type AccommodationServiceServer interface {
-	GetUser(context.Context, *GetUserRequest) (*GetUserResponse, error)
-	GetLoggedUser(context.Context, *GetLoggedUserRequest) (*GetLoggedUserResponse, error)
-	CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error)
-	Login(context.Context, *LoginRequest) (*LoginResponse, error)
-	UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserResponse, error)
-	DeleteUser(context.Context, *DeleteUserRequest) (*DeleteUserResponse, error)
+	GetAllAccommodations(context.Context, *GetAllAccommodationsRequest) (*GetAllAccommodationsResponse, error)
+	CreateAccommodation(context.Context, *CreateAccommodationRequest) (*CreateAccommodationResponse, error)
+	GetAllAvailabilities(context.Context, *GetAllAvailabilitiesRequest) (*GetAllAvailabilitiesResponse, error)
+	CreateAvailability(context.Context, *CreateAvailabilityRequest) (*CreateAvailabilityResponse, error)
+	UpdateAvailability(context.Context, *UpdateAvailabilityRequest) (*UpdateAvailabilityResponse, error)
+	SearchAvailability(context.Context, *SearchAvailabilityRequest) (*SearchAvailabilityResponse, error)
 	mustEmbedUnimplementedAccommodationServiceServer()
 }
 
@@ -118,23 +118,23 @@ type AccommodationServiceServer interface {
 type UnimplementedAccommodationServiceServer struct {
 }
 
-func (UnimplementedAccommodationServiceServer) GetUser(context.Context, *GetUserRequest) (*GetUserResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetUser not implemented")
+func (UnimplementedAccommodationServiceServer) GetAllAccommodations(context.Context, *GetAllAccommodationsRequest) (*GetAllAccommodationsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAllAccommodations not implemented")
 }
-func (UnimplementedAccommodationServiceServer) GetLoggedUser(context.Context, *GetLoggedUserRequest) (*GetLoggedUserResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetLoggedUser not implemented")
+func (UnimplementedAccommodationServiceServer) CreateAccommodation(context.Context, *CreateAccommodationRequest) (*CreateAccommodationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateAccommodation not implemented")
 }
-func (UnimplementedAccommodationServiceServer) CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateUser not implemented")
+func (UnimplementedAccommodationServiceServer) GetAllAvailabilities(context.Context, *GetAllAvailabilitiesRequest) (*GetAllAvailabilitiesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAllAvailabilities not implemented")
 }
-func (UnimplementedAccommodationServiceServer) Login(context.Context, *LoginRequest) (*LoginResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
+func (UnimplementedAccommodationServiceServer) CreateAvailability(context.Context, *CreateAvailabilityRequest) (*CreateAvailabilityResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateAvailability not implemented")
 }
-func (UnimplementedAccommodationServiceServer) UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateUser not implemented")
+func (UnimplementedAccommodationServiceServer) UpdateAvailability(context.Context, *UpdateAvailabilityRequest) (*UpdateAvailabilityResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateAvailability not implemented")
 }
-func (UnimplementedAccommodationServiceServer) DeleteUser(context.Context, *DeleteUserRequest) (*DeleteUserResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteUser not implemented")
+func (UnimplementedAccommodationServiceServer) SearchAvailability(context.Context, *SearchAvailabilityRequest) (*SearchAvailabilityResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SearchAvailability not implemented")
 }
 func (UnimplementedAccommodationServiceServer) mustEmbedUnimplementedAccommodationServiceServer() {}
 
@@ -149,110 +149,110 @@ func RegisterAccommodationServiceServer(s grpc.ServiceRegistrar, srv Accommodati
 	s.RegisterService(&AccommodationService_ServiceDesc, srv)
 }
 
-func _AccommodationService_GetUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetUserRequest)
+func _AccommodationService_GetAllAccommodations_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAllAccommodationsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AccommodationServiceServer).GetUser(ctx, in)
+		return srv.(AccommodationServiceServer).GetAllAccommodations(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: AccommodationService_GetUser_FullMethodName,
+		FullMethod: AccommodationService_GetAllAccommodations_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccommodationServiceServer).GetUser(ctx, req.(*GetUserRequest))
+		return srv.(AccommodationServiceServer).GetAllAccommodations(ctx, req.(*GetAllAccommodationsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AccommodationService_GetLoggedUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetLoggedUserRequest)
+func _AccommodationService_CreateAccommodation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateAccommodationRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AccommodationServiceServer).GetLoggedUser(ctx, in)
+		return srv.(AccommodationServiceServer).CreateAccommodation(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: AccommodationService_GetLoggedUser_FullMethodName,
+		FullMethod: AccommodationService_CreateAccommodation_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccommodationServiceServer).GetLoggedUser(ctx, req.(*GetLoggedUserRequest))
+		return srv.(AccommodationServiceServer).CreateAccommodation(ctx, req.(*CreateAccommodationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AccommodationService_CreateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateUserRequest)
+func _AccommodationService_GetAllAvailabilities_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAllAvailabilitiesRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AccommodationServiceServer).CreateUser(ctx, in)
+		return srv.(AccommodationServiceServer).GetAllAvailabilities(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: AccommodationService_CreateUser_FullMethodName,
+		FullMethod: AccommodationService_GetAllAvailabilities_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccommodationServiceServer).CreateUser(ctx, req.(*CreateUserRequest))
+		return srv.(AccommodationServiceServer).GetAllAvailabilities(ctx, req.(*GetAllAvailabilitiesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AccommodationService_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(LoginRequest)
+func _AccommodationService_CreateAvailability_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateAvailabilityRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AccommodationServiceServer).Login(ctx, in)
+		return srv.(AccommodationServiceServer).CreateAvailability(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: AccommodationService_Login_FullMethodName,
+		FullMethod: AccommodationService_CreateAvailability_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccommodationServiceServer).Login(ctx, req.(*LoginRequest))
+		return srv.(AccommodationServiceServer).CreateAvailability(ctx, req.(*CreateAvailabilityRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AccommodationService_UpdateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateUserRequest)
+func _AccommodationService_UpdateAvailability_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateAvailabilityRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AccommodationServiceServer).UpdateUser(ctx, in)
+		return srv.(AccommodationServiceServer).UpdateAvailability(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: AccommodationService_UpdateUser_FullMethodName,
+		FullMethod: AccommodationService_UpdateAvailability_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccommodationServiceServer).UpdateUser(ctx, req.(*UpdateUserRequest))
+		return srv.(AccommodationServiceServer).UpdateAvailability(ctx, req.(*UpdateAvailabilityRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AccommodationService_DeleteUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteUserRequest)
+func _AccommodationService_SearchAvailability_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SearchAvailabilityRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AccommodationServiceServer).DeleteUser(ctx, in)
+		return srv.(AccommodationServiceServer).SearchAvailability(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: AccommodationService_DeleteUser_FullMethodName,
+		FullMethod: AccommodationService_SearchAvailability_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccommodationServiceServer).DeleteUser(ctx, req.(*DeleteUserRequest))
+		return srv.(AccommodationServiceServer).SearchAvailability(ctx, req.(*SearchAvailabilityRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -265,28 +265,28 @@ var AccommodationService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*AccommodationServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "GetUser",
-			Handler:    _AccommodationService_GetUser_Handler,
+			MethodName: "GetAllAccommodations",
+			Handler:    _AccommodationService_GetAllAccommodations_Handler,
 		},
 		{
-			MethodName: "GetLoggedUser",
-			Handler:    _AccommodationService_GetLoggedUser_Handler,
+			MethodName: "CreateAccommodation",
+			Handler:    _AccommodationService_CreateAccommodation_Handler,
 		},
 		{
-			MethodName: "CreateUser",
-			Handler:    _AccommodationService_CreateUser_Handler,
+			MethodName: "GetAllAvailabilities",
+			Handler:    _AccommodationService_GetAllAvailabilities_Handler,
 		},
 		{
-			MethodName: "Login",
-			Handler:    _AccommodationService_Login_Handler,
+			MethodName: "CreateAvailability",
+			Handler:    _AccommodationService_CreateAvailability_Handler,
 		},
 		{
-			MethodName: "UpdateUser",
-			Handler:    _AccommodationService_UpdateUser_Handler,
+			MethodName: "UpdateAvailability",
+			Handler:    _AccommodationService_UpdateAvailability_Handler,
 		},
 		{
-			MethodName: "DeleteUser",
-			Handler:    _AccommodationService_DeleteUser_Handler,
+			MethodName: "SearchAvailability",
+			Handler:    _AccommodationService_SearchAvailability_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

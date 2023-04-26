@@ -1,0 +1,115 @@
+syntax = "proto3";
+
+option go_package = "github.com/MarkoVasilic/Accommodation-booking-platform/common/proto/user_service";
+
+package user_service;
+
+import "google/api/annotations.proto";
+
+service UserService{
+        rpc GetUser(GetUserRequest) returns(GetUserResponse) {
+        	option (google.api.http) = {
+			get: "/accommodation/user/{id}"
+		};
+        }
+        rpc GetLoggedUser(GetLoggedUserRequest) returns(GetLoggedUserResponse) {
+        	option (google.api.http) = {
+			get: "/accommodation/user/logged"
+		};
+        }
+        rpc CreateUser(CreateUserRequest) returns (CreateUserResponse) {
+                option (google.api.http) = {
+                    post: "/accommodation/user"
+                    body: "*"
+                };
+        }
+        rpc Login(LoginRequest) returns (LoginResponse) {
+                option (google.api.http) = {
+                        post: "/accommodation/login"
+                        body: "*"
+                };
+        }
+        rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse) {
+                option (google.api.http) = {
+                        put: "/accommodation/user/{id}"
+                        body: "*"
+                };
+        }
+        rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse) {
+                option (google.api.http) = {
+                        delete: "/accommodation/user/{id}"
+                };
+        }
+}
+
+message User {
+        string Id = 1;
+        string Username = 2;
+        string FirstName = 3;
+        string LastName = 4;
+        string Password = 5;
+        string Email = 6;
+        string Address = 7;
+        string Token = 8;
+        string Role = 9;
+}
+
+message GetUserRequest {
+        string id = 1;
+}
+
+message GetUserResponse {
+        User user = 1;
+}
+
+message GetLoggedUserRequest {
+}
+
+message GetLoggedUserResponse {
+        User user = 1;
+}
+
+message LoginRequest {
+        string Password = 1;
+        string Username = 2;
+}
+
+message LoginResponse {
+        User user = 1;
+}
+
+message CreateUserRequest {
+        string Username = 1;
+        string FirstName = 2;
+        string LastName = 3;
+        string Password = 4;
+        string Email = 5;
+        string Address = 6;
+        string Role = 7;
+}
+
+message CreateUserResponse {
+        string message = 1;
+}
+
+message UpdateUserRequest {
+        string id = 1;
+        string Username = 2;
+        string FirstName = 3;
+        string LastName = 4;
+        string Password = 5;
+        string Email = 6;
+        string Address = 7;
+}
+
+message UpdateUserResponse {
+        string message = 1;
+}
+
+message DeleteUserRequest {
+        string id = 1;
+}
+
+message DeleteUserResponse {
+        string message = 1;
+}

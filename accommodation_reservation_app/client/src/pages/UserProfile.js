@@ -6,11 +6,17 @@ import { Stack } from '@mui/system';
 import axiosApi from "../api/axios";
 import Navbar from "./Navbar";
 import AllowedUsers from "../components/AllowedUsers";
+import React from "react";
+import Box from "@mui/material/Box";
+import Alert from "@mui/material/Alert";
+import IconButton from "@mui/material/IconButton";
+import Collapse from "@mui/material/Collapse";
+import CloseIcon from "@mui/icons-material/Close";
 
 export default function UserProfile() {
     const listOfAllowedUsers = ["HOST", "GUEST"];
     let navigate = useNavigate();
-
+    const [failedAlert, setFailedAlert] = React.useState(false);
     const routeChange = () =>{ 
         let path = `/user-profile/update/`; 
         navigate(path);
@@ -33,6 +39,7 @@ export default function UserProfile() {
         }
         catch (err) {
             console.log(err)
+            setFailedAlert(true)
         }
     };
 
@@ -113,6 +120,28 @@ export default function UserProfile() {
             <PersonalInformationCard></PersonalInformationCard>
             </Paper>
         </Stack>
+        <Box sx={{ width: "100%" }}>
+                <Collapse in={failedAlert}>
+                    <Alert
+                        severity="error"
+                        action={
+                            <IconButton
+                                aria-label="close"
+                                color="inherit"
+                                size="small"
+                                onClick={() => {
+                                    setFailedAlert(false);
+                                }}
+                            >
+                                <CloseIcon fontSize="inherit" />
+                            </IconButton>
+                        }
+                        sx={{ mb: 2 }}
+                    >
+                    Profile deleition failed!
+                    </Alert>
+                </Collapse>
+            </Box>
         </div>
     );
 }
