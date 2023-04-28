@@ -244,15 +244,15 @@ func (handler *GlobalHandler) DeleteUser(w http.ResponseWriter, r *http.Request,
 }
 
 func (handler *GlobalHandler) CreateAccommodation(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
-	//TODO
+	//TODO mihaela
 }
 
 func (handler *GlobalHandler) CreateAvailability(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
-	//TODO
+	//TODO nadja i aleksandra
 }
 
 func (handler *GlobalHandler) UpdateAvailability(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
-	//TODO
+	//TODO nadja i aleksandra
 }
 
 func (handler *GlobalHandler) DeleteAvailability(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
@@ -260,33 +260,33 @@ func (handler *GlobalHandler) DeleteAvailability(w http.ResponseWriter, r *http.
 }
 
 func (handler *GlobalHandler) SearchAvailability(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
-	//TODO
+	//TODO nadja i aleksandra
 }
 
 func (handler *GlobalHandler) CreateReservation(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
-	//TODO
+	//TODO nadja i aleksandra
 }
 
 func (handler *GlobalHandler) GetFindReservationPendingGuest(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
-	//TODO
+	//TODO nadja i aleksandra
 }
 
 func (handler *GlobalHandler) GetFindReservationAcceptedGuest(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
-	//TODO
+	//TODO nadja i aleksandra
 }
 
 func (handler *GlobalHandler) GetFindReservationHost(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
-	//TODO
+	//TODO mihaela
 }
 
 func (handler *GlobalHandler) CancelReservation(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
-	//TODO
+	//TODO nadja i aleksandra
 }
 
 func (handler *GlobalHandler) DeleteLogicallyReservation(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
-	//TODO
+	//TODO nadja i aleksandra
 }
 
 func (handler *GlobalHandler) AcceptReservation(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
-	//TODO
+	//TODO mihaela
 }

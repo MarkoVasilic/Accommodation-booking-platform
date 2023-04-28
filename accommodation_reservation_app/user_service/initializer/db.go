@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	DATABASE = "accommodation_db"
+	DATABASE = "user_db"
 )
 
 func ConnectToDatabase(host, port string) *mongo.Client {
