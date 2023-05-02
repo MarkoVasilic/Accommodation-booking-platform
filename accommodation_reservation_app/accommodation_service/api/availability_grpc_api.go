@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 
+	//"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/accommodation_service/models"
 	"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/accommodation_service/service"
 	pb "github.com/MarkoVasilic/Accommodation-booking-platform/common/proto/accommodation_service"
 )
@@ -40,6 +41,7 @@ func (handler *AvailabilityHandler) CreateAvailability(ctx context.Context, requ
 func (handler *AvailabilityHandler) UpdateAvailability(ctx context.Context, request *pb.UpdateAvailabilityRequest) (*pb.UpdateAvailabilityResponse, error) {
 	//TODO treba dobaviti sve rezervacije i provjeriti da li postoje neke za availiabilty koji treba da se mjenja a da je isdeleted na false
 	//samo ako nema onda moze da se azurira
+	//ako imamo rezervacije ne mozemo da menjamo tj. ukoliko i ima rezervacija, ali ako je isdeleted na true ili iscanceled na true onda moze da se menja (obrisane su)
 	response := &pb.UpdateAvailabilityResponse{
 		Message: "Success",
 	}
