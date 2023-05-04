@@ -23,11 +23,12 @@ func (repo *AvailabilityRepository) CreateAvailability(availability *models.Avai
 	return inserterr
 }
 
-func (repo *AvailabilityRepository) GetAllAvailabilities() ([]models.Availability, error) {
+func (repo *AvailabilityRepository) GetAllAvailabilitiesByAccommodationID(accommodationID primitive.ObjectID) ([]models.Availability, error) {
 	var ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	cursor, err := repo.AvailabilityCollection.Find(ctx, bson.M{})
+	filter := bson.M{"accomodation_id": accommodationID}
+	cursor, err := repo.AvailabilityCollection.Find(ctx, filter)
 	if err != nil {
 		return nil, err
 	}

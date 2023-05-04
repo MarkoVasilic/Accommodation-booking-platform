@@ -4,8 +4,12 @@ import (
 	"context"
 
 	//"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/accommodation_service/models"
+	"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/accommodation_service/models"
 	"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/accommodation_service/service"
 	pb "github.com/MarkoVasilic/Accommodation-booking-platform/common/proto/accommodation_service"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type AvailabilityHandler struct {
@@ -23,7 +27,22 @@ func NewAvailabilityHandler(accommodation_service *service.AccommodationService,
 
 func (handler *AvailabilityHandler) GetAllAvailabilities(ctx context.Context, request *pb.GetAllAvailabilitiesRequest) (*pb.GetAllAvailabilitiesResponse, error) {
 	//TODO pomocna metoda za dobavljanje svih dostupnosti koje mozete koristiti u drugim mikroservisima
+	id := request.Id
+	accomodationId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		err := status.Errorf(codes.InvalidArgument, "the provided id is not a valid ObjectID")
+		return nil, err
+	}
+	as, err := handler.availability_service.GetAllAvailabilitiesByAccommodationID(accomodationId)
+	if err != nil {
+		return nil, err
+	}
 	availabilities := []*pb.Availability{}
+	for _, a := range as {
+		availabilityPb := mapAvailability(&a)
+		availabilities = append(availabilities, availabilityPb)
+	}
+
 	response := &pb.GetAllAvailabilitiesResponse{
 		Availabilities: availabilities,
 	}
@@ -32,6 +51,17 @@ func (handler *AvailabilityHandler) GetAllAvailabilities(ctx context.Context, re
 
 func (handler *AvailabilityHandler) CreateAvailability(ctx context.Context, request *pb.CreateAvailabilityRequest) (*pb.CreateAvailabilityResponse, error) {
 	//TODO
+	accommodationID, err := primitive.ObjectIDFromHex(request.AccommodationID)
+	if err != nil {
+		return nil, err
+	}
+
+	availability := models.Availability{AccommodationID: accommodationID, StartDate: request.EndDate.AsTime(), EndDate: request.EndDate.AsTime(), Price: request.Price, IsPricePerGuest: request.IsPricePerGuest}
+	mess, err := handler.availability_service.CreateAvailability(availability)
+	if err != nil {
+		err := status.Errorf(codes.Internal, mess)
+		return nil, err
+	}
 	response := &pb.CreateAvailabilityResponse{
 		Message: "Success",
 	}
