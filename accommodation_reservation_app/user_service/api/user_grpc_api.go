@@ -7,26 +7,43 @@ import (
 	"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/user_service/models"
 	"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/user_service/service"
 	"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/user_service/token"
+	"github.com/MarkoVasilic/Accommodation-booking-platform/common/proto/accommodation_service"
+	"github.com/MarkoVasilic/Accommodation-booking-platform/common/proto/reservation_service"
 	pb "github.com/MarkoVasilic/Accommodation-booking-platform/common/proto/user_service"
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
 type UserHandler struct {
 	pb.UnimplementedUserServiceServer
-	service *service.UserService
+	service              *service.UserService
+	accommodation_client accommodation_service.AccommodationServiceClient
+	reservation_client   reservation_service.ReservationServiceClient
 }
 
-func NewUserHandler(service *service.UserService) *UserHandler {
+func NewUserHandler(service *service.UserService, accommodation_client accommodation_service.AccommodationServiceClient, reservation_client reservation_service.ReservationServiceClient) *UserHandler {
 	return &UserHandler{
-		service: service,
+		service:              service,
+		accommodation_client: accommodation_client,
+		reservation_client:   reservation_client,
 	}
+}
+
+func createContextForAuthorization(ctx context.Context) context.Context {
+	token, _ := grpc_auth.AuthFromMD(ctx, "Bearer")
+	if len(token) > 0 {
+		return metadata.NewOutgoingContext(context.Background(), metadata.Pairs("Authorization", "Bearer "+token))
+	}
+	return context.TODO()
 }
 
 func (handler *UserHandler) GetUser(ctx context.Context, request *pb.GetUserRequest) (*pb.GetUserResponse, error) {
 	id := request.Id
+	//primjer pozivanja metode iz drugog mikroservisa
+	//handler.accommodation_client.GetAllAccommodations(createContextForAuthorization(ctx), &accommodation_service.GetAllAccommodationsRequest{Id: "1"})
 	objectId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		err := status.Errorf(codes.InvalidArgument, "the provided id is not a valid ObjectID")

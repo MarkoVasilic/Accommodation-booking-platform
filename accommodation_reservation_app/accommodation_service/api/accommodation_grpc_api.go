@@ -5,16 +5,24 @@ import (
 
 	"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/accommodation_service/service"
 	pb "github.com/MarkoVasilic/Accommodation-booking-platform/common/proto/accommodation_service"
+	"github.com/MarkoVasilic/Accommodation-booking-platform/common/proto/reservation_service"
+	"github.com/MarkoVasilic/Accommodation-booking-platform/common/proto/user_service"
 )
 
 type AccommodationHandler struct {
 	pb.UnimplementedAccommodationServiceServer
 	accommodation_service *service.AccommodationService
+	availability_service  *service.AvailabilityService
+	user_client           user_service.UserServiceClient
+	reservation_client    reservation_service.ReservationServiceClient
 }
 
-func NewAccommodationHandler(accommodation_service *service.AccommodationService) *AccommodationHandler {
+func NewAccommodationHandler(accommodation_service *service.AccommodationService, availability_service *service.AvailabilityService, user_client user_service.UserServiceClient, reservation_client reservation_service.ReservationServiceClient) *AccommodationHandler {
 	return &AccommodationHandler{
 		accommodation_service: accommodation_service,
+		availability_service:  availability_service,
+		user_client:           user_client,
+		reservation_client:    reservation_client,
 	}
 }
 

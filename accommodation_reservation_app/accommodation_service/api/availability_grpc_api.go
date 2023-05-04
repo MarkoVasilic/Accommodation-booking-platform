@@ -7,6 +7,8 @@ import (
 	"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/accommodation_service/models"
 	"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/accommodation_service/service"
 	pb "github.com/MarkoVasilic/Accommodation-booking-platform/common/proto/accommodation_service"
+	"github.com/MarkoVasilic/Accommodation-booking-platform/common/proto/reservation_service"
+	"github.com/MarkoVasilic/Accommodation-booking-platform/common/proto/user_service"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -16,12 +18,16 @@ type AvailabilityHandler struct {
 	pb.UnimplementedAccommodationServiceServer
 	accommodation_service *service.AccommodationService
 	availability_service  *service.AvailabilityService
+	user_client           user_service.UserServiceClient
+	reservation_client    reservation_service.ReservationServiceClient
 }
 
-func NewAvailabilityHandler(accommodation_service *service.AccommodationService, availability_service *service.AvailabilityService) *AvailabilityHandler {
+func NewAvailabilityHandler(accommodation_service *service.AccommodationService, availability_service *service.AvailabilityService, user_client user_service.UserServiceClient, reservation_client reservation_service.ReservationServiceClient) *AvailabilityHandler {
 	return &AvailabilityHandler{
 		accommodation_service: accommodation_service,
 		availability_service:  availability_service,
+		user_client:           user_client,
+		reservation_client:    reservation_client,
 	}
 }
 

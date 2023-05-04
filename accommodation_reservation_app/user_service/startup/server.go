@@ -13,10 +13,13 @@ import (
 	"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/user_service/service"
 	"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/user_service/startup/config"
 	"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/user_service/token"
+	"github.com/MarkoVasilic/Accommodation-booking-platform/common/proto/accommodation_service"
+	"github.com/MarkoVasilic/Accommodation-booking-platform/common/proto/reservation_service"
 	user "github.com/MarkoVasilic/Accommodation-booking-platform/common/proto/user_service"
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
 )
 
@@ -30,12 +33,32 @@ func NewServer(config *config.Config) *Server {
 	}
 }
 
+func (server *Server) InitializeAccommodationClient() accommodation_service.AccommodationServiceClient {
+	accommodationEndpoint := fmt.Sprintf("%s:%s", server.config.AccommodationHost, server.config.AccommodationPort)
+	conn, err := grpc.Dial(accommodationEndpoint, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Fatalf("Failed to start gRPC connection to Accommodation service: %v", err)
+	}
+	return accommodation_service.NewAccommodationServiceClient(conn)
+}
+
+func (server *Server) InitializeReservationClient() reservation_service.ReservationServiceClient {
+	reservationEndpoint := fmt.Sprintf("%s:%s", server.config.ReservationHost, server.config.ReservationPort)
+	conn, err := grpc.Dial(reservationEndpoint, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Fatalf("Failed to start gRPC connection to Reservation service: %v", err)
+	}
+	return reservation_service.NewReservationServiceClient(conn)
+}
+
 func (server *Server) Start() {
 	client := initializer.ConnectToDatabase(server.config.UserDBHost, server.config.UserDBPort)
 	user_collection := initializer.UserCollection(client)
 	user_repository := &repository.UserRepository{UserCollection: user_collection}
 	user_service := &service.UserService{UserRepository: user_repository}
-	user_handler := api.NewUserHandler(user_service)
+	accommodation_client := server.InitializeAccommodationClient()
+	reservation_client := server.InitializeReservationClient()
+	user_handler := api.NewUserHandler(user_service, accommodation_client, reservation_client)
 
 	server.startGrpcServer(user_handler)
 }

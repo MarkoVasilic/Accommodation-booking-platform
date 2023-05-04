@@ -4,21 +4,37 @@ import (
 	"context"
 
 	"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/reservation_service/service"
+	"github.com/MarkoVasilic/Accommodation-booking-platform/common/proto/accommodation_service"
 	pb "github.com/MarkoVasilic/Accommodation-booking-platform/common/proto/reservation_service"
+	"github.com/MarkoVasilic/Accommodation-booking-platform/common/proto/user_service"
+	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
 type ReservationHandler struct {
 	pb.UnimplementedReservationServiceServer
-	reservation_service *service.ReservationService
+	reservation_service  *service.ReservationService
+	accommodation_client accommodation_service.AccommodationServiceClient
+	user_client          user_service.UserServiceClient
 }
 
-func NewReservationHandler(reservation_service *service.ReservationService) *ReservationHandler {
+func NewReservationHandler(reservation_service *service.ReservationService, accommodation_client accommodation_service.AccommodationServiceClient, user_client user_service.UserServiceClient) *ReservationHandler {
 	return &ReservationHandler{
-		reservation_service: reservation_service,
+		reservation_service:  reservation_service,
+		accommodation_client: accommodation_client,
+		user_client:          user_client,
 	}
+}
+
+func createContextForAuthorization(ctx context.Context) context.Context {
+	token, _ := grpc_auth.AuthFromMD(ctx, "Bearer")
+	if len(token) > 0 {
+		return metadata.NewOutgoingContext(context.Background(), metadata.Pairs("Authorization", "Bearer "+token))
+	}
+	return context.TODO()
 }
 
 // by availability

@@ -10,7 +10,7 @@ import "google/protobuf/timestamp.proto";
 service ReservationService{
     rpc GetAllReservations(GetAllReservationsRequest) returns(GetAllReservationsResponse) {
         option (google.api.http) = {
-        get: "/accommodation/reservation"
+        get: "/accommodation/reservation/{id}"
     };
     }
     rpc CreateReservation(CreateReservationRequest) returns (CreateReservationResponse) {

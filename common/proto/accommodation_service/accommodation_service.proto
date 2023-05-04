@@ -22,7 +22,7 @@ service AccommodationService{
 
         rpc GetAllAvailabilities(GetAllAvailabilitiesRequest) returns(GetAllAvailabilitiesResponse) {
                 option (google.api.http) = {
-                get: "/accommodation/availability"
+                get: "/accommodation/availability/{id}"
             };
             }
         rpc CreateAvailability(CreateAvailabilityRequest) returns (CreateAvailabilityResponse) {

@@ -19,6 +19,14 @@ func NewGlobalHandler(accommodationHandler *AccommodationHandler, availabilityHa
 	}
 }
 
+func (handler *GlobalHandler) GetAllAccommodations(ctx context.Context, request *pb.GetAllAccommodationsRequest) (*pb.GetAllAccommodationsResponse, error) {
+	return handler.accommodationHandler.GetAllAccommodations(ctx, request)
+}
+
+func (handler *GlobalHandler) GetAllAvailabilities(ctx context.Context, request *pb.GetAllAvailabilitiesRequest) (*pb.GetAllAvailabilitiesResponse, error) {
+	return handler.availabilityHandler.GetAllAvailabilities(ctx, request)
+}
+
 func (handler *GlobalHandler) CreateAccommodation(ctx context.Context, request *pb.CreateAccommodationRequest) (*pb.CreateAccommodationResponse, error) {
 	return handler.accommodationHandler.CreateAccommodation(ctx, request)
 }
