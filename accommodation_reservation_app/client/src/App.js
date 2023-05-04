@@ -7,6 +7,9 @@ import UserProfile from "./pages/UserProfile";
 import UserChangePassword from "./pages/UserChangePassword";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { setAuthToken } from "./helpers/sethAuthToken";
+import CreateAvailability from './pages/CreateAvailability';
+import UpdateAvailability from './pages/UpdateAvailability';
+import AvailabilityList from './pages/AvailabilityList';
 
 function App() {
   const token = localStorage.getItem("token");
@@ -25,6 +28,9 @@ function App() {
                         <Route path="/user-profile" element={<UserProfile />} />
                         <Route path="/user-profile/update" element={<UpdateUser />} />
                         <Route path="/user-profile/password/" element={<UserChangePassword />} />
+                        <Route path="/availability/create" element={<CreateAvailability />} />
+                        <Route path="/availability/update/:availability" element={<UpdateAvailability />} />
+                        <Route path="/availabilities" element={<AvailabilityList />} />
                     </Routes>
                 </div>
             </Router>
