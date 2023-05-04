@@ -5,6 +5,9 @@ import (
 
 	"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/reservation_service/service"
 	pb "github.com/MarkoVasilic/Accommodation-booking-platform/common/proto/reservation_service"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type ReservationHandler struct {
@@ -18,9 +21,25 @@ func NewReservationHandler(reservation_service *service.ReservationService) *Res
 	}
 }
 
+// by availability
 func (handler *ReservationHandler) GetAllReservations(ctx context.Context, request *pb.GetAllReservationsRequest) (*pb.GetAllReservationsResponse, error) {
 	//TODO pomocna metoda za dobavljanje svih rezervacija koje mozete koristiti u drugim mikroservisima
+	id := request.Id
+	availabilityId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		err := status.Errorf(codes.InvalidArgument, "the provided id is not a valid ObjectID")
+		return nil, err
+	}
+	res, err := handler.reservation_service.GetAllReservations(availabilityId)
+	if err != nil {
+		return nil, err
+	}
 	reservations := []*pb.Reservation{}
+	for _, r := range res {
+		reservationsPb := mapReservation(&r)
+		reservations = append(reservations, reservationsPb)
+	}
+
 	response := &pb.GetAllReservationsResponse{
 		Reservations: reservations,
 	}

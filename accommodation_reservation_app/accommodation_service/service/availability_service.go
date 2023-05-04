@@ -1,14 +1,15 @@
 package service
 
 import (
-	"fmt"
-	"net/http"
+	"context"
+	"time"
 
 	"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/accommodation_service/models"
 	"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/accommodation_service/repository"
-	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type AvailabilityService struct {
@@ -17,38 +18,33 @@ type AvailabilityService struct {
 
 var Validate = validator.New()
 
-func (service *AvailabilityService) CreateAvailability(c *gin.Context) {
-	var availability models.Availability
-
-	if err := c.BindJSON(&availability); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
+func (service *AvailabilityService) CreateAvailability(availability models.Availability) (string, error) {
+	var _, cancel = context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 
 	validationErr := Validate.Struct(availability)
 	if validationErr != nil {
-		fmt.Println(validationErr)
-		c.JSON(http.StatusBadRequest, gin.H{"error": validationErr.Error()})
-		return
+		err := status.Errorf(codes.InvalidArgument, "user fields are not valid")
+		return "user fields are not valid", err
 	}
 
 	if availability.EndDate.Before(availability.StartDate) {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "End date can not be before start date!"})
-		return
+		err := status.Errorf(codes.InvalidArgument, "End date can not be before start date!")
+		return "End date can not be before start date!", err
 	}
 
 	inserterr := service.AvailabilityRepository.CreateAvailability(&availability)
 
 	if inserterr != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "not created"})
-		return
+		err := status.Errorf(codes.Internal, "not created")
+		return "not created", err
 	}
 
-	c.JSON(http.StatusCreated, "Successfully created availability!!")
+	return "Successfully created availability!", nil
 }
 
-func (service *AvailabilityService) GetAllAvailabilities() ([]models.Availability, error) {
-	availabilities, err := service.AvailabilityRepository.GetAllAvailabilities()
+func (service *AvailabilityService) GetAllAvailabilitiesByAccommodationID(accommodationID primitive.ObjectID) ([]models.Availability, error) {
+	availabilities, err := service.AvailabilityRepository.GetAllAvailabilitiesByAccommodationID(accommodationID)
 	if err != nil {
 		return nil, err
 	}

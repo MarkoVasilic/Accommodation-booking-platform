@@ -3,21 +3,24 @@ package repository
 import (
 	"context"
 	"time"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/bson"
+
 	"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/reservation_service/models"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type ReservationRepository struct {
 	ReservationCollection *mongo.Collection
 }
 
-
-func (repo *ReservationRepository) GetAllReservations() ([]models.Reservation, error) {
+// by availability
+func (repo *ReservationRepository) GetAllReservations(availibiltyId primitive.ObjectID) ([]models.Reservation, error) {
 	var ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	cursor, err := repo.ReservationCollection.Find(ctx, bson.M{})
+	filter := bson.M{"availability_id": availibiltyId}
+	cursor, err := repo.ReservationCollection.Find(ctx, filter)
 	if err != nil {
 		return nil, err
 	}
