@@ -25,7 +25,7 @@ func (service *AvailabilityService) CreateAvailability(availability models.Avail
 	validationErr := Validate.Struct(availability)
 	if validationErr != nil {
 		err := status.Errorf(codes.InvalidArgument, "user fields are not valid")
-		return "user fields are not valid", err
+		return "Availability fields are not valid", err
 	}
 
 	if availability.EndDate.Before(availability.StartDate) {
