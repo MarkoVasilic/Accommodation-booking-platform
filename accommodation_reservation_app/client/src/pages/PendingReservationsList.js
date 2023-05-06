@@ -1,14 +1,14 @@
-import CreateAvailabilityForm from "../components/CreateAvailabilityForm";
 import Navbar from "../pages/Navbar";
+import ListPendingReservations from "../components/ListPendingReservations";
 import AllowedUsers from "../components/AllowedUsers";
 
-export default function CreateAvailability(){
-    var allowedUsers = ["HOST"]
+export default function PendingReservationsList(){
+    var allowedUsers = ["GUEST"]
     return(
         <div>
             <AllowedUsers userRole = {allowedUsers}></AllowedUsers>
             <Navbar/>
-            <CreateAvailabilityForm />
+            <ListPendingReservations></ListPendingReservations>
         </div>
     );
 }

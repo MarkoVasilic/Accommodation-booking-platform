@@ -17,8 +17,11 @@ import CloseIcon from "@mui/icons-material/Close";
 import Alert from "@mui/material/Alert";
 import Collapse from "@mui/material/Collapse";
 
+function refreshPage(){
+    window.location.reload();
+}
 
-const RenderUpdateButton = (params) => {
+const RenderDeleteReservation = (params) => {
     let navigate = useNavigate();
     return (
         <strong>
@@ -28,10 +31,12 @@ const RenderUpdateButton = (params) => {
                 size="small"
                 style={{ marginLeft: 16 }}
                 onClick={() => {
-                    //navigate('/availability/update/'+params.row.id);
+                    //proveriti url
+                    //navigate('/accommodation/reservation/ldelete/'+params.row.id);
+                    //refreshPage();
                 }}
             >
-                Update
+                Delete
             </Button>
         </strong>
     )
@@ -41,7 +46,27 @@ const RenderUpdateButton = (params) => {
 
 const columns = [
     {
-        field: "StartDate",
+        field: "name",
+        headerName: "Name",
+        type: "string",
+        width: 300,
+        sortable: false,
+        filterable: false,
+        editable: false,
+    },
+    {
+        field: "location",
+        headerName: "Location",
+        type: "string",
+        width: 300,
+        sortable: false,
+        filterable: false,
+        editable: false,
+        //format:"DD/MM/YYYY hh:mm A",
+        valueFormatter: params => moment(params?.value).add(-2, 'h').format("DD/MM/YYYY hh:mm:ss A"),
+    },
+    {
+        field: "start_date",
         headerName: "Start date",
         type: "datetime-local",
         width: 300,
@@ -52,8 +77,8 @@ const columns = [
         valueFormatter: params => moment(params?.value).add(-2, 'h').format("DD/MM/YYYY hh:mm:ss A"),
     },
     {
-        field: "EndDate",
-        headerName: "End Date",
+        field: "end_date",
+        headerName: "End date",
         type: "datetime-local",
         width: 300,
         sortable: false,
@@ -62,39 +87,29 @@ const columns = [
         //format:"DD/MM/YYYY hh:mm A",
         valueFormatter: params => moment(params?.value).add(-2, 'h').format("DD/MM/YYYY hh:mm:ss A"),
     },
-    {
-        field: "price",
-        headerName: "Price",
+    //proveriti da li treba ova inf
+    /*{
+        field: "numGuests",
+        headerName: "Number of guests",
         type: "number",
         width: 300,
-        headerAlign: "left",
-        align: "left",
         sortable: false,
         filterable: false,
-        editable: false,
-    },
+        editable: false, 
+    },*/
     {
-        field: "IsPricePerGuest",
-        headerName: "Is price per guest",
-        type: "string",
+        field: "delete",
+        headerName: "Delete Reservation",
         width: 300,
-        sortable: false,
-        filterable: false,
-        editable: false,
-    },
-    {
-        field: "update",
-        headerName: "Update Availability",
-        width: 300,
-        renderCell: RenderUpdateButton,
+        renderCell: RenderDeleteReservation,
         disableClickEventBubbling: true   
     }
 ];
 
 
-function AvailabilityList(props) {
+function PendingReservationsList(props) {
     const { handleSubmit, control } = useForm();
-    const [availabilities, setAvailabilities ] = useState([]);
+    const [reservations, setReservations ] = useState([]);
     const [ error, setError ] = React.useState(false);
     const [er, setEr] = React.useState("");
     const navigate = useNavigate();
@@ -107,16 +122,17 @@ function AvailabilityList(props) {
         let getData = async () => {
         try{
         axiosApi
-            //.get(`/flights/all/?${`taking_off_date=${date}&`}${`start_location=&`}${`end_location=&`}${`number_of_tickets=1`}`)
+            //proslediti koji treba
+            //.get(`/reservation/guest/pending/`+id)
             .then((response) => {
-                setAvailabilities(response.data);
+                setReservations(response.data);
             }).catch(er => {
                 console.log(er.response);
-                setAvailabilities([]);
+                setReservations([]);
             });
         }catch (err) {
                 console.log(err)
-                setAvailabilities([]);
+                setReservations([]);
             }
         };
 
@@ -130,7 +146,7 @@ function AvailabilityList(props) {
                     marginBottom={3}
                     marginTop={1}
                 >
-                    Availabilities
+                    Pending Reservations
                 </Typography>
             </Stack>
             <Paper>
@@ -145,7 +161,7 @@ function AvailabilityList(props) {
                                     size="small"
                                     onClick={() => {
                                         setError(false);
-                                        setAvailabilities([])
+                                        setReservations([])
                                     }}
                                 >
                                     <CloseIcon fontSize="inherit" />
@@ -159,7 +175,7 @@ function AvailabilityList(props) {
                 </Box>
                 <Box sx={{ height: 700, width: "100%", marginTop: "20px", marginBottom: "20px"}}>
                     <DataGrid
-                        rows={availabilities}
+                        rows={reservations}
                         getRowId={(row) => row.ID}
                         disableColumnFilter
                         columns={columns}
@@ -178,4 +194,4 @@ function AvailabilityList(props) {
     );
 }
 
-export default AvailabilityList;
+export default PendingReservationsList;
