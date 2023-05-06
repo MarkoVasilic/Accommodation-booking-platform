@@ -1,11 +1,12 @@
 import UpdateAvailabilityForm from "../components/UpdateAvailabilityForm";
-//import AllowedUsers from "../components/AllowedUsers";
+import AllowedUsers from "../components/AllowedUsers";
 import Navbar from "../pages/Navbar";
 
 export default function UpdateAvailability(){
-    //var listOfAllowedUsers = ["Admin", "TranfusionCenterStaff"]
+    var allowedUsers = ["HOST"]
     return(
         <div>
+        <AllowedUsers userRole = {allowedUsers}></AllowedUsers>
         <Navbar></Navbar>
         <UpdateAvailabilityForm></UpdateAvailabilityForm>
         </div>

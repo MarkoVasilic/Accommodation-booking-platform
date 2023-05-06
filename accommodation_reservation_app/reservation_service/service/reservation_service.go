@@ -44,7 +44,7 @@ func (svc *ReservationService) CreateReservation(reservation models.Reservation)
 		return "Start date can not be after end date", err
 	}
 
-	//dobavljam sve rezervacije kako bih rpoverila da li imamo preklapajucih rezervacija tj. da li je automatsko prihvatanje rezervacije
+	//dobavljam sve rezervacije kako bih proverila da li imamo preklapajucih rezervacija tj. da li je automatsko prihvatanje rezervacije
 	reservations, err := svc.ReservationRepository.GetAllReservations(reservation.AvailabilityID)
 	if err != nil {
 		err := status.Errorf(codes.Internal, "Failed to get reservations")

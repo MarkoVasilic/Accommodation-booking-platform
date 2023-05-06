@@ -10,6 +10,10 @@ import { setAuthToken } from "./helpers/sethAuthToken";
 import CreateAvailability from './pages/CreateAvailability';
 import UpdateAvailability from './pages/UpdateAvailability';
 import AvailabilityList from './pages/AvailabilityList';
+import AcceptedReservationsList from './pages/AcceptedReservationsList';
+import PendingReservationsList from './pages/PendingReservationsList';
+import SearchAvailability from './pages/SearchedAvailability';
+import SearchAvailabilityGuest from './pages/SearchedAvailabilityGuest';
 
 function App() {
   const token = localStorage.getItem("token");
@@ -31,6 +35,10 @@ function App() {
                         <Route path="/availability/create" element={<CreateAvailability />} />
                         <Route path="/availability/update/:availability" element={<UpdateAvailability />} />
                         <Route path="/availabilities" element={<AvailabilityList />} />
+                        <Route path="/accepted-reservations" element={<AcceptedReservationsList />} />
+                        <Route path="/pending-reservations" element={<PendingReservationsList />} />
+                        <Route path="/accomodations/all" element={<SearchAvailability />} />
+                        <Route path="/accomodations/all/guest" element={<SearchAvailabilityGuest />} />
                     </Routes>
                 </div>
             </Router>

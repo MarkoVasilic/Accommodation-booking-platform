@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"log"
 	"time"
 
 	"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/accommodation_service/models"
@@ -52,13 +53,29 @@ func (service *AvailabilityService) GetAllAvailabilitiesByAccommodationID(accomm
 }
 
 // availability_grpc_api -> opis kada treba? videti kako da dobavimo sve rez
-func (s *AvailabilityService) UpdateAvailability(availID primitive.ObjectID, price float64) error {
-	avail, err := s.AvailabilityRepository.GetAvailabilityById(availID.Hex())
-	if err != nil {
-		return err
+func (service *AvailabilityService) UpdateAvailability(availability models.Availability, id string) (string, error) {
+	var _, cancel = context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	objectId, err := primitive.ObjectIDFromHex(id)
+	/*foundavai, founderr := service.AvailabilityRepository.GetAvailabilityById(objectId)
+	if founderr != nil {
+		log.Panic(err)
+		err := status.Errorf(codes.Internal, "something went wrong")
+		return "something went wrong", err
+	}*/
+
+	validationErr := Validate.Struct(availability)
+	if validationErr != nil {
+		err := status.Errorf(codes.InvalidArgument, "availability fields are not valid")
+		return "availability fields are not valid", err
 	}
 
-	avail.Price = price
-
-	return s.AvailabilityRepository.UpdateAvailability(&avail)
+	availability.ID = objectId
+	inserterr := service.AvailabilityRepository.UpdateAvailability(&availability)
+	if inserterr != nil {
+		log.Panic(err)
+		err := status.Errorf(codes.Internal, "something went wrong")
+		return "something went wrong", err
+	}
+	return "Succesffully updated availability", nil
 }
