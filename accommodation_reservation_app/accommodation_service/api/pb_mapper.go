@@ -20,3 +20,29 @@ func mapAvailability(availability *models.Availability) *pb.Availability {
 	}
 	return availabilityPb
 }
+
+func mapAccommodation(accommodation *models.Accommodation) *pb.Accommodation {
+
+	accommodationPb := &pb.Accommodation{
+		Id:         accommodation.ID.Hex(),
+		HostId:     accommodation.HostID.Hex(),
+		Name:       accommodation.Name,
+		Location:   accommodation.Location,
+		Wifi:       accommodation.Wifi,
+		Kitchen:    accommodation.Kitchen,
+		AC:         accommodation.AC,
+		ParkingLot: accommodation.ParkingLot,
+		MinGuests:  int32(accommodation.MinGuests),
+		MaxGuests:  int32(accommodation.MaxGuests),
+		Images:     make([]string, 0, len(accommodation.Images)),
+		AutoAccept: accommodation.AutoAccept,
+	}
+	//proveriti ovo za images
+	for _, image := range accommodation.Images {
+		if image != nil {
+			accommodationPb.Images = append(accommodationPb.Images, *image)
+		}
+	}
+
+	return accommodationPb
+}

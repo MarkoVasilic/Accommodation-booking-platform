@@ -57,17 +57,10 @@ func (repo *AvailabilityRepository) UpdateAvailability(avail *models.Availabilit
 	return updateErr
 }
 
-func (repo *AvailabilityRepository) GetAvailabilityById(id string) (models.Availability, error) {
+func (repo *AvailabilityRepository) GetAvailabilityById(id primitive.ObjectID) (models.Availability, error) {
 	var ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
-
-	var foundAvailability models.Availability
-
-	objID, err_hex := primitive.ObjectIDFromHex(id)
-	if err_hex != nil {
-		panic(err_hex)
-	}
-
-	err := repo.AvailabilityCollection.FindOne(ctx, bson.M{"_id": objID}).Decode(&foundAvailability)
+	var availability models.Availability
+	err := repo.AvailabilityCollection.FindOne(ctx, bson.M{"_id": id}).Decode(&availability)
 	defer cancel()
-	return foundAvailability, err
+	return availability, err
 }

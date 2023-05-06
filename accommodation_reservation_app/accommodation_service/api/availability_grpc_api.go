@@ -67,8 +67,19 @@ func (handler *AvailabilityHandler) GetAllAvailabilities(ctx context.Context, re
 
 func (handler *AvailabilityHandler) GetAvailabilityById(ctx context.Context, request *pb.GetAvailabilityByIdRequest) (*pb.GetAvailabilityByIdResponse, error) {
 	//TODO
+	id := request.Id
+	objectId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		err := status.Errorf(codes.InvalidArgument, "the provided id is not a valid ObjectID")
+		return nil, err
+	}
+	availability, err := handler.availability_service.GetAvailabilityById(objectId)
+	if err != nil {
+		return nil, err
+	}
+	availabilityPb := mapAvailability(&availability)
 	response := &pb.GetAvailabilityByIdResponse{
-		Availability: nil,
+		Availability: availabilityPb,
 	}
 	return response, nil
 }
