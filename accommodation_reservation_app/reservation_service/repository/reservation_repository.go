@@ -32,3 +32,16 @@ func (repo *ReservationRepository) GetAllReservations(availibiltyId primitive.Ob
 
 	return reservations, nil
 }
+
+func (repo *ReservationRepository) CreateReservation(reservation *models.Reservation) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	reservation.ID = primitive.NewObjectID()
+	_, err := repo.ReservationCollection.InsertOne(ctx, reservation)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
