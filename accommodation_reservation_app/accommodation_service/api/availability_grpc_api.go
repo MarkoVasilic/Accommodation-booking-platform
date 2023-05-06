@@ -55,6 +55,14 @@ func (handler *AvailabilityHandler) GetAllAvailabilities(ctx context.Context, re
 	return response, nil
 }
 
+func (handler *AvailabilityHandler) GetAvailabilityById(ctx context.Context, request *pb.GetAvailabilityByIdRequest) (*pb.GetAvailabilityByIdResponse, error) {
+	//TODO
+	response := &pb.GetAvailabilityByIdResponse{
+		Availability: nil,
+	}
+	return response, nil
+}
+
 func (handler *AvailabilityHandler) CreateAvailability(ctx context.Context, request *pb.CreateAvailabilityRequest) (*pb.CreateAvailabilityResponse, error) {
 	//TODO
 	accommodationID, err := primitive.ObjectIDFromHex(request.AccommodationID)

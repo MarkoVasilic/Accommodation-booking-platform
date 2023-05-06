@@ -19,12 +19,23 @@ service AccommodationService{
                     body: "*"
                 };
         }
+        rpc GetAccommodationByAvailability(GetAccommodationByAvailabilityRequest) returns(GetAccommodationByAvailabilityResponse) {
+                option (google.api.http) = {
+                get: "/accommodation/accommodation/availability/{id}"
+            };
+        }
 
         rpc GetAllAvailabilities(GetAllAvailabilitiesRequest) returns(GetAllAvailabilitiesResponse) {
                 option (google.api.http) = {
                 get: "/accommodation/availability/{id}"
             };
-            }
+        }
+
+        rpc GetAvailabilityById(GetAvailabilityByIdRequest) returns(GetAvailabilityByIdResponse) {
+                option (google.api.http) = {
+                get: "/accommodation/availability/one/{id}"
+            };
+        }
         rpc CreateAvailability(CreateAvailabilityRequest) returns (CreateAvailabilityResponse) {
                 option (google.api.http) = {
                     post: "/accommodation/availability"
@@ -67,7 +78,14 @@ message GetAllAccommodationsRequest {
 message GetAllAccommodationsResponse {
         repeated Accommodation accommodations = 1;
 }
-    
+
+message GetAccommodationByAvailabilityRequest {
+        string id = 1;
+}
+
+message GetAccommodationByAvailabilityResponse {
+        Accommodation accommodation = 1;
+}
 
 message CreateAccommodationRequest {
         string Id = 1;
@@ -95,6 +113,14 @@ message Availability {
         google.protobuf.Timestamp EndDate = 4;
         double Price = 5;
         bool IsPricePerGuest = 6;
+}
+
+message GetAvailabilityByIdRequest {
+        string id = 1;
+}
+
+message GetAvailabilityByIdResponse {
+        Availability availability = 1;
 }
 
 message GetAllAvailabilitiesRequest {

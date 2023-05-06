@@ -35,6 +35,14 @@ func (handler *AccommodationHandler) GetAllAccommodations(ctx context.Context, r
 	return response, nil
 }
 
+func (handler *AccommodationHandler) GetAccommodationByAvailability(ctx context.Context, request *pb.GetAccommodationByAvailabilityRequest) (*pb.GetAccommodationByAvailabilityResponse, error) {
+	//TODO
+	response := &pb.GetAccommodationByAvailabilityResponse{
+		Accommodation: nil,
+	}
+	return response, nil
+}
+
 func (handler *AccommodationHandler) CreateAccommodation(ctx context.Context, request *pb.CreateAccommodationRequest) (*pb.CreateAccommodationResponse, error) {
 	//TODO
 	response := &pb.CreateAccommodationResponse{
