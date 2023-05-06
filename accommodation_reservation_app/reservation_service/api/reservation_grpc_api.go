@@ -115,8 +115,9 @@ func (handler *ReservationHandler) GetFindReservationPendingGuest(ctx context.Co
 		if err != nil {
 			return nil, err
 		}
-		//accomodation, err := handler.accommodation_client.GetAccomodationByAvailiabilityId(reservation.availabilityId)
-		findRes := models.FindReservation{ReservationId: reservation.ID, GuestID: reservation.GuestID, Name: user.User.FirstName + " " + user.User.LastName, Location: "", StartDate: reservation.StartDate, EndDate: reservation.EndDate, NumOfCancelation: 0, IsAccepted: reservation.IsAccepted, IsCanceled: reservation.IsCanceled}
+		availabilityId := string(reservation.AvailabilityID.Hex())
+		accommodation, err := handler.accommodation_client.GetAccommodationByAvailability(createContextForAuthorization(ctx), &accommodation_service.GetAccommodationByAvailabilityRequest{Id: availabilityId})
+		findRes := models.FindReservation{ReservationId: reservation.ID, GuestID: reservation.GuestID, Name: user.User.FirstName + " " + user.User.LastName, Location: accommodation.Accommodation.Location, StartDate: reservation.StartDate, EndDate: reservation.EndDate, NumOfCancelation: 0, IsAccepted: reservation.IsAccepted, IsCanceled: reservation.IsCanceled}
 		filteredReservations = append(filteredReservations, findRes)
 	}
 

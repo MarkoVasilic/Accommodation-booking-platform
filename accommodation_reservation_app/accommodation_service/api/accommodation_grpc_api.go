@@ -7,6 +7,9 @@ import (
 	pb "github.com/MarkoVasilic/Accommodation-booking-platform/common/proto/accommodation_service"
 	"github.com/MarkoVasilic/Accommodation-booking-platform/common/proto/reservation_service"
 	"github.com/MarkoVasilic/Accommodation-booking-platform/common/proto/user_service"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type AccommodationHandler struct {
@@ -37,8 +40,23 @@ func (handler *AccommodationHandler) GetAllAccommodations(ctx context.Context, r
 
 func (handler *AccommodationHandler) GetAccommodationByAvailability(ctx context.Context, request *pb.GetAccommodationByAvailabilityRequest) (*pb.GetAccommodationByAvailabilityResponse, error) {
 	//TODO
+	id := request.Id
+	availabilityId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		err := status.Errorf(codes.InvalidArgument, "the provided id is not a valid ObjectID")
+		return nil, err
+	}
+	availability, err := handler.availability_service.GetAvailabilityById(availabilityId)
+	if err != nil {
+		return nil, err
+	}
+	accommodation, err := handler.accommodation_service.GetAccommodationById(availability.AccommodationID)
+	if err != nil {
+		return nil, err
+	}
+	accommodationPb := mapAccommodation(&accommodation)
 	response := &pb.GetAccommodationByAvailabilityResponse{
-		Accommodation: nil,
+		Accommodation: accommodationPb,
 	}
 	return response, nil
 }

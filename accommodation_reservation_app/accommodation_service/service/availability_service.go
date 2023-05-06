@@ -52,6 +52,14 @@ func (service *AvailabilityService) GetAllAvailabilitiesByAccommodationID(accomm
 	return availabilities, nil
 }
 
+func (service *AvailabilityService) GetAvailabilityById(id primitive.ObjectID) (models.Availability, error) {
+	var _, cancel = context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	foundAvailability, err := service.AvailabilityRepository.GetAvailabilityById(id)
+	return foundAvailability, err
+}
+
 // availability_grpc_api -> opis kada treba? videti kako da dobavimo sve rez
 func (service AvailabilityService) UpdateAvailability(availability models.Availability, id string) (string, error) {
 	var _, cancel = context.WithTimeout(context.Background(), 5*time.Second)
