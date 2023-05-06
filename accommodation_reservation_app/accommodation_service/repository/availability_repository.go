@@ -47,7 +47,8 @@ func (repo *AvailabilityRepository) UpdateAvailability(avail *models.Availabilit
 	filter := bson.M{"_id": avail.ID}
 	update := bson.M{
 		"$set": bson.M{
-			"price": avail.Price,
+			"price":              avail.Price,
+			"is_price_per_guest": avail.IsPricePerGuest,
 		},
 	}
 	//da se ne kreira nova, vec azurira postojeca dostupnost

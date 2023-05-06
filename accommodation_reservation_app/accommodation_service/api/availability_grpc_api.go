@@ -9,8 +9,10 @@ import (
 	pb "github.com/MarkoVasilic/Accommodation-booking-platform/common/proto/accommodation_service"
 	"github.com/MarkoVasilic/Accommodation-booking-platform/common/proto/reservation_service"
 	"github.com/MarkoVasilic/Accommodation-booking-platform/common/proto/user_service"
+	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
@@ -29,6 +31,14 @@ func NewAvailabilityHandler(accommodation_service *service.AccommodationService,
 		user_client:           user_client,
 		reservation_client:    reservation_client,
 	}
+}
+
+func createContextForAuthorization(ctx context.Context) context.Context {
+	token, _ := grpc_auth.AuthFromMD(ctx, "Bearer")
+	if len(token) > 0 {
+		return metadata.NewOutgoingContext(context.Background(), metadata.Pairs("Authorization", "Bearer "+token))
+	}
+	return context.TODO()
 }
 
 func (handler *AvailabilityHandler) GetAllAvailabilities(ctx context.Context, request *pb.GetAllAvailabilitiesRequest) (*pb.GetAllAvailabilitiesResponse, error) {
@@ -78,6 +88,27 @@ func (handler *AvailabilityHandler) UpdateAvailability(ctx context.Context, requ
 	//TODO treba dobaviti sve rezervacije i provjeriti da li postoje neke za availiabilty koji treba da se mjenja a da je isdeleted na false
 	//samo ako nema onda moze da se azurira
 	//ako imamo rezervacije ne mozemo da menjamo tj. ukoliko i ima rezervacija, ali ako je isdeleted na true ili iscanceled na true onda moze da se menja (obrisane su)
+	Id, err := primitive.ObjectIDFromHex(request.Id)
+	if err != nil {
+		return nil, err
+	}
+	res, err := handler.reservation_client.GetAllReservations(createContextForAuthorization(ctx), &reservation_service.GetAllReservationsRequest{Id: request.Id}) //&request.Id?
+	var acceptedReservations []*reservation_service.Reservation
+	for _, reservation := range res.Reservations {
+		if reservation.IsAccepted && !reservation.IsCanceled && !reservation.IsDeleted {
+			acceptedReservations = append(acceptedReservations, reservation)
+		}
+	}
+	if acceptedReservations != nil {
+		err := status.Errorf(codes.InvalidArgument, "Cannot update availability price because there are reservations in that period!")
+		return nil, err
+	}
+	availability := models.Availability{ID: Id, StartDate: request.StartDate.AsTime(), EndDate: request.EndDate.AsTime(), Price: request.Price, IsPricePerGuest: request.IsPricePerGuest}
+	mess, err := handler.availability_service.UpdateAvailability(availability, request.Id)
+	if err != nil {
+		err := status.Errorf(codes.Internal, mess)
+		return nil, err
+	}
 	response := &pb.UpdateAvailabilityResponse{
 		Message: "Success",
 	}
