@@ -8,6 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type ReservationRepository struct {
@@ -15,12 +16,29 @@ type ReservationRepository struct {
 }
 
 // by availability
-func (repo *ReservationRepository) GetAllReservations(availibiltyId primitive.ObjectID) ([]models.Reservation, error) {
+func (repo *ReservationRepository) GetAllReservationsByAvailability(availibiltyId primitive.ObjectID) ([]models.Reservation, error) {
 	var ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	filter := bson.M{"availability_id": availibiltyId}
 	cursor, err := repo.ReservationCollection.Find(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+
+	var reservations []models.Reservation
+	if err = cursor.All(ctx, &reservations); err != nil {
+		return nil, err
+	}
+
+	return reservations, nil
+}
+
+func (repo *ReservationRepository) GetAllReservations() ([]models.Reservation, error) {
+	var ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	cursor, err := repo.ReservationCollection.Find(ctx, bson.M{})
 	if err != nil {
 		return nil, err
 	}
@@ -44,4 +62,54 @@ func (repo *ReservationRepository) CreateReservation(reservation *models.Reserva
 	}
 
 	return nil
+}
+
+func (repo *ReservationRepository) GetReservationById(id string) (models.Reservation, error) {
+	var ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
+
+	var foundReservation models.Reservation
+
+	objID, err_hex := primitive.ObjectIDFromHex(id)
+	if err_hex != nil {
+		panic(err_hex)
+	}
+
+	err := repo.ReservationCollection.FindOne(ctx, bson.M{"_id": objID}).Decode(&foundReservation)
+	defer cancel()
+	return foundReservation, err
+}
+
+func (repo *ReservationRepository) CancelReservation(reservationID primitive.ObjectID) error {
+	var ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{"_id": reservationID}
+
+	update := bson.M{
+		"$set": bson.M{
+			"is_canceled": true,
+			"is_accepted": false,
+		},
+	}
+
+	options := options.Update().SetUpsert(false)
+	_, updateErr := repo.ReservationCollection.UpdateOne(ctx, filter, update, options)
+	return updateErr
+}
+
+func (repo *ReservationRepository) DeleteLogicallyReservation(reservationID primitive.ObjectID) error {
+	var ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{"_id": reservationID}
+
+	update := bson.M{
+		"$set": bson.M{
+			"id_deleted": true,
+		},
+	}
+
+	options := options.Update().SetUpsert(false)
+	_, updateErr := repo.ReservationCollection.UpdateOne(ctx, filter, update, options)
+	return updateErr
 }
