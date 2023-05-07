@@ -2,7 +2,9 @@ package api
 
 import (
 	"context"
+	"fmt"
 
+	"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/accommodation_service/models"
 	"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/accommodation_service/service"
 	pb "github.com/MarkoVasilic/Accommodation-booking-platform/common/proto/accommodation_service"
 	"github.com/MarkoVasilic/Accommodation-booking-platform/common/proto/reservation_service"
@@ -62,7 +64,36 @@ func (handler *AccommodationHandler) GetAccommodationByAvailability(ctx context.
 }
 
 func (handler *AccommodationHandler) CreateAccommodation(ctx context.Context, request *pb.CreateAccommodationRequest) (*pb.CreateAccommodationResponse, error) {
-	//TODO
+	hostID, err := primitive.ObjectIDFromHex(request.HostId)
+	fmt.Println(err)
+	fmt.Println(request)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid HostId")
+	}
+
+	var images []*string
+	for _, img := range request.Images {
+		images = append(images, &img)
+	}
+
+	accommodation := models.Accommodation{
+		HostID:     hostID,
+		Name:       request.Name,
+		Location:   request.Location,
+		Wifi:       request.Wifi,
+		Kitchen:    request.Kitchen,
+		AC:         request.AC,
+		ParkingLot: request.ParkingLot,
+		MinGuests:  int(request.MinGuests),
+		MaxGuests:  int(request.MaxGuests),
+		Images:     images,
+		AutoAccept: request.AutoAccept}
+	mess, err := handler.accommodation_service.CreateAccommodation(accommodation)
+	if err != nil {
+		err := status.Errorf(codes.Internal, mess)
+		return nil, err
+	}
+
 	response := &pb.CreateAccommodationResponse{
 		Message: "Success",
 	}

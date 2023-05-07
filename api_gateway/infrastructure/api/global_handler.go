@@ -245,6 +245,36 @@ func (handler *GlobalHandler) DeleteUser(w http.ResponseWriter, r *http.Request,
 
 func (handler *GlobalHandler) CreateAccommodation(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
 	//TODO mihaela
+	var accommodation domain.Accommodation
+	err := json.NewDecoder(r.Body).Decode(&accommodation)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, "Failed to parse request body: %v", err)
+		return
+	}
+
+	fmt.Println(accommodation)
+	resp, err := handler.accommodationService.CreateAccommodation(createContextForAuthorization(r.Header["Authorization"]),
+		&accommodation_service.CreateAccommodationRequest{
+			Id:         "ttt",
+			HostId:     accommodation.HostId,
+			Name:       accommodation.Name,
+			Location:   accommodation.Location,
+			Wifi:       accommodation.Wifi,
+			Kitchen:    accommodation.Kitchen,
+			AC:         accommodation.AC,
+			ParkingLot: accommodation.ParkingLot,
+			MinGuests:  accommodation.MinGuests,
+			MaxGuests:  accommodation.MaxGuests,
+			Images:     accommodation.Images,
+			AutoAccept: accommodation.AutoAccept})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "Failed to call CreateAccommodation method: %v", err)
+		return
+	}
+
+	fmt.Fprintf(w, "%s", resp)
 }
 
 func (handler *GlobalHandler) CreateAvailability(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {

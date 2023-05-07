@@ -21,3 +21,17 @@ func (repo *AccommodationRepository) GetAccommodationById(id primitive.ObjectID)
 	defer cancel()
 	return accommodation, err
 }
+
+func (repo *AccommodationRepository) CreateAccommodation(accommodation *models.Accommodation) error {
+	var ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	accommodation.ID = primitive.NewObjectID()
+	_, inserterr := repo.AccommodationCollection.InsertOne(ctx, accommodation)
+	return inserterr
+}
+
+func (repo *AccommodationRepository) CountByName(name string) (int64, error) {
+	var ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	return repo.AccommodationCollection.CountDocuments(ctx, bson.M{"name": name})
+}
