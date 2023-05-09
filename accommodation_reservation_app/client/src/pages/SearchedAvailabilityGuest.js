@@ -3,10 +3,9 @@ import ListSearchedAvailabilityGuest from "../components/ListSearchedAvailabilit
 import AllowedUsers from "../components/AllowedUsers";
 
 export default function SearchAvailabilityGuest(){
-    var allowedUsers = ["GUEST"]
+    //var allowedUsers = ["GUEST"]
     return(
         <div>
-            <AllowedUsers userRole = {allowedUsers}></AllowedUsers>
             <Navbar/>
             <ListSearchedAvailabilityGuest buttonUrl={"/accomodation-details/"}></ListSearchedAvailabilityGuest>
         </div>
