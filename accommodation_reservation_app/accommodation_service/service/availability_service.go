@@ -34,6 +34,21 @@ func (service *AvailabilityService) CreateAvailability(availability models.Avail
 		return "End date can not be before start date!", err
 	}
 
+	allAvailabilities, err := service.AvailabilityRepository.GetAllAvailabilitiesByAccommodationID(availability.AccommodationID)
+	if err != nil {
+		err := status.Errorf(codes.Internal, "Failed to retrieve availabilities")
+		return "Failed to retrieve availabilities", err
+	}
+
+	//provera preklapanja
+	for _, existingAvailability := range allAvailabilities {
+		if availability.StartDate.Before(existingAvailability.EndDate) && existingAvailability.StartDate.Before(availability.EndDate) {
+			err := status.Errorf(codes.AlreadyExists, "Overlap with existing availability")
+			return "Overlap with existing availability", err
+		}
+	}
+
+	//kreiranje dostupnosti
 	inserterr := service.AvailabilityRepository.CreateAvailability(&availability)
 
 	if inserterr != nil {
