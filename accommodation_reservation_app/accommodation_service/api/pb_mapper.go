@@ -35,19 +35,12 @@ func mapFindAvailability(findAvailability *models.FindAvailability) *pb.FindAvai
 		Kitchen:         findAvailability.Kitchen,
 		AC:              findAvailability.AC,
 		ParkingLot:      findAvailability.ParkingLot,
-		Images:          make([]string, 0, len(findAvailability.Images)),
+		Images:          nil, //dodati za slike
 		StartDate:       startDate,
 		EndDate:         endDate,
 		TotalPrice:      findAvailability.TotalPrice,
 		SinglePrice:     findAvailability.SinglePrice,
 		IsPricePerGuest: findAvailability.IsPricePerGuest,
-	}
-
-	//proveriti ovo za images
-	for _, image := range findAvailability.Images {
-		if image != nil {
-			findAvailabilityPb.Images = append(findAvailabilityPb.Images, *image)
-		}
 	}
 
 	return findAvailabilityPb
@@ -66,14 +59,8 @@ func mapAccommodation(accommodation *models.Accommodation) *pb.Accommodation {
 		ParkingLot: accommodation.ParkingLot,
 		MinGuests:  int32(accommodation.MinGuests),
 		MaxGuests:  int32(accommodation.MaxGuests),
-		Images:     make([]string, 0, len(accommodation.Images)),
+		Images:     nil, //dodati slike
 		AutoAccept: accommodation.AutoAccept,
-	}
-	//proveriti ovo za images
-	for _, image := range accommodation.Images {
-		if image != nil {
-			accommodationPb.Images = append(accommodationPb.Images, *image)
-		}
 	}
 
 	return accommodationPb
