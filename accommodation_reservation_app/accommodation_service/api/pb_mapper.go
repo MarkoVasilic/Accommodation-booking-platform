@@ -30,7 +30,7 @@ func mapFindAvailability(findAvailability *models.FindAvailability) *pb.FindAvai
 		AvailabilityID:  findAvailability.AvailabilityID.Hex(),
 		HostId:          findAvailability.HostID.Hex(),
 		Name:            findAvailability.Name,
-		//Location:	findAvailability.Location,
+		Location:        findAvailability.Location,
 		Wifi:            findAvailability.Wifi,
 		Kitchen:         findAvailability.Kitchen,
 		AC:              findAvailability.AC,
