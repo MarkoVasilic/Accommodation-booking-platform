@@ -48,3 +48,11 @@ func (service *AccommodationService) CreateAccommodation(accommodation models.Ac
 		return "Succesffully added new accomodation", nil
 	}
 }
+
+func (service *AccommodationService) GetAllAccommodationsByLocation(location string) ([]models.Accommodation, error) {
+	accommodations, err := service.AccommodationRepository.GetAllAccommodationsByLocation(location)
+	if err != nil {
+		return nil, err
+	}
+	return accommodations, nil
+}

@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"time"
 
 	//"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/accommodation_service/models"
 	"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/accommodation_service/models"
@@ -144,7 +145,56 @@ func (handler *AvailabilityHandler) SearchAvailability(ctx context.Context, requ
 	//Treba napraviti mapper koji mapira dto u pb i pravi listu tih koji ce biti vraceni
 	//
 	//na frontu ce vjerovatno trebati dvije stranice jedna za guestovi i jedna za neulogovane usere, jer oni ne mogu da rezervisu
+	year, month, day := request.StartDate.AsTime().Date()
+	yearE, monthE, dayE := request.EndDate.AsTime().Date()
+	startDate := time.Date(year, month, day, int(0), int(0), int(0), int(0), time.UTC)
+	endDate := time.Date(yearE, monthE, dayE, int(0), int(0), int(0), int(0), time.UTC)
+
+	availabilities, err := handler.availability_service.GetAllAvailabilitiesByDates(startDate, endDate)
+	if err != nil {
+		return nil, err
+	}
+	favailabilities := []models.FindAvailability{}
+	for _, avail := range availabilities {
+		accommodation, err := handler.accommodation_service.GetAccommodationById(avail.AccommodationID)
+		if err != nil {
+			return nil, err
+		}
+		// proveriti jos za rezervacije if reservations.len == 0
+		reservations, err := handler.reservation_client.GetAllReservations(createContextForAuthorization(ctx), &reservation_service.GetAllReservationsRequest{Id: string(avail.ID.Hex())})
+		if reservations == nil {
+			if accommodation.Location == request.Location && accommodation.MinGuests > int(request.GuestsNum) && accommodation.MaxGuests < int(request.GuestsNum) {
+				nights := endDate.Sub(startDate)
+				totalPrice := avail.Price * float64(nights)
+				findAvailability := models.FindAvailability{AccommodationId: accommodation.ID, AvailabilityID: avail.ID, HostID: accommodation.HostID, Name: accommodation.Name,
+					Location: accommodation.Location, Wifi: accommodation.Wifi, Kitchen: accommodation.Kitchen, AC: accommodation.AC, ParkingLot: accommodation.ParkingLot, Images: accommodation.Images,
+					StartDate: avail.StartDate, EndDate: avail.EndDate, TotalPrice: totalPrice, SinglePrice: avail.Price, IsPricePerGuest: avail.IsPricePerGuest}
+				favailabilities = append(favailabilities, findAvailability)
+			}
+		} else {
+			i := 0
+			for _, res := range reservations.Reservations {
+				if res.IsAccepted && !res.IsCanceled && !res.IsDeleted {
+					i++
+				}
+			}
+			if i == 0 {
+				if accommodation.Location == request.Location && accommodation.MinGuests > int(request.GuestsNum) && accommodation.MaxGuests < int(request.GuestsNum) {
+					nights := endDate.Sub(startDate)
+					totalPrice := avail.Price * float64(nights)
+					findAvailability := models.FindAvailability{AccommodationId: accommodation.ID, AvailabilityID: avail.ID, HostID: accommodation.HostID, Name: accommodation.Name,
+						Location: accommodation.Location, Wifi: accommodation.Wifi, Kitchen: accommodation.Kitchen, AC: accommodation.AC, ParkingLot: accommodation.ParkingLot, Images: accommodation.Images,
+						StartDate: avail.StartDate, EndDate: avail.EndDate, TotalPrice: totalPrice, SinglePrice: avail.Price, IsPricePerGuest: avail.IsPricePerGuest}
+					favailabilities = append(favailabilities, findAvailability)
+				}
+			}
+		}
+	}
 	findAvailabilities := []*pb.FindAvailability{}
+	for _, a := range favailabilities {
+		findAvailabilitiyPb := mapFindAvailability(&a)
+		findAvailabilities = append(findAvailabilities, findAvailabilitiyPb)
+	}
 	response := &pb.SearchAvailabilityResponse{
 		FindAvailability: findAvailabilities,
 	}

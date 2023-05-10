@@ -35,3 +35,23 @@ func (repo *AccommodationRepository) CountByName(name string) (int64, error) {
 	defer cancel()
 	return repo.AccommodationCollection.CountDocuments(ctx, bson.M{"name": name})
 }
+
+func (repo *AccommodationRepository) GetAllAccommodationsByLocation(location string) ([]models.Accommodation, error) {
+	var accommodations []models.Accommodation
+	var ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{"location": location}
+	cursor, err := repo.AccommodationCollection.Find(ctx, filter)
+
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	if err := cursor.All(ctx, &accommodations); err != nil {
+		return nil, err
+	}
+
+	return accommodations, err
+}

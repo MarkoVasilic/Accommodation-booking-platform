@@ -101,7 +101,6 @@ func (svc *ReservationService) CreateReservation(reservation models.Reservation)
 	return "Successfully created reservation", nil
 }
 
-// proveriti
 func (svc *ReservationService) CancelReservation(ReservationId primitive.ObjectID) (string, error) {
 	var _, cancel = context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -112,12 +111,16 @@ func (svc *ReservationService) CancelReservation(ReservationId primitive.ObjectI
 		return "There is no reservation with that id", err
 	}
 
+	if !reservation.IsAccepted {
+		return "You cannot delete reservation that is not accepted!", nil
+	}
+
 	year, month, day := reservation.StartDate.Date()
 	startDate := time.Date(year, month, day, int(0), int(0), int(0), int(0), time.UTC)
 	today := time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), int(0), int(0), int(0), int(0), time.UTC)
 
 	if startDate.After(today.Add(24 * time.Hour)) {
-		return "You cannot cancel reservation after day before!", nil
+		return "You cannot cancel reservation a day before it starts!", nil
 	}
 
 	err := svc.ReservationRepository.CancelReservation(ReservationId)
@@ -134,7 +137,6 @@ func (svc *ReservationService) CancelReservation(ReservationId primitive.ObjectI
 	return "Succesffully canceled reservation", nil
 }
 
-// proveriti
 func (svc *ReservationService) DeleteLogicallyReservation(ReservationId primitive.ObjectID) (string, error) {
 	var _, cancel = context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()

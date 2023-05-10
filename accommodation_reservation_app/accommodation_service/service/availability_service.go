@@ -19,6 +19,7 @@ type AvailabilityService struct {
 
 var Validate = validator.New()
 
+// proveriti preklapanja!!!
 func (service *AvailabilityService) CreateAvailability(availability models.Availability) (string, error) {
 	var _, cancel = context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -80,12 +81,12 @@ func (service AvailabilityService) UpdateAvailability(availability models.Availa
 	var _, cancel = context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	objectId, err := primitive.ObjectIDFromHex(id)
-	/*foundavai, founderr := service.AvailabilityRepository.GetAvailabilityById(objectId)
-	  if founderr != nil {
-	      log.Panic(err)
-	      err := status.Errorf(codes.Internal, "something went wrong")
-	      return "something went wrong", err
-	  }*/
+
+	_, error := service.AvailabilityRepository.GetAvailabilityById(objectId)
+	if error != nil {
+		err := status.Errorf(codes.NotFound, "There is no reservation with that id")
+		return "There is no reservation with that id", err
+	}
 
 	validationErr := Validate.Struct(availability)
 	if validationErr != nil {
@@ -101,4 +102,16 @@ func (service AvailabilityService) UpdateAvailability(availability models.Availa
 		return "something went wrong", err
 	}
 	return "Succesffully updated availability", nil
+}
+
+func (service *AvailabilityService) GetAllAvailabilitiesByDates(startDate time.Time, endDate time.Time) ([]models.Availability, error) {
+	availabilities, err := service.AvailabilityRepository.GetAllAvailabilityByDate(startDate, endDate)
+	if availabilities == nil {
+		er := status.Errorf(codes.InvalidArgument, "There is no available accommodatiom for choosen dates!")
+		return nil, er
+	}
+	if err != nil {
+		return nil, err
+	}
+	return availabilities, nil
 }
