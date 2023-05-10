@@ -20,3 +20,11 @@ func (service *AccommodationService) GetAccommodationById(id primitive.ObjectID)
 	foundAccommodation, err := service.AccommodationRepository.GetAccommodationById(id)
 	return foundAccommodation, err
 }
+
+func (service *AccommodationService) GetAllAccommodationsByLocation(location string) ([]models.Accommodation, error) {
+	accommodations, err := service.AccommodationRepository.GetAllAccommodationsByLocation(location)
+	if err != nil {
+		return nil, err
+	}
+	return accommodations, nil
+}

@@ -88,7 +88,6 @@ func (repo *ReservationRepository) CancelReservation(reservationID primitive.Obj
 	update := bson.M{
 		"$set": bson.M{
 			"is_canceled": true,
-			"is_accepted": false,
 		},
 	}
 
