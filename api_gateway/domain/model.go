@@ -1,5 +1,7 @@
 package domain
 
+import "time"
+
 type User struct {
 	Username  string
 	FirstName string
@@ -23,4 +25,25 @@ type Accommodation struct {
 	MaxGuests  int32
 	Images     []string
 	AutoAccept bool
+}
+
+type Availability struct {
+	Id              string
+	AccommodationId string
+	StartDate       time.Time
+	EndDate         time.Time
+	Price           float64
+	IsPricePerGuest bool
+}
+
+type Reservation struct {
+	Id             string
+	AvailabilityID string
+	GuestId        string
+	StartDate      time.Time
+	EndDate        time.Time
+	NumGuests      int
+	IsAccepted     bool
+	IsCanceled     bool
+	IsDeleted      bool
 }

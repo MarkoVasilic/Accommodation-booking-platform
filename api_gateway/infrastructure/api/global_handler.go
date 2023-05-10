@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"google.golang.org/protobuf/types/known/timestamppb"
+
 	"github.com/MarkoVasilic/Accommodation-booking-platform/api_gateway/domain"
 	accommodation_service "github.com/MarkoVasilic/Accommodation-booking-platform/common/proto/accommodation_service"
 	reservation_service "github.com/MarkoVasilic/Accommodation-booking-platform/common/proto/reservation_service"
@@ -279,10 +281,48 @@ func (handler *GlobalHandler) CreateAccommodation(w http.ResponseWriter, r *http
 
 func (handler *GlobalHandler) CreateAvailability(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
 	//TODO nadja i aleksandra
+	var availability domain.Availability
+	err := json.NewDecoder(r.Body).Decode(&availability)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, "Failed to parse request body: %v", err)
+		return
+	}
+	startDate := timestamppb.New(availability.StartDate)
+	endDate := timestamppb.New(availability.EndDate)
+	resp, err := handler.accommodationService.CreateAvailability(createContextForAuthorization(r.Header["Authorization"]), &accommodation_service.CreateAvailabilityRequest{Id: availability.Id, AccommodationID: availability.AccommodationId, StartDate: startDate, EndDate: endDate, Price: availability.Price, IsPricePerGuest: availability.IsPricePerGuest})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "Failed to call createAvailability method: %v", err)
+		return
+	}
+
+	fmt.Fprintf(w, "%s", resp)
 }
 
 func (handler *GlobalHandler) UpdateAvailability(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
 	//TODO nadja i aleksandra
+	id := pathParams["availabilityId"]
+	if id == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	var availability domain.Availability
+	err := json.NewDecoder(r.Body).Decode(&availability)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, "Failed to parse request body: %v", err)
+		return
+	}
+	startDate := timestamppb.New(availability.StartDate)
+	endDate := timestamppb.New(availability.EndDate)
+	resp, err := handler.accommodationService.UpdateAvailability(createContextForAuthorization(r.Header["Authorization"]), &accommodation_service.UpdateAvailabilityRequest{Id: id, StartDate: startDate, EndDate: endDate, Price: availability.Price, IsPricePerGuest: availability.IsPricePerGuest})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "Failed to call UpdateAvailability method: %v", err)
+		return
+	}
+	fmt.Fprintf(w, "%s", resp)
 }
 
 func (handler *GlobalHandler) DeleteAvailability(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
@@ -291,18 +331,78 @@ func (handler *GlobalHandler) DeleteAvailability(w http.ResponseWriter, r *http.
 
 func (handler *GlobalHandler) SearchAvailability(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
 	//TODO nadja i aleksandra
+	var findAvailability domain.FindAvailability
+	err := json.NewDecoder(r.Body).Decode(&findAvailability)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, "Failed to parse request body: %v", err)
+		return
+	}
+	startDate := timestamppb.New(findAvailability.StartDate)
+	endDate := timestamppb.New(findAvailability.EndDate)
+	resp, err := handler.accommodationService.SearchAvailability(createContextForAuthorization(r.Header["Authorization"]), &accommodation_service.SearchAvailabilityRequest{Location: findAvailability.Location, GuestsNum: int32(findAvailability.GuestsNum), StartDate: startDate, EndDate: endDate})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "Failed to call searchAvailability method: %v", err)
+		return
+	}
+
+	fmt.Fprintf(w, "%s", resp)
+
 }
 
 func (handler *GlobalHandler) CreateReservation(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
 	//TODO nadja i aleksandra
+	var reservation domain.Reservation
+	err := json.NewDecoder(r.Body).Decode(&reservation)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, "Failed to parse request body: %v", err)
+		return
+	}
+	startDate := timestamppb.New(reservation.StartDate)
+	endDate := timestamppb.New(reservation.EndDate)
+	resp, err := handler.reservationService.CreateReservation(createContextForAuthorization(r.Header["Authorization"]), &reservation_service.CreateReservationRequest{Id: reservation.Id, AvailabilityID: reservation.AvailabilityID, GuestId: reservation.GuestId, StartDate: startDate, EndDate: endDate, NumGuests: int32(reservation.NumGuests)})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "Failed to call createReservation method: %v", err)
+		return
+	}
+
+	fmt.Fprintf(w, "%s", resp)
+
 }
 
 func (handler *GlobalHandler) GetFindReservationPendingGuest(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
 	//TODO nadja i aleksandra
+	id := pathParams["id"]
+	if id == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	resp, err := handler.reservationService.GetFindReservationPendingGuest(createContextForAuthorization(r.Header["Authorization"]), &reservation_service.GetFindReservationPendingGuestRequest{Id: id})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "Failed to call GetFindReservationPendingGuest method: %v", err)
+		return
+	}
+	fmt.Fprintf(w, "%s", resp)
 }
 
 func (handler *GlobalHandler) GetFindReservationAcceptedGuest(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
 	//TODO nadja i aleksandra
+	id := pathParams["id"]
+	if id == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	resp, err := handler.reservationService.GetFindReservationAcceptedGuest(createContextForAuthorization(r.Header["Authorization"]), &reservation_service.GetFindReservationAcceptedGuestRequest{Id: id})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "Failed to call GetFindReservationAcceptedGuest method: %v", err)
+		return
+	}
+	fmt.Fprintf(w, "%s", resp)
 }
 
 func (handler *GlobalHandler) GetFindReservationHost(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
@@ -311,10 +411,35 @@ func (handler *GlobalHandler) GetFindReservationHost(w http.ResponseWriter, r *h
 
 func (handler *GlobalHandler) CancelReservation(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
 	//TODO nadja i aleksandra
+	id := pathParams["id"]
+	if id == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	resp, err := handler.reservationService.CancelReservation(createContextForAuthorization(r.Header["Authorization"]), &reservation_service.CancelReservationRequest{Id: id})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "Failed to call CancelReservation method: %v", err)
+		return
+	}
+	fmt.Fprintf(w, "%s", resp)
+
 }
 
 func (handler *GlobalHandler) DeleteLogicallyReservation(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
 	//TODO nadja i aleksandra
+	id := pathParams["id"]
+	if id == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	resp, err := handler.reservationService.DeleteLogicallyReservation(createContextForAuthorization(r.Header["Authorization"]), &reservation_service.DeleteLogicallyReservationRequest{Id: id})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "Failed to call DeleteLogicallyReservation method: %v", err)
+		return
+	}
+	fmt.Fprintf(w, "%s", resp)
 }
 
 func (handler *GlobalHandler) AcceptReservation(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
