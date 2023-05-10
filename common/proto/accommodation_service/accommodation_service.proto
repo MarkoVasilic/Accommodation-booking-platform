@@ -161,16 +161,17 @@ message FindAvailability {
         string AvailabilityID = 2;
         string HostId = 3;
         string Name = 4;
-        bool Wifi = 5;
-        bool Kitchen = 6;
-        bool AC = 7;
-        bool ParkingLot = 8;
-        repeated string Images = 9;
-        google.protobuf.Timestamp StartDate = 10;
-        google.protobuf.Timestamp EndDate = 11;
-        double TotalPrice = 12;
-        double SinglePrice = 13;
-        bool IsPricePerGuest = 14;
+        string Location = 5;
+        bool Wifi = 6;
+        bool Kitchen = 7;
+        bool AC = 8;
+        bool ParkingLot = 9;
+        repeated string Images = 10;
+        google.protobuf.Timestamp StartDate = 11;
+        google.protobuf.Timestamp EndDate = 12;
+        double TotalPrice = 13;
+        double SinglePrice = 14;
+        bool IsPricePerGuest = 15;
 }
 
 message SearchAvailabilityRequest {
