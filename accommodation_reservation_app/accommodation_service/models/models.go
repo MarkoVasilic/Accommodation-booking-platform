@@ -27,5 +27,5 @@ type Availability struct {
 	StartDate       time.Time          `bson:"start_date" json:"start_date" validate:"required"`
 	EndDate         time.Time          `bson:"end_date" json:"end_date" validate:"required,gtfield=StartDate"`
 	Price           float64            `bson:"price" json:"price" validate:"required,min=0"`
-	IsPricePerGuest bool               `bson:"is_price_per_guest" json:"is_price_per_guest" validate:"required"`
+	IsPricePerGuest bool               `bson:"is_price_per_guest" json:"is_price_per_guest" default:"false"`
 }

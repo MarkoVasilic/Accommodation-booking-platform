@@ -28,8 +28,8 @@ type Accommodation struct {
 }
 
 type Availability struct {
-	Id              string
-	AccommodationId string
+	ID              string
+	AccommodationID string
 	StartDate       time.Time
 	EndDate         time.Time
 	Price           float64
