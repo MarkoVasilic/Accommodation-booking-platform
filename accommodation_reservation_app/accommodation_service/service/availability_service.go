@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"time"
 
@@ -23,8 +24,10 @@ var Validate = validator.New()
 func (service *AvailabilityService) CreateAvailability(availability models.Availability) (string, error) {
 	var _, cancel = context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-
+	fmt.Println(availability)
+	availability.IsPricePerGuest = false
 	validationErr := Validate.Struct(availability)
+	fmt.Println(validationErr)
 	if validationErr != nil {
 		err := status.Errorf(codes.InvalidArgument, "user fields are not valid")
 		return "Availability fields are not valid", err
