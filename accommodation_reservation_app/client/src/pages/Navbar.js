@@ -149,6 +149,7 @@ const chooseSideMenu = (Role) => {
     if (!Role) return { "Search flights": "/flights/all" };
     if (Role === "HOST") {
         return {
+            "Create accommodation": "/accomodations/create",
         };
     } else if (Role === "GUEST") {
         return {

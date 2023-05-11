@@ -14,6 +14,7 @@ import AcceptedReservationsList from './pages/AcceptedReservationsList';
 import PendingReservationsList from './pages/PendingReservationsList';
 import SearchAvailability from './pages/SearchedAvailability';
 import SearchAvailabilityGuest from './pages/SearchedAvailabilityGuest';
+import CreateAccommodation from './pages/CreateAccommodation';
 
 function App() {
   const token = localStorage.getItem("token");
@@ -39,6 +40,7 @@ function App() {
                         <Route path="/pending-reservations" element={<PendingReservationsList />} />
                         <Route path="/accomodations/all" element={<SearchAvailability />} />
                         <Route path="/accomodations/all/guest" element={<SearchAvailabilityGuest />} />
+                        <Route path="/accomodations/create" element={<CreateAccommodation />} />
                     </Routes>
                 </div>
             </Router>
