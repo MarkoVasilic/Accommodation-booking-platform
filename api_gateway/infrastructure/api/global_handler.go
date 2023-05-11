@@ -290,7 +290,10 @@ func (handler *GlobalHandler) CreateAvailability(w http.ResponseWriter, r *http.
 	}
 	startDate := timestamppb.New(availability.StartDate)
 	endDate := timestamppb.New(availability.EndDate)
+	fmt.Println("pre")
+	fmt.Println(availability)
 	resp, err := handler.accommodationService.CreateAvailability(createContextForAuthorization(r.Header["Authorization"]), &accommodation_service.CreateAvailabilityRequest{Id: availability.Id, AccommodationID: availability.AccommodationId, StartDate: startDate, EndDate: endDate, Price: availability.Price, IsPricePerGuest: availability.IsPricePerGuest})
+	fmt.Println("posle")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, "Failed to call createAvailability method: %v", err)

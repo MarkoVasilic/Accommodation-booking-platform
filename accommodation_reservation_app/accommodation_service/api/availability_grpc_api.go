@@ -92,7 +92,10 @@ func (handler *AvailabilityHandler) CreateAvailability(ctx context.Context, requ
 		return nil, err
 	}
 
-	availability := models.Availability{AccommodationID: accommodationID, StartDate: request.EndDate.AsTime(), EndDate: request.EndDate.AsTime(), Price: request.Price, IsPricePerGuest: request.IsPricePerGuest}
+	startDate := request.StartDate.AsTime()
+	endDate := request.EndDate.AsTime()
+
+	availability := models.Availability{AccommodationID: accommodationID, StartDate: startDate, EndDate: endDate, Price: request.Price, IsPricePerGuest: request.IsPricePerGuest}
 	mess, err := handler.availability_service.CreateAvailability(availability)
 	if err != nil {
 		err := status.Errorf(codes.Internal, mess)
