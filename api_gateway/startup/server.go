@@ -51,7 +51,7 @@ func (server *Server) initHandlers() {
 	}
 	accommodationClient := services.NewAccommodationClient(accommodationEndpoint)
 	userClient := services.NewUserClient(userEndpoint)
-	reservationClient := services.NewReservationClient(userEndpoint)
+	reservationClient := services.NewReservationClient(reservationEndpoint)
 	globalHandler := api.NewGlobalHandler(accommodationClient, userClient, reservationClient)
 	globalHandler.Init(server.mux)
 }
