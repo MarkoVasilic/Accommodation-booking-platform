@@ -27,6 +27,10 @@ func (handler *GlobalHandler) GetAllAvailabilities(ctx context.Context, request 
 	return handler.availabilityHandler.GetAllAvailabilities(ctx, request)
 }
 
+func (handler *GlobalHandler) GetAccommodationByAvailability(ctx context.Context, request *pb.GetAccommodationByAvailabilityRequest) (*pb.GetAccommodationByAvailabilityResponse, error) {
+	return handler.accommodationHandler.GetAccommodationByAvailability(ctx, request)
+}
+
 func (handler *GlobalHandler) CreateAccommodation(ctx context.Context, request *pb.CreateAccommodationRequest) (*pb.CreateAccommodationResponse, error) {
 	return handler.accommodationHandler.CreateAccommodation(ctx, request)
 }

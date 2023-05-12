@@ -65,20 +65,11 @@ func (repo *AvailabilityRepository) GetAvailabilityById(id primitive.ObjectID) (
 	return availability, err
 }
 
-func (repo *AvailabilityRepository) GetAllAvailabilityByDate(startDate time.Time, endDate time.Time) ([]models.Availability, error) {
+func (repo *AvailabilityRepository) GetAllAvailabilities() ([]models.Availability, error) {
 	var availabilities []models.Availability
 	var ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-
-	filter := bson.M{
-		"StartDate": bson.M{
-			"$gte": startDate,
-		},
-		"EndDate": bson.M{
-			"$lte": endDate,
-		},
-	}
-	cursor, err := repo.AvailabilityCollection.Find(ctx, filter)
+	cursor, err := repo.AvailabilityCollection.Find(ctx, bson.M{})
 
 	if err != nil {
 		return nil, err

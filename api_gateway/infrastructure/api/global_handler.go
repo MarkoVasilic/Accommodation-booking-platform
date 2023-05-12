@@ -302,6 +302,7 @@ func (handler *GlobalHandler) CreateAvailability(w http.ResponseWriter, r *http.
 
 func (handler *GlobalHandler) UpdateAvailability(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
 	//TODO nadja i aleksandra
+	println("In method")
 	id := pathParams["availabilityId"]
 	if id == "" {
 		w.WriteHeader(http.StatusBadRequest)
@@ -402,6 +403,7 @@ func (handler *GlobalHandler) GetFindReservationAcceptedGuest(w http.ResponseWri
 		fmt.Fprintf(w, "Failed to call GetFindReservationAcceptedGuest method: %v", err)
 		return
 	}
+	println("AAAAAAA")
 	fmt.Fprintf(w, "%s", resp)
 }
 

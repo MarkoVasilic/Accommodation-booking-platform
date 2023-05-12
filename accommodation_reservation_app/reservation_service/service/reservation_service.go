@@ -54,6 +54,8 @@ func (svc *ReservationService) GetFindReservationAcceptedGuest(guestId primitive
 			filteredReservations = append(filteredReservations, reservation)
 		}
 	}
+	//fmt.Println("Aaaaaaaaaa")
+	//fmt.Println(filteredReservations)
 	return filteredReservations, nil
 }
 
@@ -115,11 +117,11 @@ func (svc *ReservationService) CancelReservation(ReservationId primitive.ObjectI
 		return "You cannot delete reservation that is not accepted!", nil
 	}
 
-	year, month, day := reservation.StartDate.Date()
+	year, month, day := reservation.StartDate.UTC().Date()
 	startDate := time.Date(year, month, day, int(0), int(0), int(0), int(0), time.UTC)
 	today := time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), int(0), int(0), int(0), int(0), time.UTC)
 
-	if startDate.After(today.Add(24 * time.Hour)) {
+	if startDate.Sub(today) <= 24*time.Hour {
 		return "You cannot cancel reservation a day before it starts!", nil
 	}
 
