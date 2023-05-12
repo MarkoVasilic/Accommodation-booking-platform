@@ -112,3 +112,45 @@ func (repo *ReservationRepository) DeleteLogicallyReservation(reservationID prim
 	_, updateErr := repo.ReservationCollection.UpdateOne(ctx, filter, update, options)
 	return updateErr
 }
+
+func (repo *ReservationRepository) AcceptReservation(reservationID primitive.ObjectID) error {
+	var ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{"_id": reservationID}
+
+	update := bson.M{
+		"$set": bson.M{
+			"is_accepted": true,
+		},
+	}
+
+	options := options.Update().SetUpsert(false)
+	_, updateErr := repo.ReservationCollection.UpdateOne(ctx, filter, update, options)
+	return updateErr
+}
+
+func (repo *ReservationRepository) GetAllCanceledReservationsByGuest(guestId primitive.ObjectID) ([]models.Reservation, error) {
+	var ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{"guest_id": guestId}
+	cursor, err := repo.ReservationCollection.Find(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+
+	var reservations []models.Reservation
+	if err = cursor.All(ctx, &reservations); err != nil {
+		return nil, err
+	}
+
+	var canceledReservations []models.Reservation
+	for _, r := range reservations {
+		if r.IsCanceled == true {
+			canceledReservations = append(canceledReservations, r)
+		}
+	}
+
+	return canceledReservations, nil
+}

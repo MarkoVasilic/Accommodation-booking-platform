@@ -407,6 +407,18 @@ func (handler *GlobalHandler) GetFindReservationAcceptedGuest(w http.ResponseWri
 
 func (handler *GlobalHandler) GetFindReservationHost(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
 	//TODO mihaela
+	id := pathParams["id"]
+	if id == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	resp, err := handler.reservationService.GetFindReservationHost(createContextForAuthorization(r.Header["Authorization"]), &reservation_service.GetFindReservationHostRequest{Id: id})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "Failed to call GetFindReservationAcceptedGuest method: %v", err)
+		return
+	}
+	fmt.Fprintf(w, "%s", resp)
 }
 
 func (handler *GlobalHandler) CancelReservation(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
@@ -444,4 +456,17 @@ func (handler *GlobalHandler) DeleteLogicallyReservation(w http.ResponseWriter, 
 
 func (handler *GlobalHandler) AcceptReservation(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
 	//TODO mihaela
+	id := pathParams["id"]
+	if id == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	resp, err := handler.reservationService.AcceptReservation(createContextForAuthorization(r.Header["Authorization"]), &reservation_service.AcceptReservationRequest{Id: id})
+	if err != nil {
+		fmt.Println("Upao u gresku 2")
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "Failed to call AcceptReservation method: %v", err)
+		return
+	}
+	fmt.Fprintf(w, "%s", resp)
 }

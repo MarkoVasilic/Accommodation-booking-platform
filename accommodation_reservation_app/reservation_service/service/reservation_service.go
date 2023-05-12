@@ -164,3 +164,82 @@ func (svc *ReservationService) DeleteLogicallyReservation(ReservationId primitiv
 	}
 	return "Succesffully deleted reservation", nil
 }
+
+func (svc *ReservationService) AcceptReservation(ReservationId primitive.ObjectID) (string, error) {
+	var _, cancel = context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	reservation, error := svc.ReservationRepository.GetReservationById(string(ReservationId.Hex()))
+	if error != nil {
+		err1 := status.Errorf(codes.NotFound, "There is no reservation with that id")
+		return "There is no reservation with that id", err1
+	}
+
+	if reservation.IsDeleted || reservation.IsCanceled {
+		return "You can't accept reservation that is deleted or canceled!", nil
+	}
+
+	year, month, day := reservation.StartDate.Date()
+	startDate := time.Date(year, month, day, int(0), int(0), int(0), int(0), time.UTC)
+	today := time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), int(0), int(0), int(0), int(0), time.UTC)
+
+	if startDate.Before(today) {
+		return "You can't accept expired reservation!", nil
+	}
+
+	reservations, err2 := svc.ReservationRepository.GetAllReservationsByAvailability(reservation.AvailabilityID)
+	if err2 != nil {
+		err2 := status.Errorf(codes.Internal, "Failed to get reservations")
+		return "Failed to get reservations", err2
+	}
+
+	for _, r := range reservations {
+		//neotkazane i neizbrisane rezervacije koje se preklapaju sa rezervacijom za prihvatanje
+		if !(reservation.StartDate.After(r.EndDate) || r.StartDate.After(reservation.EndDate)) && !r.IsCanceled && !r.IsDeleted {
+
+			//ako postoji vec prihvacena rezervacija, obrisi rez iz zahteva za prihvatanje
+			if r.IsAccepted {
+
+				err3 := svc.ReservationRepository.DeleteLogicallyReservation(ReservationId)
+				if err3 != nil {
+					err3 := status.Errorf(codes.Internal, "something went wrong")
+					return "something went wrong", err3
+				}
+				err4 := status.Errorf(codes.InvalidArgument, "Already have accepted reservation in this timespan")
+				return "Reservation overlaps with an existing accepted reservation", err4
+
+			} else {
+
+				//obrisi rezervaciju koja se preklapa sa rez iz zahteva
+				err5 := svc.ReservationRepository.DeleteLogicallyReservation(r.ID)
+				if err5 != nil {
+					err5 := status.Errorf(codes.Internal, "something went wrong")
+					return "something went wrong", err5
+				}
+			}
+
+		}
+
+	}
+
+	err6 := svc.ReservationRepository.AcceptReservation(ReservationId)
+	if err6 != nil {
+		err6 := status.Errorf(codes.Internal, "something went wrong")
+		return "something went wrong", err6
+	}
+
+	validationErr := Validate.Struct(reservation)
+	if validationErr != nil {
+		err := status.Errorf(codes.InvalidArgument, "reservation fields are not valid")
+		return "reservation fields are not valid", err
+	}
+	return "Succesffully accepted reservation", nil
+}
+
+func (svc *ReservationService) GetAllCanceledReservationsByGuest(guestId primitive.ObjectID) ([]models.Reservation, error) {
+	reservations, err := svc.ReservationRepository.GetAllCanceledReservationsByGuest(guestId)
+	if err != nil {
+		return nil, err
+	}
+	return reservations, nil
+}
