@@ -17,13 +17,23 @@ import CloseIcon from "@mui/icons-material/Close";
 import Alert from "@mui/material/Alert";
 import Collapse from "@mui/material/Collapse";
 
-
+function formatPrice(pricePerGuest) {
+    var IsPricePerGuest = ""
+    if (pricePerGuest === true) {
+        IsPricePerGuest = "Yes"
+    } else {
+        IsPricePerGuest = "No"
+    }
+    //console.log('Sec', seconds)
+    //console.log('date', date)
+    return IsPricePerGuest;
+  }
 const columns = [
     {
         field: "Name",
         headerName: "Name",
         type: "string",
-        width: 350,
+        width: 250,
         sortable: false,
         filterable: false,
         editable: false,
@@ -32,16 +42,16 @@ const columns = [
         field: "Location",
         headerName: "Location",
         type: "string",
-        width: 350,
+        width: 250,
         sortable: false,
         filterable: false,
         editable: false,
     },
     {
-        field: "Price",
+        field: "SinglePrice",
         headerName: "Price per guest / accomodation",
         type: "number",
-        width: 350,
+        width: 280,
         headerAlign: "left",
         align: "left",
         sortable: false,
@@ -49,15 +59,25 @@ const columns = [
         editable: false,
     },
     {
-        field: "Total_Price",
+        field: "TotalPrice",
         headerName: "Total Price",
         type: "number",
-        width: 350,
+        width: 250,
         headerAlign: "left",
         align: "left",
         sortable: false,
         filterable: false,
         editable: false,
+    },
+    {
+        field: "IsPricePerGuest",
+        headerName: "Is price per guest",
+        type: "string",
+        width: 250,
+        sortable: false,
+        filterable: false,
+        editable: false,
+        valueGetter: params => formatPrice(params.row.IsPricePerGuest)
     }
 ];
 
@@ -97,19 +117,25 @@ function ListSearchedAvailability(props) {
     const [accomodation, setAccomodation ] = useState([]);
     const [ error, setError ] = React.useState(false);
     const [er, setEr] = React.useState("");
-    const navigate = useNavigate();
-    useEffect(() => {
-        getData();
-      //  onSubmit();
-    }, []);
-    const date = new Date().toISOString();
+    let navigate = useNavigate();
 
-        let getData = async () => {
-        try{
-        axiosApi
+    useEffect(() => {
+        //getData();
+      onSubmit();
+    }, []);
+
+    const onSubmit = async (data) => {
+        try {
+            console.log(data)
+            data.StartDate = new Date(Date.parse(data.StartDate))
+            data.EndDate = new Date(Date.parse(data.EndDate))   
+            data.GuestsNum = parseInt(data.GuestsNum)
+            
+            await axiosApi
             //url drugi staviti
-            .get(`/flights/all/?${`taking_off_date=${date}&`}${`start_location=&`}${`end_location=&`}${`number_of_tickets=1`}`)
+            .post('/availability/search', data)
             .then((response) => {
+                console.log("REs", response)
                 setAccomodation(response.data);
             }).catch(er => {
                 console.log(er.response);
@@ -121,30 +147,6 @@ function ListSearchedAvailability(props) {
             }
         };
 
-    const onSubmit = async (data) => {
-        try {
-            let searchDate = new Date(Date.parse(data.taking_off_date))
-            let res = await axiosApi
-            //url drugi staviti
-            .get(`/flights/all/?${`taking_off_date=${searchDate.toISOString()}&`}${`start_location=${data.start_location}&`}${`end_location=${data.end_location}&`}${`number_of_tickets=${data.number_of_tickets}`}`)
-            .then((response) => {
-                setAccomodation(response.data);
-                console.log(response.data);
-                console.log("ACCOMODATIONS AFTER: ", accomodation);
-            }).catch(er => {
-                console.log(er.response);
-                setAccomodation([]);
-                setError(true)
-                setEr(er.response.data.error)
-            });
-        }
-        catch (err) {
-            console.log(err)
-            setAccomodation([]);
-            setError(true);
-            setEr(er.response.data.error)
-        }
-    };
 
     return (
         <div>
@@ -171,7 +173,7 @@ function ListSearchedAvailability(props) {
                             <Typography>
                                 Choose start date:</Typography>
                             <InputTextField
-                                name="start_date"
+                                name="StartDate"
                                 control={control}
                                 type="date"
                                 rules={{ required: "This field is required" }}
@@ -181,7 +183,7 @@ function ListSearchedAvailability(props) {
                             <Typography>
                                 Choose end date:</Typography>
                             <InputTextField
-                                name="end_date"
+                                name="EndDate"
                                 control={control}
                                 type="date"
                                 rules={{ required: "This field is required" }}
@@ -191,7 +193,7 @@ function ListSearchedAvailability(props) {
                             <Typography>
                                 Enter location:</Typography>
                             <InputTextField
-                                name="start_location"
+                                name="Location"
                                 control={control}
                                 type="text"
                                 rules={{ required: "This field is required" }}
@@ -201,14 +203,14 @@ function ListSearchedAvailability(props) {
                             <Typography>
                                 Number of guests:</Typography>
                             <InputTextField
-                                name="num_guests"
+                                name="GuestsNum"
                                 control={control}
                                 type="number"
-                                min="0"
+                                min="1"
                                 rules={{
                                     required: "This field is required",
                                     min: {
-                                      value: 0,
+                                      value: 1,
                                       message: "The value cannot be less that 1"
                                     }
                                   }}
@@ -266,7 +268,7 @@ function ListSearchedAvailability(props) {
                 <Box sx={{ height: 700, width: "100%", marginTop: "20px", marginBottom: "20px"}}>
                     <DataGrid
                         rows={accomodation}
-                        getRowId={(row) => row.ID}
+                        getRowId={(row) => row.AccommodationId}
                         disableColumnFilter
                         columns={[...columns, rowAction(navigate, props.buttonName, props.buttonUrl)]}
                         autoHeight

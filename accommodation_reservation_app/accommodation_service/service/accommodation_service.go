@@ -57,14 +57,13 @@ func (service *AccommodationService) GetAllAccommodationsByLocation(location str
 	return accommodations, nil
 }
 
-func (service *AccommodationService) GetAllAccommodations() ([]models.Accommodation, error) {
-	accommodations, err := service.AccommodationRepository.GetAllAccommodations()
+func (service *AccommodationService) GetAllAccommodations(hostId primitive.ObjectID) ([]models.Accommodation, error) {
+	accommodations, err := service.AccommodationRepository.GetAllAccommodations(hostId)
 	if err != nil {
 		return nil, err
 	}
 	return accommodations, nil
 }
-
 func (service *AccommodationService) DeleteAccommodationsHost(accommodations []models.Accommodation) (string, error) {
 	for _, r := range accommodations {
 		_, err := service.AccommodationRepository.DeleteAccommodation(r.ID)
