@@ -180,7 +180,6 @@ func (handler *AvailabilityHandler) SearchAvailability(ctx context.Context, requ
 		if reservations == nil {
 			if accommodation.Location == request.Location && accommodation.MinGuests >= int(request.GuestsNum) && accommodation.MaxGuests <= int(request.GuestsNum) {
 				nights := endDate.Sub(startDate)
-				fmt.Println(nights)
 				totalPrice := avail.Price * float64(nights)
 				findAvailability := models.FindAvailability{AccommodationId: accommodation.ID, AvailabilityID: avail.ID, HostID: accommodation.HostID, Name: accommodation.Name,
 					Location: accommodation.Location, Wifi: accommodation.Wifi, Kitchen: accommodation.Kitchen, AC: accommodation.AC, ParkingLot: accommodation.ParkingLot, Images: accommodation.Images,
@@ -199,12 +198,9 @@ func (handler *AvailabilityHandler) SearchAvailability(ctx context.Context, requ
 				}
 			}
 			if i == 0 {
-				fmt.Println(strings.Title(strings.ToLower(accommodation.Location)) == strings.Title(strings.ToLower(request.Location)), int(request.GuestsNum) >= accommodation.MinGuests, int(request.GuestsNum) <= accommodation.MaxGuests)
-				fmt.Println(request.GuestsNum, accommodation.MinGuests)
 				if strings.Title(strings.ToLower(accommodation.Location)) == strings.Title(strings.ToLower(request.Location)) && int(request.GuestsNum) >= accommodation.MinGuests && int(request.GuestsNum) <= accommodation.MaxGuests {
 					duration := endDate.Sub(startDate)
 					nights := int(duration.Hours() / 24)
-					fmt.Println(nights)
 					totalPrice := avail.Price * float64(nights)
 					findAvailability := models.FindAvailability{AccommodationId: accommodation.ID, AvailabilityID: avail.ID, HostID: accommodation.HostID, Name: accommodation.Name,
 						Location: accommodation.Location, Wifi: accommodation.Wifi, Kitchen: accommodation.Kitchen, AC: accommodation.AC, ParkingLot: accommodation.ParkingLot, Images: accommodation.Images,
