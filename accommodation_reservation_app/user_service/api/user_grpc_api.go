@@ -98,18 +98,23 @@ func (handler *UserHandler) DeleteUser(ctx context.Context, request *pb.DeleteUs
 		}
 		return response, err
 	}
-	objectId, err := primitive.ObjectIDFromHex(id)
-	mess, err := handler.service.DeleteUser(objectId)
-	if err != nil {
-		response := &pb.DeleteUserResponse{
-			Message: mess,
-		}
-		return response, err
-	}
+	fmt.Println(claims.Role)
 	response := &pb.DeleteUserResponse{
 		Message: "Success",
 	}
 	return response, nil
+	// objectId, err := primitive.ObjectIDFromHex(id)
+	// mess, err := handler.service.DeleteUser(objectId)
+	// if err != nil {
+	// 	response := &pb.DeleteUserResponse{
+	// 		Message: mess,
+	// 	}
+	// 	return response, err
+	// }
+	// response := &pb.DeleteUserResponse{
+	// 	Message: "Success",
+	// }
+	// return response, nil
 }
 
 func (handler *UserHandler) GetLoggedUser(ctx context.Context, request *pb.GetLoggedUserRequest) (*pb.GetLoggedUserResponse, error) {

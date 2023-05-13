@@ -75,11 +75,13 @@ func (handler *ReservationHandler) CreateReservation(ctx context.Context, reques
 	}
 	availabilityId, err := primitive.ObjectIDFromHex(request.GuestId)
 	if err != nil {
+		fmt.Println("1")
 		err := status.Errorf(codes.InvalidArgument, "the provided id is not a valid ObjectID")
 		return nil, err
 	}
 	guestId, err := primitive.ObjectIDFromHex(request.AvailabilityID)
 	if err != nil {
+		fmt.Println("21")
 		err := status.Errorf(codes.InvalidArgument, "the provided id is not a valid ObjectID")
 		return nil, err
 	}
