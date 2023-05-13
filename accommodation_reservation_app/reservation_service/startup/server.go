@@ -112,6 +112,8 @@ func checkIsRoleHost(fullMethod string, ClientToken string) bool {
 			"GetFindReservationHost",
 			"DeleteLogicallyReservation",
 			"AcceptReservation",
+			"GetAllReservationsHost",
+			"DeleteReservationsHost",
 		}
 		return checkRoles(fullMethod, skipMethods)
 	}

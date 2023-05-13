@@ -19,7 +19,7 @@ func NewConfig() *Config {
 		UserDBPort:        os.Getenv("USER_DB_PORT"),
 		AccommodationHost: os.Getenv("ACCOMMODATION_SERVICE_HOST"),
 		AccommodationPort: os.Getenv("ACCOMMODATION_SERVICE_PORT"),
-		ReservationHost:   os.Getenv("USER_SERVICE_HOST"),
-		ReservationPort:   os.Getenv("USER_SERVICE_PORT"),
+		ReservationHost:   os.Getenv("RESERVATION_SERVICE_HOST"),
+		ReservationPort:   os.Getenv("RESERVATION_SERVICE_PORT"),
 	}
 }

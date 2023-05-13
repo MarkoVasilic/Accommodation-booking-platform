@@ -27,6 +27,7 @@ const (
 	AccommodationService_CreateAvailability_FullMethodName             = "/accommodation_service.AccommodationService/CreateAvailability"
 	AccommodationService_UpdateAvailability_FullMethodName             = "/accommodation_service.AccommodationService/UpdateAvailability"
 	AccommodationService_SearchAvailability_FullMethodName             = "/accommodation_service.AccommodationService/SearchAvailability"
+	AccommodationService_DeleteAccommodationsByHost_FullMethodName     = "/accommodation_service.AccommodationService/DeleteAccommodationsByHost"
 )
 
 // AccommodationServiceClient is the client API for AccommodationService service.
@@ -41,6 +42,7 @@ type AccommodationServiceClient interface {
 	CreateAvailability(ctx context.Context, in *CreateAvailabilityRequest, opts ...grpc.CallOption) (*CreateAvailabilityResponse, error)
 	UpdateAvailability(ctx context.Context, in *UpdateAvailabilityRequest, opts ...grpc.CallOption) (*UpdateAvailabilityResponse, error)
 	SearchAvailability(ctx context.Context, in *SearchAvailabilityRequest, opts ...grpc.CallOption) (*SearchAvailabilityResponse, error)
+	DeleteAccommodationsByHost(ctx context.Context, in *DeleteAccommodationsByHostRequest, opts ...grpc.CallOption) (*DeleteAccommodationsByHostResponse, error)
 }
 
 type accommodationServiceClient struct {
@@ -123,6 +125,15 @@ func (c *accommodationServiceClient) SearchAvailability(ctx context.Context, in 
 	return out, nil
 }
 
+func (c *accommodationServiceClient) DeleteAccommodationsByHost(ctx context.Context, in *DeleteAccommodationsByHostRequest, opts ...grpc.CallOption) (*DeleteAccommodationsByHostResponse, error) {
+	out := new(DeleteAccommodationsByHostResponse)
+	err := c.cc.Invoke(ctx, AccommodationService_DeleteAccommodationsByHost_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AccommodationServiceServer is the server API for AccommodationService service.
 // All implementations must embed UnimplementedAccommodationServiceServer
 // for forward compatibility
@@ -135,6 +146,7 @@ type AccommodationServiceServer interface {
 	CreateAvailability(context.Context, *CreateAvailabilityRequest) (*CreateAvailabilityResponse, error)
 	UpdateAvailability(context.Context, *UpdateAvailabilityRequest) (*UpdateAvailabilityResponse, error)
 	SearchAvailability(context.Context, *SearchAvailabilityRequest) (*SearchAvailabilityResponse, error)
+	DeleteAccommodationsByHost(context.Context, *DeleteAccommodationsByHostRequest) (*DeleteAccommodationsByHostResponse, error)
 	mustEmbedUnimplementedAccommodationServiceServer()
 }
 
@@ -165,6 +177,9 @@ func (UnimplementedAccommodationServiceServer) UpdateAvailability(context.Contex
 }
 func (UnimplementedAccommodationServiceServer) SearchAvailability(context.Context, *SearchAvailabilityRequest) (*SearchAvailabilityResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchAvailability not implemented")
+}
+func (UnimplementedAccommodationServiceServer) DeleteAccommodationsByHost(context.Context, *DeleteAccommodationsByHostRequest) (*DeleteAccommodationsByHostResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteAccommodationsByHost not implemented")
 }
 func (UnimplementedAccommodationServiceServer) mustEmbedUnimplementedAccommodationServiceServer() {}
 
@@ -323,6 +338,24 @@ func _AccommodationService_SearchAvailability_Handler(srv interface{}, ctx conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AccommodationService_DeleteAccommodationsByHost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteAccommodationsByHostRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccommodationServiceServer).DeleteAccommodationsByHost(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AccommodationService_DeleteAccommodationsByHost_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccommodationServiceServer).DeleteAccommodationsByHost(ctx, req.(*DeleteAccommodationsByHostRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AccommodationService_ServiceDesc is the grpc.ServiceDesc for AccommodationService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -361,6 +394,10 @@ var AccommodationService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SearchAvailability",
 			Handler:    _AccommodationService_SearchAvailability_Handler,
+		},
+		{
+			MethodName: "DeleteAccommodationsByHost",
+			Handler:    _AccommodationService_DeleteAccommodationsByHost_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

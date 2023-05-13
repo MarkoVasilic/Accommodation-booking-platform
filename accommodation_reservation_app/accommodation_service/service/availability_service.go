@@ -132,3 +132,13 @@ func (service *AvailabilityService) GetAllAvailabilities() ([]models.Availabilit
 	}
 	return availabilities, nil
 }
+
+func (service *AvailabilityService) DeleteAvailabilitiesHost(availabilities []models.Availability) (string, error) {
+	for _, r := range availabilities {
+		_, err := service.AvailabilityRepository.DeleteAvailability(r.ID)
+		if err != nil {
+			return "something went wrong", err
+		}
+	}
+	return "success", nil
+}

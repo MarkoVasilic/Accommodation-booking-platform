@@ -81,3 +81,10 @@ func (repo *AvailabilityRepository) GetAllAvailabilities() ([]models.Availabilit
 
 	return availabilities, nil
 }
+
+func (repo *AvailabilityRepository) DeleteAvailability(id primitive.ObjectID) (*mongo.DeleteResult, error) {
+	var ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	return repo.AvailabilityCollection.DeleteOne(ctx, bson.M{"_id": id})
+}

@@ -64,3 +64,13 @@ func (service *AccommodationService) GetAllAccommodations() ([]models.Accommodat
 	}
 	return accommodations, nil
 }
+
+func (service *AccommodationService) DeleteAccommodationsHost(accommodations []models.Accommodation) (string, error) {
+	for _, r := range accommodations {
+		_, err := service.AccommodationRepository.DeleteAccommodation(r.ID)
+		if err != nil {
+			return "something went wrong", err
+		}
+	}
+	return "success", nil
+}

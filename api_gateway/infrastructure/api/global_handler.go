@@ -76,11 +76,6 @@ func (handler *GlobalHandler) Init(mux *runtime.ServeMux) {
 		panic(err)
 	}
 
-	err = mux.HandlePath("DELETE", "/availability/{availabilityId}", handler.DeleteAvailability)
-	if err != nil {
-		panic(err)
-	}
-
 	err = mux.HandlePath("POST", "/availability/search", handler.SearchAvailability)
 	if err != nil {
 		panic(err)
@@ -324,10 +319,6 @@ func (handler *GlobalHandler) UpdateAvailability(w http.ResponseWriter, r *http.
 		return
 	}
 	fmt.Fprintf(w, "%s", resp)
-}
-
-func (handler *GlobalHandler) DeleteAvailability(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
-	//TODO marko
 }
 
 func (handler *GlobalHandler) SearchAvailability(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {

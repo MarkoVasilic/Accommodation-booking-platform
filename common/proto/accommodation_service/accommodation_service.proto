@@ -54,6 +54,11 @@ service AccommodationService{
                         body: "*"
                 };
         }
+        rpc DeleteAccommodationsByHost(DeleteAccommodationsByHostRequest) returns (DeleteAccommodationsByHostResponse) {
+                option (google.api.http) = {
+                        delete: "/accommodation/availability/delete/host/id"
+                };
+        }
 }
 
 message Accommodation {
@@ -183,4 +188,12 @@ message SearchAvailabilityRequest {
 
 message SearchAvailabilityResponse {
         repeated FindAvailability FindAvailability = 1;
+}
+
+message DeleteAccommodationsByHostRequest {
+        string id = 1;
+}
+
+message DeleteAccommodationsByHostResponse {
+        string message = 1;
 }

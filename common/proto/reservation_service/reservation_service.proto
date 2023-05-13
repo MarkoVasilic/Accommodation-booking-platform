@@ -52,6 +52,16 @@ service ReservationService{
                     body: "*"
             };
     }
+    rpc GetAllReservationsHost(GetAllReservationsHostRequest) returns(GetAllReservationsHostResponse) {
+        option (google.api.http) = {
+                get: "/accommodation/reservation/all/host/{id}"
+        };
+    }
+    rpc DeleteReservationsHost(DeleteReservationsHostRequest) returns (DeleteReservationsHostResponse) {
+        option (google.api.http) = {
+                delete: "/accommodation/reservation/host/{id}"
+        };
+    }
 }
 
 message Reservation {
@@ -144,5 +154,21 @@ message AcceptReservationRequest {
 }
 
 message AcceptReservationResponse {
+        string message = 1;
+}
+
+message GetAllReservationsHostRequest {
+        string id = 1;
+}
+
+message GetAllReservationsHostResponse {
+        repeated Reservation Reservation = 1;
+}
+
+message DeleteReservationsHostRequest {
+        string id = 1;
+}
+
+message DeleteReservationsHostResponse {
         string message = 1;
 }

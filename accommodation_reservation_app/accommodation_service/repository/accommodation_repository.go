@@ -72,3 +72,10 @@ func (repo *AccommodationRepository) GetAllAccommodations() ([]models.Accommodat
 
 	return accommodations, nil
 }
+
+func (repo *AccommodationRepository) DeleteAccommodation(id primitive.ObjectID) (*mongo.DeleteResult, error) {
+	var ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	return repo.AccommodationCollection.DeleteOne(ctx, bson.M{"_id": id})
+}

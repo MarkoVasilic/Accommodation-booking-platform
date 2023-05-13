@@ -272,3 +272,13 @@ func (svc *ReservationService) GetAll() ([]models.Reservation, error) {
 	}
 	return reservations, nil
 }
+
+func (svc *ReservationService) DeleteReservationsHost(reservations []models.Reservation) (string, error) {
+	for _, r := range reservations {
+		_, err := svc.ReservationRepository.DeleteReservationById(r.ID)
+		if err != nil {
+			return "something went wrong", err
+		}
+	}
+	return "success", nil
+}

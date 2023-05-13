@@ -27,6 +27,8 @@ const (
 	ReservationService_CancelReservation_FullMethodName               = "/reservation_service.ReservationService/CancelReservation"
 	ReservationService_DeleteLogicallyReservation_FullMethodName      = "/reservation_service.ReservationService/DeleteLogicallyReservation"
 	ReservationService_AcceptReservation_FullMethodName               = "/reservation_service.ReservationService/AcceptReservation"
+	ReservationService_GetAllReservationsHost_FullMethodName          = "/reservation_service.ReservationService/GetAllReservationsHost"
+	ReservationService_DeleteReservationsHost_FullMethodName          = "/reservation_service.ReservationService/DeleteReservationsHost"
 )
 
 // ReservationServiceClient is the client API for ReservationService service.
@@ -41,6 +43,8 @@ type ReservationServiceClient interface {
 	CancelReservation(ctx context.Context, in *CancelReservationRequest, opts ...grpc.CallOption) (*CancelReservationResponse, error)
 	DeleteLogicallyReservation(ctx context.Context, in *DeleteLogicallyReservationRequest, opts ...grpc.CallOption) (*DeleteLogicallyReservationResponse, error)
 	AcceptReservation(ctx context.Context, in *AcceptReservationRequest, opts ...grpc.CallOption) (*AcceptReservationResponse, error)
+	GetAllReservationsHost(ctx context.Context, in *GetAllReservationsHostRequest, opts ...grpc.CallOption) (*GetAllReservationsHostResponse, error)
+	DeleteReservationsHost(ctx context.Context, in *DeleteReservationsHostRequest, opts ...grpc.CallOption) (*DeleteReservationsHostResponse, error)
 }
 
 type reservationServiceClient struct {
@@ -123,6 +127,24 @@ func (c *reservationServiceClient) AcceptReservation(ctx context.Context, in *Ac
 	return out, nil
 }
 
+func (c *reservationServiceClient) GetAllReservationsHost(ctx context.Context, in *GetAllReservationsHostRequest, opts ...grpc.CallOption) (*GetAllReservationsHostResponse, error) {
+	out := new(GetAllReservationsHostResponse)
+	err := c.cc.Invoke(ctx, ReservationService_GetAllReservationsHost_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *reservationServiceClient) DeleteReservationsHost(ctx context.Context, in *DeleteReservationsHostRequest, opts ...grpc.CallOption) (*DeleteReservationsHostResponse, error) {
+	out := new(DeleteReservationsHostResponse)
+	err := c.cc.Invoke(ctx, ReservationService_DeleteReservationsHost_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ReservationServiceServer is the server API for ReservationService service.
 // All implementations must embed UnimplementedReservationServiceServer
 // for forward compatibility
@@ -135,6 +157,8 @@ type ReservationServiceServer interface {
 	CancelReservation(context.Context, *CancelReservationRequest) (*CancelReservationResponse, error)
 	DeleteLogicallyReservation(context.Context, *DeleteLogicallyReservationRequest) (*DeleteLogicallyReservationResponse, error)
 	AcceptReservation(context.Context, *AcceptReservationRequest) (*AcceptReservationResponse, error)
+	GetAllReservationsHost(context.Context, *GetAllReservationsHostRequest) (*GetAllReservationsHostResponse, error)
+	DeleteReservationsHost(context.Context, *DeleteReservationsHostRequest) (*DeleteReservationsHostResponse, error)
 	mustEmbedUnimplementedReservationServiceServer()
 }
 
@@ -165,6 +189,12 @@ func (UnimplementedReservationServiceServer) DeleteLogicallyReservation(context.
 }
 func (UnimplementedReservationServiceServer) AcceptReservation(context.Context, *AcceptReservationRequest) (*AcceptReservationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AcceptReservation not implemented")
+}
+func (UnimplementedReservationServiceServer) GetAllReservationsHost(context.Context, *GetAllReservationsHostRequest) (*GetAllReservationsHostResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAllReservationsHost not implemented")
+}
+func (UnimplementedReservationServiceServer) DeleteReservationsHost(context.Context, *DeleteReservationsHostRequest) (*DeleteReservationsHostResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteReservationsHost not implemented")
 }
 func (UnimplementedReservationServiceServer) mustEmbedUnimplementedReservationServiceServer() {}
 
@@ -323,6 +353,42 @@ func _ReservationService_AcceptReservation_Handler(srv interface{}, ctx context.
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ReservationService_GetAllReservationsHost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAllReservationsHostRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ReservationServiceServer).GetAllReservationsHost(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ReservationService_GetAllReservationsHost_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ReservationServiceServer).GetAllReservationsHost(ctx, req.(*GetAllReservationsHostRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ReservationService_DeleteReservationsHost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteReservationsHostRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ReservationServiceServer).DeleteReservationsHost(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ReservationService_DeleteReservationsHost_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ReservationServiceServer).DeleteReservationsHost(ctx, req.(*DeleteReservationsHostRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ReservationService_ServiceDesc is the grpc.ServiceDesc for ReservationService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -361,6 +427,14 @@ var ReservationService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AcceptReservation",
 			Handler:    _ReservationService_AcceptReservation_Handler,
+		},
+		{
+			MethodName: "GetAllReservationsHost",
+			Handler:    _ReservationService_GetAllReservationsHost_Handler,
+		},
+		{
+			MethodName: "DeleteReservationsHost",
+			Handler:    _ReservationService_DeleteReservationsHost_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

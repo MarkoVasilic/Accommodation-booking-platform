@@ -138,7 +138,7 @@ export default function UserProfile() {
                         }
                         sx={{ mb: 2 }}
                     >
-                    Profile deleition failed!
+                    Profile deletion failed!
                     </Alert>
                 </Collapse>
             </Box>

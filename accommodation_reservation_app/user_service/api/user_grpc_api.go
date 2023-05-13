@@ -42,8 +42,6 @@ func createContextForAuthorization(ctx context.Context) context.Context {
 
 func (handler *UserHandler) GetUser(ctx context.Context, request *pb.GetUserRequest) (*pb.GetUserResponse, error) {
 	id := request.Id
-	//primjer pozivanja metode iz drugog mikroservisa
-	//handler.accommodation_client.GetAllAccommodations(createContextForAuthorization(ctx), &accommodation_service.GetAllAccommodationsRequest{Id: "1"})
 	objectId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		err := status.Errorf(codes.InvalidArgument, "the provided id is not a valid ObjectID")
@@ -98,23 +96,68 @@ func (handler *UserHandler) DeleteUser(ctx context.Context, request *pb.DeleteUs
 		}
 		return response, err
 	}
-	fmt.Println(claims.Role)
+	if claims.Role == "GUEST" {
+		reservations, err := handler.reservation_client.GetFindReservationAcceptedGuest(createContextForAuthorization(ctx), &reservation_service.GetFindReservationAcceptedGuestRequest{Id: id})
+		if err != nil {
+			err := status.Errorf(codes.Internal, "something went wrong")
+			response := &pb.DeleteUserResponse{
+				Message: "something went wrong",
+			}
+			return response, err
+		}
+		if len(reservations.FindReservation) > 0 {
+			err := status.Errorf(codes.PermissionDenied, "There are existing reservations, please cancel them before you proceede")
+			response := &pb.DeleteUserResponse{
+				Message: "There are existing reservations, please cancel them before you proceede",
+			}
+			return response, err
+		}
+	}
+	if claims.Role == "HOST" {
+		reservations, err := handler.reservation_client.GetAllReservationsHost(createContextForAuthorization(ctx), &reservation_service.GetAllReservationsHostRequest{Id: id})
+		if err != nil {
+			err := status.Errorf(codes.Internal, "something went wrong")
+			response := &pb.DeleteUserResponse{
+				Message: "something went wrong",
+			}
+			return response, err
+		}
+		if len(reservations.Reservation) > 0 {
+			err := status.Errorf(codes.PermissionDenied, "There are existing reservations, please cancel them before you proceede")
+			response := &pb.DeleteUserResponse{
+				Message: "There are existing reservations, please cancel them before you proceede",
+			}
+			return response, err
+		}
+		_, err = handler.reservation_client.DeleteReservationsHost(createContextForAuthorization(ctx), &reservation_service.DeleteReservationsHostRequest{Id: id})
+		if err != nil {
+			err := status.Errorf(codes.Internal, "something went wrong")
+			response := &pb.DeleteUserResponse{
+				Message: "something went wrong",
+			}
+			return response, err
+		}
+		_, err = handler.accommodation_client.DeleteAccommodationsByHost(createContextForAuthorization(ctx), &accommodation_service.DeleteAccommodationsByHostRequest{Id: id})
+		if err != nil {
+			err := status.Errorf(codes.Internal, "something went wrong")
+			response := &pb.DeleteUserResponse{
+				Message: "something went wrong",
+			}
+			return response, err
+		}
+	}
+	objectId, err := primitive.ObjectIDFromHex(id)
+	mess, err := handler.service.DeleteUser(objectId)
+	if err != nil {
+		response := &pb.DeleteUserResponse{
+			Message: mess,
+		}
+		return response, err
+	}
 	response := &pb.DeleteUserResponse{
 		Message: "Success",
 	}
 	return response, nil
-	// objectId, err := primitive.ObjectIDFromHex(id)
-	// mess, err := handler.service.DeleteUser(objectId)
-	// if err != nil {
-	// 	response := &pb.DeleteUserResponse{
-	// 		Message: mess,
-	// 	}
-	// 	return response, err
-	// }
-	// response := &pb.DeleteUserResponse{
-	// 	Message: "Success",
-	// }
-	// return response, nil
 }
 
 func (handler *UserHandler) GetLoggedUser(ctx context.Context, request *pb.GetLoggedUserRequest) (*pb.GetLoggedUserResponse, error) {
