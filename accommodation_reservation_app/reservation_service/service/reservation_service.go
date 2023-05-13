@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/reservation_service/models"
@@ -54,6 +55,8 @@ func (svc *ReservationService) GetFindReservationAcceptedGuest(guestId primitive
 			filteredReservations = append(filteredReservations, reservation)
 		}
 	}
+	//fmt.Println("Aaaaaaaaaa")
+	//fmt.Println(filteredReservations)
 	return filteredReservations, nil
 }
 
@@ -115,11 +118,11 @@ func (svc *ReservationService) CancelReservation(ReservationId primitive.ObjectI
 		return "You cannot delete reservation that is not accepted!", nil
 	}
 
-	year, month, day := reservation.StartDate.Date()
+	year, month, day := reservation.StartDate.UTC().Date()
 	startDate := time.Date(year, month, day, int(0), int(0), int(0), int(0), time.UTC)
 	today := time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), int(0), int(0), int(0), int(0), time.UTC)
 
-	if startDate.After(today.Add(24 * time.Hour)) {
+	if startDate.Sub(today) <= 24*time.Hour {
 		return "You cannot cancel reservation a day before it starts!", nil
 	}
 
@@ -176,7 +179,13 @@ func (svc *ReservationService) AcceptReservation(ReservationId primitive.ObjectI
 	}
 
 	if reservation.IsDeleted || reservation.IsCanceled {
-		return "You can't accept reservation that is deleted or canceled!", nil
+		err3 := status.Errorf(codes.PermissionDenied, "You can't accept reservation that is deleted or canceled!")
+		return "You can't accept reservation that is deleted or canceled!", err3
+	}
+
+	if reservation.IsAccepted {
+		err3 := status.Errorf(codes.AlreadyExists, "You can't accept reservation that is already accepted!")
+		return "You can't accept reservation that is already accepted!", err3
 	}
 
 	year, month, day := reservation.StartDate.Date()
@@ -184,19 +193,30 @@ func (svc *ReservationService) AcceptReservation(ReservationId primitive.ObjectI
 	today := time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), int(0), int(0), int(0), int(0), time.UTC)
 
 	if startDate.Before(today) {
-		return "You can't accept expired reservation!", nil
+		err3 := status.Errorf(codes.PermissionDenied, "You can't accept expired reservation!")
+		return "You can't accept expired reservation!", err3
 	}
 
-	reservations, err2 := svc.ReservationRepository.GetAllReservationsByAvailability(reservation.AvailabilityID)
+	reservations, err2 := svc.ReservationRepository.GetAllReservations()
 	if err2 != nil {
 		err2 := status.Errorf(codes.Internal, "Failed to get reservations")
 		return "Failed to get reservations", err2
 	}
 
+	var reservationsByAvailability []models.Reservation
 	for _, r := range reservations {
+		if r.AvailabilityID == reservation.AvailabilityID {
+			reservationsByAvailability = append(reservationsByAvailability, r)
+		}
+	}
+
+	for _, r := range reservationsByAvailability {
 		//neotkazane i neizbrisane rezervacije koje se preklapaju sa rezervacijom za prihvatanje
 		if !(reservation.StartDate.After(r.EndDate) || r.StartDate.After(reservation.EndDate)) && !r.IsCanceled && !r.IsDeleted {
 
+			if reservation.ID == r.ID {
+				continue
+			}
 			//ako postoji vec prihvacena rezervacija, obrisi rez iz zahteva za prihvatanje
 			if r.IsAccepted {
 
@@ -212,6 +232,7 @@ func (svc *ReservationService) AcceptReservation(ReservationId primitive.ObjectI
 
 				//obrisi rezervaciju koja se preklapa sa rez iz zahteva
 				err5 := svc.ReservationRepository.DeleteLogicallyReservation(r.ID)
+				fmt.Println(r.ID)
 				if err5 != nil {
 					err5 := status.Errorf(codes.Internal, "something went wrong")
 					return "something went wrong", err5
@@ -238,6 +259,14 @@ func (svc *ReservationService) AcceptReservation(ReservationId primitive.ObjectI
 
 func (svc *ReservationService) GetAllCanceledReservationsByGuest(guestId primitive.ObjectID) ([]models.Reservation, error) {
 	reservations, err := svc.ReservationRepository.GetAllCanceledReservationsByGuest(guestId)
+	if err != nil {
+		return nil, err
+	}
+	return reservations, nil
+}
+
+func (svc *ReservationService) GetAll() ([]models.Reservation, error) {
+	reservations, err := svc.ReservationRepository.GetAllReservations()
 	if err != nil {
 		return nil, err
 	}

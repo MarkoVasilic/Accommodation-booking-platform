@@ -302,6 +302,7 @@ func (handler *GlobalHandler) CreateAvailability(w http.ResponseWriter, r *http.
 
 func (handler *GlobalHandler) UpdateAvailability(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
 	//TODO nadja i aleksandra
+	println("In method")
 	id := pathParams["availabilityId"]
 	if id == "" {
 		w.WriteHeader(http.StatusBadRequest)
@@ -362,6 +363,7 @@ func (handler *GlobalHandler) CreateReservation(w http.ResponseWriter, r *http.R
 	}
 	startDate := timestamppb.New(reservation.StartDate)
 	endDate := timestamppb.New(reservation.EndDate)
+	//fmt.Println(reservation)
 	resp, err := handler.reservationService.CreateReservation(createContextForAuthorization(r.Header["Authorization"]), &reservation_service.CreateReservationRequest{Id: reservation.Id, AvailabilityID: reservation.AvailabilityID, GuestId: reservation.GuestId, StartDate: startDate, EndDate: endDate, NumGuests: int32(reservation.NumGuests)})
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -402,6 +404,7 @@ func (handler *GlobalHandler) GetFindReservationAcceptedGuest(w http.ResponseWri
 		fmt.Fprintf(w, "Failed to call GetFindReservationAcceptedGuest method: %v", err)
 		return
 	}
+	println("AAAAAAA")
 	fmt.Fprintf(w, "%s", resp)
 }
 
@@ -463,7 +466,6 @@ func (handler *GlobalHandler) AcceptReservation(w http.ResponseWriter, r *http.R
 	}
 	resp, err := handler.reservationService.AcceptReservation(createContextForAuthorization(r.Header["Authorization"]), &reservation_service.AcceptReservationRequest{Id: id})
 	if err != nil {
-		fmt.Println("Upao u gresku 2")
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, "Failed to call AcceptReservation method: %v", err)
 		return

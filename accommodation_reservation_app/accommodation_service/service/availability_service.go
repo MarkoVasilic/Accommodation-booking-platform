@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"time"
 
@@ -88,6 +89,7 @@ func (service AvailabilityService) UpdateAvailability(availability models.Availa
 	}
 
 	validationErr := Validate.Struct(availability)
+	fmt.Println(validationErr)
 	if validationErr != nil {
 		err := status.Errorf(codes.InvalidArgument, "availability fields are not valid")
 		return "availability fields are not valid", err
@@ -104,11 +106,27 @@ func (service AvailabilityService) UpdateAvailability(availability models.Availa
 }
 
 func (service *AvailabilityService) GetAllAvailabilitiesByDates(startDate time.Time, endDate time.Time) ([]models.Availability, error) {
-	availabilities, err := service.AvailabilityRepository.GetAllAvailabilityByDate(startDate, endDate)
-	if availabilities == nil {
-		er := status.Errorf(codes.InvalidArgument, "There is no available accommodatiom for choosen dates!")
+	availabilities, err := service.AvailabilityRepository.GetAllAvailabilities()
+	var filteredAvailabilities []models.Availability
+	for _, avail := range availabilities {
+		if avail.StartDate.Before(startDate) && avail.EndDate.After(endDate) {
+			filteredAvailabilities = append(filteredAvailabilities, avail)
+		}
+	}
+	fmt.Println("Filtered", filteredAvailabilities)
+	fmt.Println("Filtered")
+	if filteredAvailabilities == nil {
+		er := status.Errorf(codes.InvalidArgument, "There is no available accommodatiom for chosen dates!")
 		return nil, er
 	}
+	if err != nil {
+		return nil, err
+	}
+	return filteredAvailabilities, nil
+}
+
+func (service *AvailabilityService) GetAllAvailabilities() ([]models.Availability, error) {
+	availabilities, err := service.AvailabilityRepository.GetAllAvailabilities()
 	if err != nil {
 		return nil, err
 	}

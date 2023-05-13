@@ -104,7 +104,7 @@ func (repo *ReservationRepository) DeleteLogicallyReservation(reservationID prim
 
 	update := bson.M{
 		"$set": bson.M{
-			"id_deleted": true,
+			"is_deleted": true,
 		},
 	}
 

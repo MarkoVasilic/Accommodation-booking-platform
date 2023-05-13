@@ -55,3 +55,20 @@ func (repo *AccommodationRepository) GetAllAccommodationsByLocation(location str
 
 	return accommodations, err
 }
+
+func (repo *AccommodationRepository) GetAllAccommodations() ([]models.Accommodation, error) {
+	var ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	cursor, err := repo.AccommodationCollection.Find(ctx, bson.M{})
+	if err != nil {
+		return nil, err
+	}
+
+	var accommodations []models.Accommodation
+	if err = cursor.All(ctx, &accommodations); err != nil {
+		return nil, err
+	}
+
+	return accommodations, nil
+}
