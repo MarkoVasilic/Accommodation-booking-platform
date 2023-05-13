@@ -118,6 +118,9 @@ func (handler *ReservationHandler) GetFindReservationPendingGuest(ctx context.Co
 	res, err := handler.reservation_service.GetFindReservationPendingGuest(guestId)
 	if err != nil {
 		return nil, err
+	} else if res == nil {
+		err := status.Errorf(codes.InvalidArgument, "There is no pending reservations!")
+		return nil, err
 	}
 	var filteredReservations []models.FindReservation
 	for _, reservation := range res {
@@ -165,7 +168,9 @@ func (handler *ReservationHandler) GetFindReservationAcceptedGuest(ctx context.C
 			return nil, err
 		}
 		//accomodation, err := handler.accommodation_client.GetAccomodationByAvailiabilityId(reservation.availabilityId)
-		findRes := models.FindReservation{ReservationId: reservation.ID, GuestID: reservation.GuestID, Name: user.User.FirstName + " " + user.User.LastName, Location: "", StartDate: reservation.StartDate, EndDate: reservation.EndDate, NumOfCancelation: 0, IsAccepted: reservation.IsAccepted, IsCanceled: reservation.IsCanceled}
+		availabilityId := string(reservation.AvailabilityID.Hex())
+		accommodation, err := handler.accommodation_client.GetAccommodationByAvailability(createContextForAuthorization(ctx), &accommodation_service.GetAccommodationByAvailabilityRequest{Id: availabilityId})
+		findRes := models.FindReservation{ReservationId: reservation.ID, GuestID: reservation.GuestID, Name: user.User.FirstName + " " + user.User.LastName, Location: accommodation.Accommodation.Location, StartDate: reservation.StartDate, EndDate: reservation.EndDate, NumOfCancelation: 0, IsAccepted: reservation.IsAccepted, IsCanceled: reservation.IsCanceled}
 		filteredReservations = append(filteredReservations, findRes)
 	}
 

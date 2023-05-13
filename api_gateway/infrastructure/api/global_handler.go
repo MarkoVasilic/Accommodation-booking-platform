@@ -310,7 +310,6 @@ func (handler *GlobalHandler) GetAllAccommodations(w http.ResponseWriter, r *htt
 
 func (handler *GlobalHandler) GetAllAvailabilities(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
 	//TODO nadja i aleksandra
-	//fmt.Println("Global handler")
 	id := pathParams["accommodationId"]
 	if id == "" {
 		w.WriteHeader(http.StatusBadRequest)
@@ -420,7 +419,6 @@ func (handler *GlobalHandler) CreateReservation(w http.ResponseWriter, r *http.R
 	}
 	startDate := timestamppb.New(reservation.StartDate)
 	endDate := timestamppb.New(reservation.EndDate)
-	//fmt.Println(reservation)
 	resp, err := handler.reservationService.CreateReservation(createContextForAuthorization(r.Header["Authorization"]), &reservation_service.CreateReservationRequest{Id: reservation.Id, AvailabilityID: reservation.AvailabilityID, GuestId: reservation.GuestId, StartDate: startDate, EndDate: endDate, NumGuests: int32(reservation.NumGuests)})
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
