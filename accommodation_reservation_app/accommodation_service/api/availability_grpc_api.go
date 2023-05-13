@@ -53,7 +53,7 @@ func (handler *AvailabilityHandler) GetAllAvailabilities(ctx context.Context, re
 		return nil, err
 	}
 	fmt.Println(accomodationId)
-	as, err := handler.availability_service.GetAllAvailabilities()
+	as, err := handler.availability_service.GetAllAvailabilitiesByAccommodationID(accomodationId)
 	if err != nil {
 		return nil, err
 	} else if as == nil {

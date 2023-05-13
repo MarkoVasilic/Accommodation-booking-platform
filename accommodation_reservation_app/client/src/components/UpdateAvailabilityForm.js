@@ -61,9 +61,9 @@ function UpdateAvailabilityForm() {
                 setAlert(true)
                 navigate(-1)
             }).catch(err => {
-                console.log(err.response);
+                console.log('Err');
                 setFailed(true)
-                setErr(err.response.data.message)
+                setErr('Cannot update availability when there are accepted reservations!')
             });
 
         }

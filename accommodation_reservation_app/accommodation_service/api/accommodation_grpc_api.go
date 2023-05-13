@@ -122,7 +122,7 @@ func (handler *AccommodationHandler) DeleteAccommodationsByHost(ctx context.Cont
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid HostId")
 	}
-	allAccommodations, err := handler.accommodation_service.GetAllAccommodations()
+	allAccommodations, err := handler.accommodation_service.GetAllAccommodations(hostID)
 	if err != nil {
 		err := status.Errorf(codes.InvalidArgument, "the provided id is not a valid ObjectID")
 		return nil, err

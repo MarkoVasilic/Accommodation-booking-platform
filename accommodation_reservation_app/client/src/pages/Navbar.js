@@ -149,13 +149,19 @@ const chooseSideMenu = (Role) => {
     if (!Role) return { "Search flights": "/flights/all" };
     if (Role === "HOST") {
         return {
+            "My accommodations": "/accommodations/host",
             "Create accommodation": "/accomodations/create",
         };
     } else if (Role === "GUEST") {
         return {
+            "Search accommodations": "/accommodations/all/guest",
+            "Pending reservations": "/pending-reservations",
+            "Accepted reservations": "/accepted-reservations",
         };
     } else {
-        return {  };
+        return {
+            "Search accommodations": "/accommodations/all",
+        };
     }
 };
 

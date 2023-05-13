@@ -122,7 +122,7 @@ function CreateAvailabilityForm(props) {
                         </Alert>
                     ) : (
                         <Alert sx={{ visibility: errorAlert }} severity="error">
-                            Please try again!
+                            Overlap with existing availability, please choose another dates!
                         </Alert>
                     )}
                 </Grid>

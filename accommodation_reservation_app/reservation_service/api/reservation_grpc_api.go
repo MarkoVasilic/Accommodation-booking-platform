@@ -69,7 +69,7 @@ func (handler *ReservationHandler) CreateReservation(ctx context.Context, reques
 	//TODO paziti da li je automatsko prihvatanje
 	//to jeste da li postoji rezervacija u preklapajucem intervalu sa isaccepted na true a da su isdeleted/iscanceled na false
 	//ako jeste odbiti to jest ne praviti rezervaciju
-	Id, err := primitive.ObjectIDFromHex(request.Id)
+	/*Id, err := primitive.ObjectIDFromHex(request.Id)
 	if err != nil {
 		err := status.Errorf(codes.InvalidArgument, "the provided id is not a valid ObjectID")
 		return nil, err
@@ -153,6 +153,9 @@ func (handler *ReservationHandler) GetFindReservationAcceptedGuest(ctx context.C
 	}
 	res, err := handler.reservation_service.GetFindReservationAcceptedGuest(guestId)
 	if err != nil {
+		return nil, err
+	} else if res == nil {
+		err := status.Errorf(codes.InvalidArgument, "There is no accepted reservations!")
 		return nil, err
 	}
 	var filteredReservations []models.FindReservation
