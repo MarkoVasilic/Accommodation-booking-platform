@@ -52,7 +52,8 @@ func (handler *AvailabilityHandler) GetAllAvailabilities(ctx context.Context, re
 		err := status.Errorf(codes.InvalidArgument, "the provided id is not a valid ObjectID")
 		return nil, err
 	}
-	as, err := handler.availability_service.GetAllAvailabilitiesByAccommodationID(accomodationId)
+	fmt.Println(accomodationId)
+	as, err := handler.availability_service.GetAllAvailabilities()
 	if err != nil {
 		return nil, err
 	}

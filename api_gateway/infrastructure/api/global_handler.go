@@ -466,7 +466,6 @@ func (handler *GlobalHandler) AcceptReservation(w http.ResponseWriter, r *http.R
 	}
 	resp, err := handler.reservationService.AcceptReservation(createContextForAuthorization(r.Header["Authorization"]), &reservation_service.AcceptReservationRequest{Id: id})
 	if err != nil {
-		fmt.Println("Upao u gresku 2")
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, "Failed to call AcceptReservation method: %v", err)
 		return

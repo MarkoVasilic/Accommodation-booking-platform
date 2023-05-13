@@ -124,3 +124,11 @@ func (service *AvailabilityService) GetAllAvailabilitiesByDates(startDate time.T
 	}
 	return filteredAvailabilities, nil
 }
+
+func (service *AvailabilityService) GetAllAvailabilities() ([]models.Availability, error) {
+	availabilities, err := service.AvailabilityRepository.GetAllAvailabilities()
+	if err != nil {
+		return nil, err
+	}
+	return availabilities, nil
+}

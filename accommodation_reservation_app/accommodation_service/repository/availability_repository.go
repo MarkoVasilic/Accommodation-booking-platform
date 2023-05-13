@@ -66,19 +66,18 @@ func (repo *AvailabilityRepository) GetAvailabilityById(id primitive.ObjectID) (
 }
 
 func (repo *AvailabilityRepository) GetAllAvailabilities() ([]models.Availability, error) {
-	var availabilities []models.Availability
 	var ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	cursor, err := repo.AvailabilityCollection.Find(ctx, bson.M{})
 
+	cursor, err := repo.AvailabilityCollection.Find(ctx, bson.M{})
 	if err != nil {
 		return nil, err
 	}
-	defer cursor.Close(ctx)
 
-	if err := cursor.All(ctx, &availabilities); err != nil {
+	var availabilities []models.Availability
+	if err = cursor.All(ctx, &availabilities); err != nil {
 		return nil, err
 	}
 
-	return availabilities, err
+	return availabilities, nil
 }
