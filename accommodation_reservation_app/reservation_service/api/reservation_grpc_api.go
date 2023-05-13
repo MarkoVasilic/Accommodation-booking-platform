@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/reservation_service/models"
 	"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/reservation_service/service"
@@ -74,6 +75,12 @@ func (handler *ReservationHandler) CreateReservation(ctx context.Context, reques
 		err := status.Errorf(codes.InvalidArgument, "the provided ReservationId is not a valid ObjectID")
 		return nil, err
 	}*/
+	fmt.Println("Request", request)
+	year, month, day := request.StartDate.AsTime().Date()
+	yearE, monthE, dayE := request.EndDate.AsTime().Date()
+	startDate := time.Date(year, month, day, int(0), int(0), int(0), int(0), time.UTC)
+	endDate := time.Date(yearE, monthE, dayE, int(0), int(0), int(0), int(0), time.UTC)
+	fmt.Println("Start end", startDate, endDate)
 	availabilityId, err := primitive.ObjectIDFromHex(request.AvailabilityID)
 	if err != nil {
 		err := status.Errorf(codes.InvalidArgument, "the provided Guestid is not a valid ObjectID")
@@ -85,7 +92,7 @@ func (handler *ReservationHandler) CreateReservation(ctx context.Context, reques
 		return nil, err
 	}
 	reservation := models.Reservation{AvailabilityID: availabilityId, GuestID: guestId,
-		StartDate: request.StartDate.AsTime(), EndDate: request.EndDate.AsTime(), NumGuests: int(request.NumGuests), IsAccepted: false, IsCanceled: false, IsDeleted: false}
+		StartDate: startDate, EndDate: endDate, NumGuests: int(request.NumGuests), IsAccepted: false, IsCanceled: false, IsDeleted: false}
 	mess, err := handler.reservation_service.CreateReservation(reservation)
 	if err != nil {
 		err := status.Errorf(codes.Internal, mess)
@@ -268,6 +275,7 @@ func (handler *ReservationHandler) GetFindReservationHost(ctx context.Context, r
 func (handler *ReservationHandler) CancelReservation(ctx context.Context, request *pb.CancelReservationRequest) (*pb.CancelReservationResponse, error) {
 	//TODO dobija se id rezervacije provjeriti da li je datum zahtjeva u dozvoljenom vremenu otkazivanja ako jeste
 	//promjeniti samo iscanceled na true
+	println("METHODD")
 	Id, err := primitive.ObjectIDFromHex(request.Id)
 	if err != nil {
 		err := status.Errorf(codes.InvalidArgument, "the provided id is not a valid ObjectID")
@@ -275,7 +283,7 @@ func (handler *ReservationHandler) CancelReservation(ctx context.Context, reques
 	}
 	mess, err := handler.reservation_service.CancelReservation(Id)
 	if err != nil {
-		err := status.Errorf(codes.Internal, mess)
+		err := status.Errorf(codes.InvalidArgument, mess)
 		return nil, err
 	}
 	//fmt.Println("AAA", mess)

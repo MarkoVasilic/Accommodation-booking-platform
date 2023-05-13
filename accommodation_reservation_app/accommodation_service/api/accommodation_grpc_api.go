@@ -33,7 +33,24 @@ func NewAccommodationHandler(accommodation_service *service.AccommodationService
 
 func (handler *AccommodationHandler) GetAllAccommodations(ctx context.Context, request *pb.GetAllAccommodationsRequest) (*pb.GetAllAccommodationsResponse, error) {
 	//TODO pomocna metoda za dobavljanje svih smjestaja koje mozete koristiti u drugim mikroservisima
+	id := request.Id
+	hostId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		err := status.Errorf(codes.InvalidArgument, "the provided id is not a valid ObjectID")
+		return nil, err
+	}
+	acs, err := handler.accommodation_service.GetAllAccommodations(hostId)
+	if err != nil {
+		return nil, err
+	} else if acs == nil {
+		err := status.Errorf(codes.InvalidArgument, "There is no accommodations!")
+		return nil, err
+	}
 	accommodations := []*pb.Accommodation{}
+	for _, a := range acs {
+		accommodationPb := mapAccommodation(&a)
+		accommodations = append(accommodations, accommodationPb)
+	}
 	response := &pb.GetAllAccommodationsResponse{
 		Accommodations: accommodations,
 	}

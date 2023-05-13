@@ -8,7 +8,7 @@ import Stack from "@mui/material/Stack";
 import { blue } from "@mui/material/colors";
 import axiosApi from "../api/axios";
 import ReadMoreIcon from "@mui/icons-material/ReadMore";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import InputTextField from "./InputTextField";
 import Grid from "@mui/material/Grid";
 import { useForm } from "react-hook-form";
@@ -28,7 +28,8 @@ const RenderUpdateButton = (params) => {
                 size="small"
                 style={{ marginLeft: 16 }}
                 onClick={() => {
-                    //navigate('/availability/update/'+params.row.id);
+                    console.log(params.row)
+                    navigate('/availability/update', {state: params.row});
                 }}
             >
                 Update
@@ -38,32 +39,48 @@ const RenderUpdateButton = (params) => {
 };
 
 
-
+function formatSecondsToDate(seconds) {
+    const date = new Date(seconds * 1000 - 7200*1000);
+    //console.log('Sec', seconds)
+    //console.log('date', date)
+    return date;
+  }
+  function formatPrice(pricePerGuest) {
+    var IsPricePerGuest = ""
+    if (pricePerGuest === true) {
+        IsPricePerGuest = "Yes"
+    } else {
+        IsPricePerGuest = "No"
+    }
+    //console.log('Sec', seconds)
+    //console.log('date', date)
+    return IsPricePerGuest;
+  }
 const columns = [
     {
         field: "StartDate",
         headerName: "Start date",
-        type: "datetime-local",
+        type: "date",
         width: 300,
         sortable: false,
         filterable: false,
         editable: false,
-        //format:"DD/MM/YYYY hh:mm A",
-        valueFormatter: params => moment(params?.value).add(-2, 'h').format("DD/MM/YYYY hh:mm:ss A"),
+        format:"DD/MM/YYYY",
+        valueGetter: params => formatSecondsToDate(params.row.StartDate.seconds)    
     },
     {
         field: "EndDate",
         headerName: "End Date",
-        type: "datetime-local",
+        type: "date",
         width: 300,
         sortable: false,
         filterable: false,
         editable: false,
-        //format:"DD/MM/YYYY hh:mm A",
-        valueFormatter: params => moment(params?.value).add(-2, 'h').format("DD/MM/YYYY hh:mm:ss A"),
+        format:"DD/MM/YYYY",
+        valueGetter: params => formatSecondsToDate(params.row.EndDate.seconds)    
     },
     {
-        field: "price",
+        field: "Price",
         headerName: "Price",
         type: "number",
         width: 300,
@@ -81,6 +98,7 @@ const columns = [
         sortable: false,
         filterable: false,
         editable: false,
+        valueGetter: params => formatPrice(params.row.IsPricePerGuest)
     },
     {
         field: "update",
@@ -98,6 +116,8 @@ function AvailabilityList(props) {
     const [ error, setError ] = React.useState(false);
     const [er, setEr] = React.useState("");
     const navigate = useNavigate();
+    const {state} = useLocation();
+
     useEffect(() => {
         getData();
       //  onSubmit();
@@ -107,9 +127,10 @@ function AvailabilityList(props) {
         let getData = async () => {
         try{
         axiosApi
-            //.get(`/flights/all/?${`taking_off_date=${date}&`}${`start_location=&`}${`end_location=&`}${`number_of_tickets=1`}`)
+            .get(`/availability/all/`+state)
             .then((response) => {
                 setAvailabilities(response.data);
+                console.log('Availabilities',response.data)
             }).catch(er => {
                 console.log(er.response);
                 setAvailabilities([]);
@@ -160,7 +181,7 @@ function AvailabilityList(props) {
                 <Box sx={{ height: 700, width: "100%", marginTop: "20px", marginBottom: "20px"}}>
                     <DataGrid
                         rows={availabilities}
-                        getRowId={(row) => row.ID}
+                        getRowId={(row) => row.Id}
                         disableColumnFilter
                         columns={columns}
                         autoHeight

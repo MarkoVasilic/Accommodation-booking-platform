@@ -32,8 +32,14 @@ const RenderDeleteReservation = (params) => {
                 style={{ marginLeft: 16 }}
                 onClick={() => {
                     //proveriti url
-                    //navigate('/accommodation/reservation/ldelete/'+params.row.id);
-                    //refreshPage();
+                    axiosApi
+                    //proslediti koji treba
+                    .put(`/accommodation/reservation/ldelete/`+params.row.ReservationId)
+                    .then((response) => {
+                        refreshPage();
+                    }).catch(er => {
+                        console.log(er.response);
+                    });
                 }}
             >
                 Delete
@@ -42,11 +48,16 @@ const RenderDeleteReservation = (params) => {
     )
 };
 
-
+function formatSecondsToDate(seconds) {
+    const date = new Date(seconds * 1000 - 7200*1000);
+    //console.log('Sec', seconds)
+    //console.log('date', date)
+    return date;
+  }
 
 const columns = [
     {
-        field: "name",
+        field: "Name",
         headerName: "Name",
         type: "string",
         width: 300,
@@ -55,48 +66,36 @@ const columns = [
         editable: false,
     },
     {
-        field: "location",
+        field: "Location",
         headerName: "Location",
         type: "string",
         width: 300,
         sortable: false,
         filterable: false,
         editable: false,
-        //format:"DD/MM/YYYY hh:mm A",
-        valueFormatter: params => moment(params?.value).add(-2, 'h').format("DD/MM/YYYY hh:mm:ss A"),
     },
     {
-        field: "start_date",
+        field: "StartDate.seconds",
         headerName: "Start date",
-        type: "datetime-local",
+        type: "date",
         width: 300,
         sortable: false,
         filterable: false,
         editable: false,
-        //format:"DD/MM/YYYY hh:mm A",
-        valueFormatter: params => moment(params?.value).add(-2, 'h').format("DD/MM/YYYY hh:mm:ss A"),
+        format:"DD/MM/YYYY",
+        valueGetter: params => formatSecondsToDate(params.row.StartDate.seconds)    
     },
     {
-        field: "end_date",
+        field: "EndDate.seconds",
         headerName: "End date",
-        type: "datetime-local",
+        type: "date",
         width: 300,
         sortable: false,
         filterable: false,
         editable: false,
-        //format:"DD/MM/YYYY hh:mm A",
-        valueFormatter: params => moment(params?.value).add(-2, 'h').format("DD/MM/YYYY hh:mm:ss A"),
+        format:"DD/MM/YYYY",
+        valueGetter: params => formatSecondsToDate(params.row.EndDate.seconds)    
     },
-    //proveriti da li treba ova inf
-    /*{
-        field: "numGuests",
-        headerName: "Number of guests",
-        type: "number",
-        width: 300,
-        sortable: false,
-        filterable: false,
-        editable: false, 
-    },*/
     {
         field: "delete",
         headerName: "Delete Reservation",
@@ -116,16 +115,21 @@ function PendingReservationsList(props) {
     useEffect(() => {
         getData();
       //  onSubmit();
-    }, []);
+    }, [setReservations]);
     const date = new Date().toISOString();
 
         let getData = async () => {
         try{
+            console.log()
+            const res = await axiosApi.get('/user/logged');
+            console.log("ID", res.data.user.Id);
         axiosApi
             //proslediti koji treba
-            //.get(`/reservation/guest/pending/`+id)
+            .get(`/reservation/guest/pending/`+res.data.user.Id)
             .then((response) => {
                 setReservations(response.data);
+                console.log('Data', response.data)
+                console.log('RES', reservations)
             }).catch(er => {
                 console.log(er.response);
                 setReservations([]);
@@ -134,6 +138,8 @@ function PendingReservationsList(props) {
                 console.log(err)
                 setReservations([]);
             }
+            console.log('RESS',reservations)
+
         };
 
     return (
@@ -176,7 +182,7 @@ function PendingReservationsList(props) {
                 <Box sx={{ height: 700, width: "100%", marginTop: "20px", marginBottom: "20px"}}>
                     <DataGrid
                         rows={reservations}
-                        getRowId={(row) => row.ID}
+                        getRowId={(row) => row.ReservationId}
                         disableColumnFilter
                         columns={columns}
                         autoHeight

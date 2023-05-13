@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/reservation_service/models"
@@ -65,6 +66,7 @@ func (svc *ReservationService) CreateReservation(reservation models.Reservation)
 
 	//validacija
 	validationErr := Validate.Struct(reservation)
+	fmt.Println(validationErr)
 	if validationErr != nil {
 		err := status.Errorf(codes.InvalidArgument, "Reservation fields are not valid")
 		return "Reservation fields are not valid", err
@@ -114,7 +116,7 @@ func (svc *ReservationService) CancelReservation(ReservationId primitive.ObjectI
 	}
 
 	if !reservation.IsAccepted {
-		return "You cannot delete reservation that is not accepted!", nil
+		return "You cannot delete reservation that is not accepted!", status.Errorf(codes.NotFound, "You cannot delete reservation that is not accepted!")
 	}
 
 	year, month, day := reservation.StartDate.UTC().Date()
@@ -122,7 +124,7 @@ func (svc *ReservationService) CancelReservation(ReservationId primitive.ObjectI
 	today := time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), int(0), int(0), int(0), int(0), time.UTC)
 
 	if startDate.Sub(today) <= 24*time.Hour {
-		return "You cannot cancel reservation a day before it starts!", nil
+		return "You cannot cancel reservation a day before it starts!", status.Errorf(codes.NotFound, "You cannot cancel reservation a day before it starts!")
 	}
 
 	err := svc.ReservationRepository.CancelReservation(ReservationId)

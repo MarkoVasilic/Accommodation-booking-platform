@@ -1,17 +1,19 @@
 import React from "react";
 import Grid from "@mui/material/Grid";
 import { Button, Typography } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axiosApi from "../api/axios";
 import Alert from "@mui/material/Alert";
 import InputTextField from "./InputTextField";
 import { useForm } from "react-hook-form";
-import { Radio, RadioGroup, FormControlLabel } from '@mui/material';
+import { Checkbox, FormControlLabel } from "@mui/material";
+
 
 const url = "/availability";
 
-function CreateAvailabilityForm() {
-    const { handleSubmit, control } = useForm();
+function CreateAvailabilityForm(props) {
+    const {state} = useLocation()
+    const { handleSubmit, control, setValue } = useForm();
     const [successAlert, setSuccessAlert] = React.useState("hidden");
     const [errorAlert, setErrorAlert] = React.useState("hidden");
     const [alert, setAlert] = React.useState("");
@@ -20,17 +22,24 @@ function CreateAvailabilityForm() {
 
     const onSubmit = async (data) => {
         //console.log("Podaci", data);
-        let startDate = new Date(Date.parse(data.start_date));
-        data.start_date = startDate.toISOString();
-        let endDate = new Date(Date.parse(data.end_date));
-        data.end_date = endDate.toISOString();
-        data.price = parseFloat(data.price);
+        //id ccomodation ubaciti u data jos
+        console.log(state)
+        //setValue("IsPricePerGuest", data.IsPricePerGuest === "true");
+        let startDate = new Date(Date.parse(data.StartDate));
+        data.StartDate = startDate
+        let endDate = new Date(Date.parse(data.EndDate));
+        data.EndDate = endDate
+        console.log(data.Price)
+        data.Price = parseFloat(data.Price);
+        console.log(data.Price)
+        console.log(data.IsPricePerGuest)
+        data.AccommodationId = state
         try {
             const resp = await axiosApi.post(url, data);
             setSuccessAlert("visible");
             setErrorAlert("hidden");
             setAlert("success");
-            //navigate("/flights-admin/all");
+            navigate(-1);
         } catch (error) {
             setErrorAlert("visible");
             setSuccessAlert("hidden");
@@ -58,23 +67,23 @@ function CreateAvailabilityForm() {
             >
                 <Grid item xs={12}>
                         <InputTextField
-                            name="start_date"
+                            name="StartDate"
                             control={control}
-                            type="datetime-local"
+                            type="date"
                             rules={{ required: "This field is required" }}
                         />
                 </Grid>
                 <Grid item xs={12}>
                         <InputTextField
-                            name="end_date"
+                            name="EndDate"
                             control={control}
-                            type="datetime-local"
+                            type="date"
                             rules={{ required: "This field is required" }}
                         />
                 </Grid>
                 <Grid item xs={12}>
                         <InputTextField
-                            name="price"
+                            name="Price"
                             label="Price"
                             control={control}
                             type="number"
@@ -88,10 +97,19 @@ function CreateAvailabilityForm() {
                     </Typography>
                 </Grid>
                 <Grid item container xs={12} justify="center" alignItems="center" direction="row">
-                    <RadioGroup name="is_price_per_guest" defaultValue="true" control={control}>
-                    <FormControlLabel value="true" control={<Radio />} label="Yes" />
-                    <FormControlLabel value="false" control={<Radio />} label="No" />
-                    </RadioGroup>
+                <FormControlLabel
+                control={
+                  <Checkbox
+                    name="IsPricePerGuest"
+                    defaultChecked={false}
+                    onChange={(event) => {
+                      setValue("IsPricePerGuest", event.target.checked);
+                    }}
+                  />
+                }
+                label="Is price per guest?"
+                />
+
                 </Grid>
                 </Grid>
                     <Grid item xs={12}>

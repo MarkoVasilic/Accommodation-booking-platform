@@ -56,3 +56,11 @@ func (service *AccommodationService) GetAllAccommodationsByLocation(location str
 	}
 	return accommodations, nil
 }
+
+func (service *AccommodationService) GetAllAccommodations(hostId primitive.ObjectID) ([]models.Accommodation, error) {
+	accommodations, err := service.AccommodationRepository.GetAllAccommodations(hostId)
+	if err != nil {
+		return nil, err
+	}
+	return accommodations, nil
+}
