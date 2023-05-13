@@ -68,11 +68,6 @@ func (handler *ReservationHandler) CreateReservation(ctx context.Context, reques
 	//TODO paziti da li je automatsko prihvatanje
 	//to jeste da li postoji rezervacija u preklapajucem intervalu sa isaccepted na true a da su isdeleted/iscanceled na false
 	//ako jeste odbiti to jest ne praviti rezervaciju
-	Id, err := primitive.ObjectIDFromHex(request.Id)
-	if err != nil {
-		err := status.Errorf(codes.InvalidArgument, "the provided id is not a valid ObjectID")
-		return nil, err
-	}
 	availabilityId, err := primitive.ObjectIDFromHex(request.GuestId)
 	if err != nil {
 		err := status.Errorf(codes.InvalidArgument, "the provided id is not a valid ObjectID")
@@ -83,7 +78,7 @@ func (handler *ReservationHandler) CreateReservation(ctx context.Context, reques
 		err := status.Errorf(codes.InvalidArgument, "the provided id is not a valid ObjectID")
 		return nil, err
 	}
-	reservation := models.Reservation{ID: Id, AvailabilityID: availabilityId, GuestID: guestId,
+	reservation := models.Reservation{AvailabilityID: availabilityId, GuestID: guestId,
 		StartDate: request.StartDate.AsTime(), EndDate: request.EndDate.AsTime(), NumGuests: int(request.NumGuests), IsAccepted: false, IsCanceled: false, IsDeleted: false}
 	mess, err := handler.reservation_service.CreateReservation(reservation)
 	if err != nil {
