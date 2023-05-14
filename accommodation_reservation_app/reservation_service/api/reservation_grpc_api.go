@@ -2,7 +2,6 @@ package api
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/reservation_service/models"
@@ -123,7 +122,6 @@ func (handler *ReservationHandler) GetFindReservationPendingGuest(ctx context.Co
 		return nil, err
 	}
 	res, err := handler.reservation_service.GetFindReservationPendingGuest(guestId)
-	fmt.Println(guestId)
 	if err != nil {
 		return nil, err
 	} else if res == nil {
@@ -276,7 +274,6 @@ func (handler *ReservationHandler) GetFindReservationHost(ctx context.Context, r
 }
 
 func (handler *ReservationHandler) CancelReservation(ctx context.Context, request *pb.CancelReservationRequest) (*pb.CancelReservationResponse, error) {
-	println("METHODD")
 	Id, err := primitive.ObjectIDFromHex(request.Id)
 	if err != nil {
 		err := status.Errorf(codes.InvalidArgument, "the provided id is not a valid ObjectID")
