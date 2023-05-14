@@ -110,13 +110,6 @@ const columns = [
         editable: false,
         valueGetter: params => formatPrice(params.row.IsPricePerGuest)
     },
-    /*{
-        field: "make_reservation",
-        headerName: "Make a reservation",
-        width: 260,
-        renderCell: RenderMakeReservation,
-        disableClickEventBubbling: true   
-    }*/
 ];
 
 function MakeReservation(navigate, startDate, endDate, guestsNum) {
@@ -229,12 +222,14 @@ function ListSearchedAvailabilityGuest(props) {
                 .then((response) => {
                     console.log("Res", response)
                     setAccomodation(response.data);
+                    setError(false)
                 }).catch(er => {
                     console.log(er.response);
                     setAccomodation([]);
                 });
             }catch (err) {
-                    console.log(err)
+                    console.log(err);
+                    setError(false)
                     setAccomodation([]);
                 }
             };

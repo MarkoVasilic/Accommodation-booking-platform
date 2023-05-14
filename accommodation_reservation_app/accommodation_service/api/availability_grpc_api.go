@@ -229,6 +229,9 @@ func (handler *AvailabilityHandler) SearchAvailability(ctx context.Context, requ
 			}
 		}
 	}
+	if len(favailabilities) == 0 {
+		return nil, status.Errorf(codes.NotFound, "No accommodations!")
+	}
 	findAvailabilities := []*pb.FindAvailability{}
 	for _, a := range favailabilities {
 		findAvailabilitiyPb := mapFindAvailability(&a)
