@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/reservation_service/models"
@@ -122,6 +123,7 @@ func (handler *ReservationHandler) GetFindReservationPendingGuest(ctx context.Co
 		return nil, err
 	}
 	res, err := handler.reservation_service.GetFindReservationPendingGuest(guestId)
+	fmt.Println(guestId)
 	if err != nil {
 		return nil, err
 	} else if res == nil {

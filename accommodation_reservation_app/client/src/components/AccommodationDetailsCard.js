@@ -7,10 +7,14 @@ import moment from "moment";
 import { Paper } from '@mui/material';
 
 function check(value){
-    if (value == 'true')
+    if (value){
         return 'YES'
-    else
-    return 'NO'
+    }
+    else{
+        console.log(value)
+        return 'NO'
+    }
+    
 }
 
 export default function FlightDetailsCard(props) {
