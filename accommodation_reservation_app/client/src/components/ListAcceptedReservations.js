@@ -121,8 +121,7 @@ function AcceptedReservationsList(props) {
         let getData = async () => {
         try{
         axiosApi
-            //proslediti koji treba
-            //.get(`/reservation/guest/accepted/`+id)
+            .get(`/reservation/guest/accepted/`+res.data.user.Id)
             .then((response) => {
                 setReservations(response.data);
             }).catch(er => {
