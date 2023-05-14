@@ -67,7 +67,7 @@ func mapAccommodation(accommodation *models.Accommodation) *pb.Accommodation {
 		ParkingLot: accommodation.ParkingLot,
 		MinGuests:  int32(accommodation.MinGuests),
 		MaxGuests:  int32(accommodation.MaxGuests),
-		Images:     imageUrls, //dodati slike
+		Images:     imageUrls,
 		AutoAccept: accommodation.AutoAccept,
 	}
 
