@@ -147,13 +147,12 @@ func (handler *ReservationHandler) GetFindReservationPendingGuest(ctx context.Co
 	}
 	var filteredReservations []models.FindReservation
 	for _, reservation := range res {
-		user, err := handler.user_client.GetUser(createContextForAuthorization(ctx), &user_service.GetUserRequest{Id: request.Id})
+		availabilityId := string(reservation.AvailabilityID.Hex())
+		accommodation, err := handler.accommodation_client.GetAccommodationByAvailability(createContextForAuthorization(ctx), &accommodation_service.GetAccommodationByAvailabilityRequest{Id: availabilityId})
 		if err != nil {
 			return nil, err
 		}
-		availabilityId := string(reservation.AvailabilityID.Hex())
-		accommodation, err := handler.accommodation_client.GetAccommodationByAvailability(createContextForAuthorization(ctx), &accommodation_service.GetAccommodationByAvailabilityRequest{Id: availabilityId})
-		findRes := models.FindReservation{ReservationId: reservation.ID, GuestID: reservation.GuestID, Name: user.User.FirstName + " " + user.User.LastName, Location: accommodation.Accommodation.Location, StartDate: reservation.StartDate, EndDate: reservation.EndDate, NumOfCancelation: 0, IsAccepted: reservation.IsAccepted, IsCanceled: reservation.IsCanceled}
+		findRes := models.FindReservation{ReservationId: reservation.ID, GuestID: reservation.GuestID, Name: accommodation.Accommodation.Name, Location: accommodation.Accommodation.Location, StartDate: reservation.StartDate, EndDate: reservation.EndDate, NumOfCancelation: 0, IsAccepted: reservation.IsAccepted, IsCanceled: reservation.IsCanceled}
 		filteredReservations = append(filteredReservations, findRes)
 	}
 
@@ -187,14 +186,12 @@ func (handler *ReservationHandler) GetFindReservationAcceptedGuest(ctx context.C
 	}
 	var filteredReservations []models.FindReservation
 	for _, reservation := range res {
-		user, err := handler.user_client.GetUser(createContextForAuthorization(ctx), &user_service.GetUserRequest{Id: string(guestId.Hex())})
+		availabilityId := string(reservation.AvailabilityID.Hex())
+		accommodation, err := handler.accommodation_client.GetAccommodationByAvailability(createContextForAuthorization(ctx), &accommodation_service.GetAccommodationByAvailabilityRequest{Id: availabilityId})
 		if err != nil {
 			return nil, err
 		}
-		//accomodation, err := handler.accommodation_client.GetAccomodationByAvailiabilityId(reservation.availabilityId)
-		availabilityId := string(reservation.AvailabilityID.Hex())
-		accommodation, err := handler.accommodation_client.GetAccommodationByAvailability(createContextForAuthorization(ctx), &accommodation_service.GetAccommodationByAvailabilityRequest{Id: availabilityId})
-		findRes := models.FindReservation{ReservationId: reservation.ID, GuestID: reservation.GuestID, Name: user.User.FirstName + " " + user.User.LastName, Location: accommodation.Accommodation.Location, StartDate: reservation.StartDate, EndDate: reservation.EndDate, NumOfCancelation: 0, IsAccepted: reservation.IsAccepted, IsCanceled: reservation.IsCanceled}
+		findRes := models.FindReservation{ReservationId: reservation.ID, GuestID: reservation.GuestID, Name: accommodation.Accommodation.Name, Location: accommodation.Accommodation.Location, StartDate: reservation.StartDate, EndDate: reservation.EndDate, NumOfCancelation: 0, IsAccepted: reservation.IsAccepted, IsCanceled: reservation.IsCanceled}
 		filteredReservations = append(filteredReservations, findRes)
 	}
 
