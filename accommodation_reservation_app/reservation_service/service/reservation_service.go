@@ -39,6 +39,7 @@ func (svc *ReservationService) GetFindReservationPendingGuest(guestId primitive.
 			filteredReservations = append(filteredReservations, reservation)
 		}
 	}
+
 	return filteredReservations, nil
 }
 
@@ -91,7 +92,7 @@ func (svc *ReservationService) CreateReservation(reservation models.Reservation)
 		return "Failed to create reservation", err
 	}
 
-	return reservationId.String(), nil
+	return reservationId.Hex(), nil
 }
 
 func (svc *ReservationService) CancelReservation(ReservationId primitive.ObjectID) (string, error) {
@@ -161,7 +162,6 @@ func (svc *ReservationService) DeleteLogicallyReservation(ReservationId primitiv
 func (svc *ReservationService) AcceptReservation(ReservationId primitive.ObjectID) (string, error) {
 	var _, cancel = context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-
 	reservation, error := svc.ReservationRepository.GetReservationById(string(ReservationId.Hex()))
 	if error != nil {
 		err1 := status.Errorf(codes.NotFound, "There is no reservation with that id")
@@ -206,7 +206,7 @@ func (svc *ReservationService) AcceptReservation(ReservationId primitive.ObjectI
 			if reservation.ID == r.ID {
 				continue
 			}
-			if r.IsAccepted {
+			if r.IsAccepted && !r.IsCanceled && !r.IsDeleted {
 
 				err3 := svc.ReservationRepository.DeleteLogicallyReservation(ReservationId)
 				if err3 != nil {

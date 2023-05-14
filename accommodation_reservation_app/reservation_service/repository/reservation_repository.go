@@ -57,12 +57,12 @@ func (repo *ReservationRepository) CreateReservation(reservation *models.Reserva
 	reservation.ID = primitive.NewObjectID()
 	res, _ := repo.ReservationCollection.InsertOne(ctx, reservation)
 
-	oid, ok := res.InsertedID.(primitive.ObjectID)
+	_, ok := res.InsertedID.(primitive.ObjectID)
 	if !ok {
 
 	}
 
-	return oid, nil
+	return reservation.ID, nil
 }
 
 func (repo *ReservationRepository) GetReservationById(id string) (models.Reservation, error) {

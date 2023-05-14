@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"time"
 
 	"google.golang.org/protobuf/types/known/timestamppb"
 
@@ -451,12 +450,7 @@ func (handler *GlobalHandler) GetFindReservationAcceptedGuest(w http.ResponseWri
 		fmt.Fprintf(w, "Failed to call GetFindReservationAcceptedGuest method: %v", err)
 		return
 	}
-	for _, r := range resp.FindReservation {
-		seconds := int64(r.StartDate.Seconds - 7200)
-		nanoseconds := int64(0)
-		t := time.Unix(seconds, nanoseconds)
-		fmt.Println(t)
-	}
+
 	response, err := json.Marshal(resp.FindReservation)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

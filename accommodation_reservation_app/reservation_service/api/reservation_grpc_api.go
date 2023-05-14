@@ -87,7 +87,7 @@ func (handler *ReservationHandler) CreateReservation(ctx context.Context, reques
 		return nil, err
 	}
 
-	//Testirati automatsku potvrdu zahteva
+	//automatska potvrda rezervacije
 	accommodation, err1 := handler.accommodation_client.GetAccommodationByAvailability(createContextForAuthorization(ctx), &accommodation_service.GetAccommodationByAvailabilityRequest{Id: request.AvailabilityID})
 	if err1 != nil {
 		err1 := status.Errorf(codes.Internal, mess)
@@ -95,15 +95,15 @@ func (handler *ReservationHandler) CreateReservation(ctx context.Context, reques
 	}
 
 	if accommodation.Accommodation.AutoAccept {
-		reservationId, err := primitive.ObjectIDFromHex(request.GuestId)
+		reservationId, err := primitive.ObjectIDFromHex(mess)
 		if err != nil {
 			err := status.Errorf(codes.InvalidArgument, "the provided id is not a valid ObjectID")
 			return nil, err
 		}
 
-		mess, err := handler.reservation_service.AcceptReservation(reservationId)
+		mes, err := handler.reservation_service.AcceptReservation(reservationId)
 		if err != nil {
-			err := status.Errorf(codes.Internal, mess)
+			err := status.Errorf(codes.Internal, mes)
 			return nil, err
 		}
 	}
