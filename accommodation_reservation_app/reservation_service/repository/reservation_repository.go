@@ -15,7 +15,6 @@ type ReservationRepository struct {
 	ReservationCollection *mongo.Collection
 }
 
-// by availability
 func (repo *ReservationRepository) GetAllReservationsByAvailability(availibiltyId primitive.ObjectID) ([]models.Reservation, error) {
 	var ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()

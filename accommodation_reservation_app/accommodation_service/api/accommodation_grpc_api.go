@@ -2,7 +2,6 @@ package api
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/accommodation_service/models"
 	"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/accommodation_service/service"
@@ -32,7 +31,6 @@ func NewAccommodationHandler(accommodation_service *service.AccommodationService
 }
 
 func (handler *AccommodationHandler) GetAllAccommodations(ctx context.Context, request *pb.GetAllAccommodationsRequest) (*pb.GetAllAccommodationsResponse, error) {
-	//TODO pomocna metoda za dobavljanje svih smjestaja koje mozete koristiti u drugim mikroservisima
 	id := request.Id
 	hostId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
@@ -58,7 +56,6 @@ func (handler *AccommodationHandler) GetAllAccommodations(ctx context.Context, r
 }
 
 func (handler *AccommodationHandler) GetAccommodationByAvailability(ctx context.Context, request *pb.GetAccommodationByAvailabilityRequest) (*pb.GetAccommodationByAvailabilityResponse, error) {
-	//TODO
 	id := request.Id
 	availabilityId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
@@ -82,7 +79,6 @@ func (handler *AccommodationHandler) GetAccommodationByAvailability(ctx context.
 
 func (handler *AccommodationHandler) CreateAccommodation(ctx context.Context, request *pb.CreateAccommodationRequest) (*pb.CreateAccommodationResponse, error) {
 	hostID, err := primitive.ObjectIDFromHex(request.HostId)
-	fmt.Println(err)
 
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid HostId")

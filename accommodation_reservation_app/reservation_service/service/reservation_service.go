@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/reservation_service/models"
@@ -55,37 +54,28 @@ func (svc *ReservationService) GetFindReservationAcceptedGuest(guestId primitive
 			filteredReservations = append(filteredReservations, reservation)
 		}
 	}
-	//fmt.Println("Aaaaaaaaaa")
-	//fmt.Println(filteredReservations)
 	return filteredReservations, nil
 }
 
 func (svc *ReservationService) CreateReservation(reservation models.Reservation) (string, error) {
 	var _, cancel = context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-
-	//validacija
 	validationErr := Validate.Struct(reservation)
-	fmt.Println(validationErr)
 	if validationErr != nil {
 		err := status.Errorf(codes.InvalidArgument, "Reservation fields are not valid")
 		return "Reservation fields are not valid", err
 	}
-
-	//provera datuma
 	if reservation.StartDate.After(reservation.EndDate) {
 		err := status.Errorf(codes.InvalidArgument, "Start date can not be after end date")
 		return "Start date can not be after end date", err
 	}
 
-	//dobavljam sve rezervacije kako bih rpoverila da li imamo preklapajucih rezervacija tj. da li je automatsko prihvatanje rezervacije
 	reservations, err := svc.ReservationRepository.GetAllReservationsByAvailability(reservation.AvailabilityID)
 	if err != nil {
 		err := status.Errorf(codes.Internal, "Failed to get reservations")
 		return "Failed to get reservations", err
 	}
 
-	//provera da li postoji automatsko prihvatanje u tom periodu -> ako da vracam error
 	for _, r := range reservations {
 		if r.IsAccepted && !r.IsCanceled && !r.IsDeleted {
 			if reservation.StartDate.Before(r.EndDate) && r.StartDate.Before(reservation.EndDate) {
@@ -95,7 +85,6 @@ func (svc *ReservationService) CreateReservation(reservation models.Reservation)
 		}
 	}
 
-	//ako nema preklapajucih i sve okej -> kreira se
 	reservationId, insertErr := svc.ReservationRepository.CreateReservation(&reservation)
 	if insertErr != nil {
 		err := status.Errorf(codes.Internal, "Failed to create reservation")
@@ -212,13 +201,11 @@ func (svc *ReservationService) AcceptReservation(ReservationId primitive.ObjectI
 	}
 
 	for _, r := range reservationsByAvailability {
-		//neotkazane i neizbrisane rezervacije koje se preklapaju sa rezervacijom za prihvatanje
 		if !(reservation.StartDate.After(r.EndDate) || r.StartDate.After(reservation.EndDate)) && !r.IsCanceled && !r.IsDeleted {
 
 			if reservation.ID == r.ID {
 				continue
 			}
-			//ako postoji vec prihvacena rezervacija, obrisi rez iz zahteva za prihvatanje
 			if r.IsAccepted {
 
 				err3 := svc.ReservationRepository.DeleteLogicallyReservation(ReservationId)
@@ -231,9 +218,7 @@ func (svc *ReservationService) AcceptReservation(ReservationId primitive.ObjectI
 
 			} else {
 
-				//obrisi rezervaciju koja se preklapa sa rez iz zahteva
 				err5 := svc.ReservationRepository.DeleteLogicallyReservation(r.ID)
-				fmt.Println(r.ID)
 				if err5 != nil {
 					err5 := status.Errorf(codes.Internal, "something went wrong")
 					return "something went wrong", err5

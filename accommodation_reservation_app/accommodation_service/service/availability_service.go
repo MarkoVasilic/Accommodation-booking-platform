@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"time"
 
@@ -20,7 +19,6 @@ type AvailabilityService struct {
 
 var Validate = validator.New()
 
-// proveriti preklapanja!!!
 func (service *AvailabilityService) CreateAvailability(availability models.Availability) (string, error) {
 	var _, cancel = context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -41,7 +39,6 @@ func (service *AvailabilityService) CreateAvailability(availability models.Avail
 		return "Failed to retrieve availabilities", err
 	}
 
-	//provera preklapanja
 	for _, existingAvailability := range allAvailabilities {
 		if availability.StartDate.Before(existingAvailability.EndDate) && existingAvailability.StartDate.Before(availability.EndDate) {
 			err := status.Errorf(codes.AlreadyExists, "Overlap with existing availability")
@@ -49,7 +46,6 @@ func (service *AvailabilityService) CreateAvailability(availability models.Avail
 		}
 	}
 
-	//kreiranje dostupnosti
 	inserterr := service.AvailabilityRepository.CreateAvailability(&availability)
 
 	if inserterr != nil {
@@ -88,7 +84,6 @@ func (service AvailabilityService) UpdateAvailability(availability models.Availa
 	}
 
 	validationErr := Validate.Struct(availability)
-	fmt.Println(validationErr)
 	if validationErr != nil {
 		err := status.Errorf(codes.InvalidArgument, "availability fields are not valid")
 		return "availability fields are not valid", err

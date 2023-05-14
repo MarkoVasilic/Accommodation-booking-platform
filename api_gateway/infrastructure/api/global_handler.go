@@ -143,7 +143,6 @@ func (handler *GlobalHandler) GetUser(w http.ResponseWriter, r *http.Request, pa
 	}
 	user, err := handler.userService.GetUser(createContextForAuthorization(r.Header["Authorization"]), &user_service.GetUserRequest{Id: id})
 	if err != nil {
-		fmt.Println(err)
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
@@ -159,7 +158,6 @@ func (handler *GlobalHandler) GetUser(w http.ResponseWriter, r *http.Request, pa
 func (handler *GlobalHandler) GetLoggedUser(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
 	user, err := handler.userService.GetLoggedUser(createContextForAuthorization(r.Header["Authorization"]), &user_service.GetLoggedUserRequest{})
 	if err != nil {
-		fmt.Println(err)
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
@@ -200,7 +198,6 @@ func (handler *GlobalHandler) Login(w http.ResponseWriter, r *http.Request, path
 	}
 	founduser, err := handler.userService.Login(createContextForAuthorization(r.Header["Authorization"]), &user_service.LoginRequest{Password: user.Password, Username: user.Username})
 	if err != nil {
-		fmt.Println(err)
 		w.WriteHeader(http.StatusNotFound)
 		fmt.Fprintf(w, "Failed to call Login method: %v", err)
 		return
@@ -252,7 +249,6 @@ func (handler *GlobalHandler) DeleteUser(w http.ResponseWriter, r *http.Request,
 }
 
 func (handler *GlobalHandler) CreateAccommodation(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
-	//TODO mihaela
 	var accommodation domain.Accommodation
 	err := json.NewDecoder(r.Body).Decode(&accommodation)
 	if err != nil {
@@ -261,7 +257,6 @@ func (handler *GlobalHandler) CreateAccommodation(w http.ResponseWriter, r *http
 		return
 	}
 
-	fmt.Println(accommodation)
 	resp, err := handler.accommodationService.CreateAccommodation(createContextForAuthorization(r.Header["Authorization"]),
 		&accommodation_service.CreateAccommodationRequest{
 			Id:         "ttt",
@@ -286,7 +281,7 @@ func (handler *GlobalHandler) CreateAccommodation(w http.ResponseWriter, r *http
 }
 
 func (handler *GlobalHandler) GetAllAccommodations(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
-	//TODO nadja i aleksandra
+
 	id := pathParams["hostId"]
 	if id == "" {
 		w.WriteHeader(http.StatusBadRequest)
@@ -309,7 +304,6 @@ func (handler *GlobalHandler) GetAllAccommodations(w http.ResponseWriter, r *htt
 }
 
 func (handler *GlobalHandler) GetAllAvailabilities(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
-	//TODO nadja i aleksandra
 	id := pathParams["accommodationId"]
 	if id == "" {
 		w.WriteHeader(http.StatusBadRequest)
@@ -332,7 +326,6 @@ func (handler *GlobalHandler) GetAllAvailabilities(w http.ResponseWriter, r *htt
 }
 
 func (handler *GlobalHandler) CreateAvailability(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
-	//TODO nadja i aleksandra
 	var availability domain.Availability
 	err := json.NewDecoder(r.Body).Decode(&availability)
 	if err != nil {
@@ -353,7 +346,6 @@ func (handler *GlobalHandler) CreateAvailability(w http.ResponseWriter, r *http.
 }
 
 func (handler *GlobalHandler) UpdateAvailability(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
-	//TODO nadja i aleksandra
 	id := pathParams["availabilityId"]
 	if id == "" {
 		w.WriteHeader(http.StatusBadRequest)
@@ -366,8 +358,6 @@ func (handler *GlobalHandler) UpdateAvailability(w http.ResponseWriter, r *http.
 		fmt.Fprintf(w, "Failed to parse request body: %v", err)
 		return
 	}
-	fmt.Println("Request", availability.StartDate)
-	fmt.Println("Request", availability.EndDate)
 
 	startDate := timestamppb.New(availability.StartDate)
 	endDate := timestamppb.New(availability.EndDate)
@@ -381,7 +371,6 @@ func (handler *GlobalHandler) UpdateAvailability(w http.ResponseWriter, r *http.
 }
 
 func (handler *GlobalHandler) SearchAvailability(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
-	//TODO nadja i aleksandra
 	var findAvailability domain.FindAvailability
 	err := json.NewDecoder(r.Body).Decode(&findAvailability)
 	if err != nil {
@@ -408,8 +397,6 @@ func (handler *GlobalHandler) SearchAvailability(w http.ResponseWriter, r *http.
 }
 
 func (handler *GlobalHandler) CreateReservation(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
-	//TODO nadja i aleksandra
-	fmt.Println("Create res")
 	var reservation domain.Reservation
 	err := json.NewDecoder(r.Body).Decode(&reservation)
 	if err != nil {
@@ -431,7 +418,6 @@ func (handler *GlobalHandler) CreateReservation(w http.ResponseWriter, r *http.R
 }
 
 func (handler *GlobalHandler) GetFindReservationPendingGuest(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
-	//TODO nadja i aleksandra
 	id := pathParams["id"]
 	if id == "" {
 		w.WriteHeader(http.StatusBadRequest)
@@ -454,7 +440,6 @@ func (handler *GlobalHandler) GetFindReservationPendingGuest(w http.ResponseWrit
 }
 
 func (handler *GlobalHandler) GetFindReservationAcceptedGuest(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
-	//TODO nadja i aleksandra
 	id := pathParams["id"]
 	if id == "" {
 		w.WriteHeader(http.StatusBadRequest)
@@ -466,10 +451,9 @@ func (handler *GlobalHandler) GetFindReservationAcceptedGuest(w http.ResponseWri
 		fmt.Fprintf(w, "Failed to call GetFindReservationAcceptedGuest method: %v", err)
 		return
 	}
-	fmt.Println(resp.FindReservation)
 	for _, r := range resp.FindReservation {
-		seconds := int64(r.StartDate.Seconds - 7200) // number of seconds since the Unix epoch
-		nanoseconds := int64(0)                      // number of nanoseconds (0 in this case)
+		seconds := int64(r.StartDate.Seconds - 7200)
+		nanoseconds := int64(0)
 		t := time.Unix(seconds, nanoseconds)
 		fmt.Println(t)
 	}
@@ -483,7 +467,6 @@ func (handler *GlobalHandler) GetFindReservationAcceptedGuest(w http.ResponseWri
 }
 
 func (handler *GlobalHandler) GetFindReservationHost(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
-	//TODO mihaela
 	id := pathParams["id"]
 	if id == "" {
 		w.WriteHeader(http.StatusBadRequest)
@@ -506,7 +489,6 @@ func (handler *GlobalHandler) GetFindReservationHost(w http.ResponseWriter, r *h
 }
 
 func (handler *GlobalHandler) CancelReservation(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
-	//TODO nadja i aleksandra
 	id := pathParams["id"]
 	if id == "" {
 		w.WriteHeader(http.StatusBadRequest)
@@ -523,7 +505,6 @@ func (handler *GlobalHandler) CancelReservation(w http.ResponseWriter, r *http.R
 }
 
 func (handler *GlobalHandler) DeleteLogicallyReservation(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
-	//TODO nadja i aleksandra
 	id := pathParams["id"]
 	if id == "" {
 		w.WriteHeader(http.StatusBadRequest)
@@ -539,7 +520,6 @@ func (handler *GlobalHandler) DeleteLogicallyReservation(w http.ResponseWriter, 
 }
 
 func (handler *GlobalHandler) AcceptReservation(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
-	//TODO mihaela
 	id := pathParams["id"]
 	if id == "" {
 		w.WriteHeader(http.StatusBadRequest)

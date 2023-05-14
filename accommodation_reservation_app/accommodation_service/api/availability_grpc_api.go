@@ -2,11 +2,9 @@ package api
 
 import (
 	"context"
-	"fmt"
 	"strings"
 	"time"
 
-	//"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/accommodation_service/models"
 	"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/accommodation_service/models"
 	"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/accommodation_service/service"
 	pb "github.com/MarkoVasilic/Accommodation-booking-platform/common/proto/accommodation_service"
@@ -45,14 +43,12 @@ func createContextForAuthorization(ctx context.Context) context.Context {
 }
 
 func (handler *AvailabilityHandler) GetAllAvailabilities(ctx context.Context, request *pb.GetAllAvailabilitiesRequest) (*pb.GetAllAvailabilitiesResponse, error) {
-	//TODO pomocna metoda za dobavljanje svih dostupnosti
 	id := request.Id
 	accomodationId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		err := status.Errorf(codes.InvalidArgument, "the provided id is not a valid ObjectID")
 		return nil, err
 	}
-	fmt.Println(accomodationId)
 
 	temp, err := primitive.ObjectIDFromHex("64580a2e9f857372a34602c2")
 	if err != nil {
@@ -134,7 +130,6 @@ func (handler *AvailabilityHandler) UpdateAvailability(ctx context.Context, requ
 	if err != nil {
 		return nil, err
 	}
-	//println("Request", request.Id, request.StartDate, request.StartDate, request.Price, request.IsPricePerGuest)
 	res, err := handler.reservation_client.GetAllReservations(createContextForAuthorization(ctx), &reservation_service.GetAllReservationsRequest{Id: request.Id}) //&request.Id?
 	if err != nil {
 		return nil, err
@@ -185,14 +180,12 @@ func (handler *AvailabilityHandler) SearchAvailability(ctx context.Context, requ
 	}
 	favailabilities := []models.FindAvailability{}
 	for _, avail := range availabilities {
-		fmt.Println(avail.ID)
 		accommodation, err := handler.accommodation_service.GetAccommodationById(avail.AccommodationID)
 		if err != nil {
 			return nil, err
 		}
 		reservations, err := handler.reservation_client.GetAllReservations(createContextForAuthorization(ctx), &reservation_service.GetAllReservationsRequest{Id: string(avail.ID.Hex())})
 		if reservations.Reservations == nil {
-			fmt.Println(accommodation.Location, request.Location, accommodation.Location == request.Location, accommodation.MinGuests <= int(request.GuestsNum), accommodation.MaxGuests >= int(request.GuestsNum))
 			if accommodation.Location == request.Location && accommodation.MinGuests <= int(request.GuestsNum) && accommodation.MaxGuests >= int(request.GuestsNum) {
 				duration := endDate.Sub(startDate)
 				nights := int(duration.Hours() / 24)
@@ -209,7 +202,6 @@ func (handler *AvailabilityHandler) SearchAvailability(ctx context.Context, requ
 				yearERes, monthERes, dayERes := res.EndDate.AsTime().Date()
 				startDateRes := time.Date(yearRes, monthRes, dayRes, int(0), int(0), int(0), int(0), time.UTC)
 				endDateRes := time.Date(yearERes, monthERes, dayERes, int(0), int(0), int(0), int(0), time.UTC)
-				fmt.Println(avail.ID, res.IsAccepted, !res.IsCanceled, !res.IsDeleted, (startDate.After(startDateRes) && startDate.Before(endDateRes)), (endDate.Before(endDateRes) && endDate.After(startDateRes)), (startDate.Before(startDateRes) && endDate.After(endDateRes)))
 				if res.IsAccepted && !res.IsCanceled && !res.IsDeleted && ((!startDate.Before(startDateRes) && !startDate.After(endDateRes)) || (!endDate.After(endDateRes) && !endDate.Before(startDateRes)) || (!startDate.After(startDateRes) && !endDate.Before(endDateRes))) {
 					i++
 				}
