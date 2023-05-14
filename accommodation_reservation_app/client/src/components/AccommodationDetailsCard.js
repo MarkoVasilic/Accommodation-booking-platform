@@ -2,7 +2,9 @@ import React from 'react';
 import Typography from '@mui/material/Typography';
 import { useLocation } from 'react-router-dom';
 import Grid from '@mui/material/Grid';
+import Navbar from "../pages/Navbar";
 import moment from "moment";
+import { Paper } from '@mui/material';
 
 function check(value){
     if (value == 'true')
@@ -14,6 +16,9 @@ function check(value){
 export default function FlightDetailsCard(props) {
     const { state } = useLocation(); 
     return (
+        <div>
+        <Navbar/>
+        <Paper>
         <Grid container spacing={2} marginTop="0px" marginBottom="10px" alignContent={"center"}>
             <Grid item xs={3}>
                 <Typography variant="h5" align='left' marginLeft={"100px"} marginRight={"5px"}>Image: </Typography>
@@ -58,5 +63,7 @@ export default function FlightDetailsCard(props) {
             <Typography variant="h5" color="text.secondary" align='left' marginLeft={"80px"}>{state.MinGuests}</Typography>
             </Grid>
         </Grid>
+        </Paper>
+        </div>
     );
 }

@@ -113,7 +113,7 @@ func (service *AvailabilityService) GetAllAvailabilitiesByDates(startDate time.T
 		}
 	}
 	if filteredAvailabilities == nil {
-		er := status.Errorf(codes.InvalidArgument, "There is no available accommodatiom for chosen dates!")
+		er := status.Errorf(codes.InvalidArgument, "There is no available accommodation for chosen dates!")
 		return nil, er
 	}
 	if err != nil {

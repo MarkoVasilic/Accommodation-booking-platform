@@ -185,14 +185,17 @@ func (handler *AvailabilityHandler) SearchAvailability(ctx context.Context, requ
 	}
 	favailabilities := []models.FindAvailability{}
 	for _, avail := range availabilities {
+		fmt.Println(avail.ID)
 		accommodation, err := handler.accommodation_service.GetAccommodationById(avail.AccommodationID)
 		if err != nil {
 			return nil, err
 		}
 		reservations, err := handler.reservation_client.GetAllReservations(createContextForAuthorization(ctx), &reservation_service.GetAllReservationsRequest{Id: string(avail.ID.Hex())})
-		if reservations == nil {
-			if accommodation.Location == request.Location && accommodation.MinGuests >= int(request.GuestsNum) && accommodation.MaxGuests <= int(request.GuestsNum) {
-				nights := endDate.Sub(startDate)
+		if reservations.Reservations == nil {
+			fmt.Println(accommodation.Location, request.Location, accommodation.Location == request.Location, accommodation.MinGuests <= int(request.GuestsNum), accommodation.MaxGuests >= int(request.GuestsNum))
+			if accommodation.Location == request.Location && accommodation.MinGuests <= int(request.GuestsNum) && accommodation.MaxGuests >= int(request.GuestsNum) {
+				duration := endDate.Sub(startDate)
+				nights := int(duration.Hours() / 24)
 				totalPrice := avail.Price * float64(nights)
 				findAvailability := models.FindAvailability{AccommodationId: accommodation.ID, AvailabilityID: avail.ID, HostID: accommodation.HostID, Name: accommodation.Name,
 					Location: accommodation.Location, Wifi: accommodation.Wifi, Kitchen: accommodation.Kitchen, AC: accommodation.AC, ParkingLot: accommodation.ParkingLot, Images: accommodation.Images,
@@ -206,7 +209,8 @@ func (handler *AvailabilityHandler) SearchAvailability(ctx context.Context, requ
 				yearERes, monthERes, dayERes := res.EndDate.AsTime().Date()
 				startDateRes := time.Date(yearRes, monthRes, dayRes, int(0), int(0), int(0), int(0), time.UTC)
 				endDateRes := time.Date(yearERes, monthERes, dayERes, int(0), int(0), int(0), int(0), time.UTC)
-				if res.IsAccepted && !res.IsCanceled && !res.IsDeleted && ((startDate.Before(startDateRes) && endDateRes.After(startDateRes)) || (startDate.After(startDateRes) && endDate.Before(endDateRes)) || (startDate.After(startDateRes) && startDate.Before(endDateRes))) {
+				fmt.Println(avail.ID, res.IsAccepted, !res.IsCanceled, !res.IsDeleted, (startDate.After(startDateRes) && startDate.Before(endDateRes)), (endDate.Before(endDateRes) && endDate.After(startDateRes)), (startDate.Before(startDateRes) && endDate.After(endDateRes)))
+				if res.IsAccepted && !res.IsCanceled && !res.IsDeleted && ((!startDate.Before(startDateRes) && !startDate.After(endDateRes)) || (!endDate.After(endDateRes) && !endDate.Before(startDateRes)) || (!startDate.After(startDateRes) && !endDate.Before(endDateRes))) {
 					i++
 				}
 			}
@@ -222,8 +226,6 @@ func (handler *AvailabilityHandler) SearchAvailability(ctx context.Context, requ
 				} else {
 					return nil, status.Errorf(codes.InvalidArgument, "1All accommodations are occupied at chosen time!")
 				}
-			} else {
-				return nil, status.Errorf(codes.InvalidArgument, "2All accommodations are occupied at chosen time!")
 			}
 		}
 	}

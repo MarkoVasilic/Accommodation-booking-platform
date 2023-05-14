@@ -99,13 +99,15 @@ func (handler *UserHandler) DeleteUser(ctx context.Context, request *pb.DeleteUs
 	if claims.Role == "GUEST" {
 		reservations, err := handler.reservation_client.GetFindReservationAcceptedGuest(createContextForAuthorization(ctx), &reservation_service.GetFindReservationAcceptedGuestRequest{Id: id})
 		if err != nil {
-			err := status.Errorf(codes.Internal, "something went wrong")
-			response := &pb.DeleteUserResponse{
-				Message: "something went wrong",
+			if err.Error() != "rpc error: code = InvalidArgument desc = There is no accepted reservations!" {
+				err := status.Errorf(codes.Internal, "something went wrong")
+				response := &pb.DeleteUserResponse{
+					Message: "something went wrong",
+				}
+				return response, err
 			}
-			return response, err
 		}
-		if len(reservations.FindReservation) > 0 {
+		if reservations != nil && len(reservations.FindReservation) > 0 {
 			err := status.Errorf(codes.PermissionDenied, "There are existing reservations, please cancel them before you proceede")
 			response := &pb.DeleteUserResponse{
 				Message: "There are existing reservations, please cancel them before you proceede",
@@ -116,13 +118,15 @@ func (handler *UserHandler) DeleteUser(ctx context.Context, request *pb.DeleteUs
 	if claims.Role == "HOST" {
 		reservations, err := handler.reservation_client.GetAllReservationsHost(createContextForAuthorization(ctx), &reservation_service.GetAllReservationsHostRequest{Id: id})
 		if err != nil {
-			err := status.Errorf(codes.Internal, "something went wrong")
-			response := &pb.DeleteUserResponse{
-				Message: "something went wrong",
+			if err.Error() != "rpc error: code = InvalidArgument desc = There is no accommodations!" {
+				err := status.Errorf(codes.Internal, "something went wrong")
+				response := &pb.DeleteUserResponse{
+					Message: "something went wrong",
+				}
+				return response, err
 			}
-			return response, err
 		}
-		if len(reservations.Reservation) > 0 {
+		if reservations != nil && len(reservations.Reservation) > 0 {
 			err := status.Errorf(codes.PermissionDenied, "There are existing reservations, please cancel them before you proceede")
 			response := &pb.DeleteUserResponse{
 				Message: "There are existing reservations, please cancel them before you proceede",
@@ -131,11 +135,13 @@ func (handler *UserHandler) DeleteUser(ctx context.Context, request *pb.DeleteUs
 		}
 		_, err = handler.reservation_client.DeleteReservationsHost(createContextForAuthorization(ctx), &reservation_service.DeleteReservationsHostRequest{Id: id})
 		if err != nil {
-			err := status.Errorf(codes.Internal, "something went wrong")
-			response := &pb.DeleteUserResponse{
-				Message: "something went wrong",
+			if err.Error() != "rpc error: code = InvalidArgument desc = There is no accommodations!" {
+				err := status.Errorf(codes.Internal, "something went wrong")
+				response := &pb.DeleteUserResponse{
+					Message: "something went wrong",
+				}
+				return response, err
 			}
-			return response, err
 		}
 		_, err = handler.accommodation_client.DeleteAccommodationsByHost(createContextForAuthorization(ctx), &accommodation_service.DeleteAccommodationsByHostRequest{Id: id})
 		if err != nil {

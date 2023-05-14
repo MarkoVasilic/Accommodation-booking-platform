@@ -363,7 +363,6 @@ func (handler *ReservationHandler) GetAllReservationsHost(ctx context.Context, r
 
 	allAccommodations, err := handler.accommodation_client.GetAllAccommodations(createContextForAuthorization(ctx), &accommodation_service.GetAllAccommodationsRequest{Id: "64580a2e9f857372a34602c2"})
 	if err != nil {
-		err := status.Errorf(codes.InvalidArgument, "the provided id is not a valid ObjectID")
 		return nil, err
 	}
 
@@ -420,9 +419,8 @@ func (handler *ReservationHandler) GetAllReservationsHost(ctx context.Context, r
 }
 
 func (handler *ReservationHandler) DeleteReservationsHost(ctx context.Context, request *pb.DeleteReservationsHostRequest) (*pb.DeleteReservationsHostResponse, error) {
-	allAccommodations, err := handler.accommodation_client.GetAllAccommodations(createContextForAuthorization(ctx), &accommodation_service.GetAllAccommodationsRequest{Id: "tt"})
+	allAccommodations, err := handler.accommodation_client.GetAllAccommodations(createContextForAuthorization(ctx), &accommodation_service.GetAllAccommodationsRequest{Id: request.Id})
 	if err != nil {
-		err := status.Errorf(codes.InvalidArgument, "the provided id is not a valid ObjectID")
 		return nil, err
 	}
 
@@ -435,6 +433,7 @@ func (handler *ReservationHandler) DeleteReservationsHost(ctx context.Context, r
 
 	allAvailabilities, err := handler.accommodation_client.GetAllAvailabilities(createContextForAuthorization(ctx), &accommodation_service.GetAllAvailabilitiesRequest{Id: "64580a2e9f857372a34602c2"})
 	if err != nil {
+		fmt.Println(err)
 		err := status.Errorf(codes.InvalidArgument, "the provided id is not a valid ObjectID")
 		return nil, err
 	}
