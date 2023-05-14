@@ -47,6 +47,10 @@ func mapFindAvailability(findAvailability *models.FindAvailability) *pb.FindAvai
 }
 
 func mapAccommodation(accommodation *models.Accommodation) *pb.Accommodation {
+	var imageUrls []string
+	for _, img := range accommodation.Images {
+		imageUrls = append(imageUrls, *img)
+	}
 
 	accommodationPb := &pb.Accommodation{
 		Id:         accommodation.ID.Hex(),
@@ -59,7 +63,7 @@ func mapAccommodation(accommodation *models.Accommodation) *pb.Accommodation {
 		ParkingLot: accommodation.ParkingLot,
 		MinGuests:  int32(accommodation.MinGuests),
 		MaxGuests:  int32(accommodation.MaxGuests),
-		Images:     nil, //dodati slike
+		Images:     imageUrls, //dodati slike
 		AutoAccept: accommodation.AutoAccept,
 	}
 

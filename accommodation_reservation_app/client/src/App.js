@@ -15,6 +15,9 @@ import PendingReservationsList from './pages/PendingReservationsList';
 import SearchAvailability from './pages/SearchedAvailability';
 import SearchAvailabilityGuest from './pages/SearchedAvailabilityGuest';
 import CreateAccommodation from './pages/CreateAccommodation';
+import AccommodationsHost from './pages/AccommodationsHost'
+import ReservationRequestsHost from './pages/ReservationRequestsHost';
+import AccommodationDetailsCard from './components/AccommodationDetailsCard';
 
 function App() {
   const token = localStorage.getItem("token");
@@ -34,13 +37,16 @@ function App() {
                         <Route path="/user-profile/update" element={<UpdateUser />} />
                         <Route path="/user-profile/password/" element={<UserChangePassword />} />
                         <Route path="/availability/create" element={<CreateAvailability />} />
-                        <Route path="/availability/update/:availability" element={<UpdateAvailability />} />
+                        <Route path="/availability/update" element={<UpdateAvailability />} />
                         <Route path="/availabilities" element={<AvailabilityList />} />
                         <Route path="/accepted-reservations" element={<AcceptedReservationsList />} />
                         <Route path="/pending-reservations" element={<PendingReservationsList />} />
-                        <Route path="/accomodations/all" element={<SearchAvailability />} />
-                        <Route path="/accomodations/all/guest" element={<SearchAvailabilityGuest />} />
+                        <Route path="/accommodations/all" element={<SearchAvailability />} />
+                        <Route path="/accommodations/all/guest" element={<SearchAvailabilityGuest />} />
                         <Route path="/accomodations/create" element={<CreateAccommodation />} />
+                        <Route path="/accommodations/host" element={<AccommodationsHost />} />
+                        <Route path="/reservation-requests" element={<ReservationRequestsHost />} />
+                        <Route path="/accommodation-details" element={<AccommodationDetailsCard />} />
                     </Routes>
                 </div>
             </Router>

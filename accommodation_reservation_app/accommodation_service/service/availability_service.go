@@ -76,7 +76,6 @@ func (service *AvailabilityService) GetAvailabilityById(id primitive.ObjectID) (
 	return foundAvailability, err
 }
 
-// availability_grpc_api -> opis kada treba? videti kako da dobavimo sve rez
 func (service AvailabilityService) UpdateAvailability(availability models.Availability, id string) (string, error) {
 	var _, cancel = context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -113,8 +112,6 @@ func (service *AvailabilityService) GetAllAvailabilitiesByDates(startDate time.T
 			filteredAvailabilities = append(filteredAvailabilities, avail)
 		}
 	}
-	fmt.Println("Filtered", filteredAvailabilities)
-	fmt.Println("Filtered")
 	if filteredAvailabilities == nil {
 		er := status.Errorf(codes.InvalidArgument, "There is no available accommodatiom for chosen dates!")
 		return nil, er

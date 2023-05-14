@@ -33,18 +33,24 @@ func NewAccommodationHandler(accommodation_service *service.AccommodationService
 
 func (handler *AccommodationHandler) GetAllAccommodations(ctx context.Context, request *pb.GetAllAccommodationsRequest) (*pb.GetAllAccommodationsResponse, error) {
 	//TODO pomocna metoda za dobavljanje svih smjestaja koje mozete koristiti u drugim mikroservisima
-	acc, err := handler.accommodation_service.GetAllAccommodations()
+	id := request.Id
+	hostId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		err := status.Errorf(codes.InvalidArgument, "the provided id is not a valid ObjectID")
 		return nil, err
 	}
-
-	accommodations := []*pb.Accommodation{}
-	for _, a := range acc {
-		p := mapAccommodation(&a)
-		accommodations = append(accommodations, p)
+	acs, err := handler.accommodation_service.GetAllAccommodations(hostId)
+	if err != nil {
+		return nil, err
+	} else if acs == nil {
+		err := status.Errorf(codes.InvalidArgument, "There is no accommodations!")
+		return nil, err
 	}
-
+	accommodations := []*pb.Accommodation{}
+	for _, a := range acs {
+		accommodationPb := mapAccommodation(&a)
+		accommodations = append(accommodations, accommodationPb)
+	}
 	response := &pb.GetAllAccommodationsResponse{
 		Accommodations: accommodations,
 	}
@@ -116,7 +122,7 @@ func (handler *AccommodationHandler) DeleteAccommodationsByHost(ctx context.Cont
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid HostId")
 	}
-	allAccommodations, err := handler.accommodation_service.GetAllAccommodations()
+	allAccommodations, err := handler.accommodation_service.GetAllAccommodations(hostID)
 	if err != nil {
 		err := status.Errorf(codes.InvalidArgument, "the provided id is not a valid ObjectID")
 		return nil, err

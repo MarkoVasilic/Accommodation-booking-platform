@@ -18,7 +18,7 @@ import Alert from "@mui/material/Alert";
 import Collapse from "@mui/material/Collapse";
 
 
-const RenderMakeReservation = (params) => {
+/*const RenderMakeReservation = (params) => {
     let navigate = useNavigate();
     return (
         <strong>
@@ -27,25 +27,44 @@ const RenderMakeReservation = (params) => {
                 color="primary"
                 size="small"
                 style={{ marginLeft: 16 }}
+                
                 onClick={() => {
-                    //proveriti url + preusmeriti na stranicu sa svim rezervacijama za tog usera
-                    //navigate('/reservation');
-                    //refreshPage();
+                    const res = axiosApi.get('/user/logged');
+                    const data = {AvailabilityID: params.row.AvailabilityID, GuestId: res.data.user.Id, StartDate: startDate, EndDate: endDate, GuestsNum: guestsNum}
+                    axiosApi
+                    .post(`/reservation/`) //dodati data
+                    .then((response) => {
+                        console.log("AAA")
+                        console.log(response.data)
+                        navigate('/pending-reservations')
+                    }).catch(er => {
+                        console.log(er.response);
+                    });
                 }}
             >
                 Reserve it
             </Button>
         </strong>
     )
-};
+};*/
 
-
+function formatPrice(pricePerGuest) {
+    var IsPricePerGuest = ""
+    if (pricePerGuest === true) {
+        IsPricePerGuest = "Yes"
+    } else {
+        IsPricePerGuest = "No"
+    }
+    //console.log('Sec', seconds)
+    //console.log('date', date)
+    return IsPricePerGuest;
+  }
 const columns = [
     {
         field: "Name",
         headerName: "Name",
         type: "string",
-        width: 280,
+        width: 200,
         sortable: false,
         filterable: false,
         editable: false,
@@ -54,13 +73,13 @@ const columns = [
         field: "Location",
         headerName: "Location",
         type: "string",
-        width: 280,
+        width: 270,
         sortable: false,
         filterable: false,
         editable: false,
     },
     {
-        field: "Price",
+        field: "SinglePrice",
         headerName: "Price per guest / accomodation",
         type: "number",
         width: 280,
@@ -71,10 +90,10 @@ const columns = [
         editable: false,
     },
     {
-        field: "Total_Price",
+        field: "TotalPrice",
         headerName: "Total Price",
         type: "number",
-        width: 280,
+        width: 200,
         headerAlign: "left",
         align: "left",
         sortable: false,
@@ -82,15 +101,73 @@ const columns = [
         editable: false,
     },
     {
+        field: "IsPricePerGuest",
+        headerName: "Is price per guest",
+        type: "string",
+        width: 200,
+        sortable: false,
+        filterable: false,
+        editable: false,
+        valueGetter: params => formatPrice(params.row.IsPricePerGuest)
+    },
+    /*{
         field: "make_reservation",
         headerName: "Make a reservation",
-        width: 280,
+        width: 260,
         renderCell: RenderMakeReservation,
         disableClickEventBubbling: true   
-    }
+    }*/
 ];
 
-function rowAction(navigate, buttonName, buttonUrl) {
+function MakeReservation(navigate, startDate, endDate, guestsNum) {
+    return {
+        field: "Make reservation",
+        headerName: "Reserve",
+        align: "center",
+        headerAlign: "left",
+        sortable: false,
+        renderCell: (params) => {
+            const onClick = async(e) => {
+                e.stopPropagation(); // don't select this row after clicking
+
+                const api = params.api;
+                const thisRow = params.row;
+
+                    const res = await axiosApi.get('/user/logged');
+                    console.log('Id',res.data.user.Id);
+                
+                console.log('User', res.data.user.Id);
+                var guests = parseInt(guestsNum)
+                const data = {AvailabilityID: params.row.AvailabilityID, GuestId: res.data.user.Id, StartDate: startDate, EndDate: endDate, NumGuests: guests}
+                console.log('Data', data)
+                axiosApi
+                .post('/reservation', data) //dodati data
+                .then((response) => {
+                    console.log("AAA")
+                    console.log(response.data)
+                    navigate('/pending-reservations')
+                }).catch(er => {
+                    console.log(er.response);
+                });
+            
+
+               // return navigate({ state: thisRow });
+            };
+            return (
+                <Button
+                    variant="contained"
+                    color="secondary"
+                    size="small"
+                    onClick={onClick}
+                >
+                    Reserve
+                </Button>
+            );
+        },
+    };
+}
+
+function rowAction(navigate, buttonName, buttonUrl, startDate, endDate, guestsNum) {
     return {
         field: "Details",
         headerName: buttonName,
@@ -104,7 +181,7 @@ function rowAction(navigate, buttonName, buttonUrl) {
                 const api = params.api;
                 const thisRow = params.row;
 
-                return navigate(buttonUrl, { state: thisRow });
+                return navigate("/accommodation-details", { state: thisRow });
             };
             return (
                 <Button
@@ -127,53 +204,41 @@ function ListSearchedAvailabilityGuest(props) {
     const [ error, setError ] = React.useState(false);
     const [er, setEr] = React.useState("");
     const navigate = useNavigate();
+    const [ startDate, setStartDate ] = React.useState("");
+    const [ endDate, setEndDate ] = React.useState("");
+    const [ guestsNum, setGuestsNum ] = React.useState(0);
+
     useEffect(() => {
-        getData();
-      //  onSubmit();
+      //  getData();
+        onSubmit();
     }, []);
     const date = new Date().toISOString();
 
-        let getData = async () => {
-        try{
-        axiosApi
-            //url drugi staviti
-            .get(`/flights/all/?${`taking_off_date=${date}&`}${`start_location=&`}${`end_location=&`}${`number_of_tickets=1`}`)
-            .then((response) => {
-                setAccomodation(response.data);
-            }).catch(er => {
-                console.log(er.response);
-                setAccomodation([]);
-            });
-        }catch (err) {
-                console.log(err)
-                setAccomodation([]);
-            }
-        };
+        const onSubmit = async (data) => {
+            try {
+                console.log(data)
+                data.StartDate = new Date(Date.parse(data.StartDate))
+                data.EndDate = new Date(Date.parse(data.EndDate))   
+                data.GuestsNum = parseInt(data.NumGuests)
+                setStartDate(data.StartDate)
+                setEndDate(data.EndDate)
+                setGuestsNum(data.NumGuests)
+                console.log('Data', data)
 
-    const onSubmit = async (data) => {
-        try {
-            let searchDate = new Date(Date.parse(data.taking_off_date))
-            let res = await axiosApi
-            //url drugi staviti
-            .get(`/flights/all/?${`taking_off_date=${searchDate.toISOString()}&`}${`start_location=${data.start_location}&`}${`end_location=${data.end_location}&`}${`number_of_tickets=${data.number_of_tickets}`}`)
-            .then((response) => {
-                setAccomodation(response.data);
-                console.log(response.data);
-                console.log("ACCOMODATIONS AFTER: ", accomodation);
-            }).catch(er => {
-                console.log(er.response);
-                setAccomodation([]);
-                setError(true)
-                setEr(er.response.data.error)
-            });
-        }
-        catch (err) {
-            console.log(err)
-            setAccomodation([]);
-            setError(true);
-            setEr(er.response.data.error)
-        }
-    };
+                await axiosApi
+                .post('/availability/search', data)
+                .then((response) => {
+                    console.log("Res", response)
+                    setAccomodation(response.data);
+                }).catch(er => {
+                    console.log(er.response);
+                    setAccomodation([]);
+                });
+            }catch (err) {
+                    console.log(err)
+                    setAccomodation([]);
+                }
+            };
 
     return (
         <div>
@@ -200,7 +265,7 @@ function ListSearchedAvailabilityGuest(props) {
                             <Typography>
                                 Choose start date:</Typography>
                             <InputTextField
-                                name="start_date"
+                                name="StartDate"
                                 control={control}
                                 type="date"
                                 rules={{ required: "This field is required" }}
@@ -210,7 +275,7 @@ function ListSearchedAvailabilityGuest(props) {
                             <Typography>
                                 Choose end date:</Typography>
                             <InputTextField
-                                name="end_date"
+                                name="EndDate"
                                 control={control}
                                 type="date"
                                 rules={{ required: "This field is required" }}
@@ -220,7 +285,7 @@ function ListSearchedAvailabilityGuest(props) {
                             <Typography>
                                 Enter location:</Typography>
                             <InputTextField
-                                name="start_location"
+                                name="Location"
                                 control={control}
                                 type="text"
                                 rules={{ required: "This field is required" }}
@@ -230,7 +295,7 @@ function ListSearchedAvailabilityGuest(props) {
                             <Typography>
                                 Number of guests:</Typography>
                             <InputTextField
-                                name="num_guests"
+                                name="NumGuests"
                                 control={control}
                                 type="number"
                                 min="0"
@@ -295,9 +360,9 @@ function ListSearchedAvailabilityGuest(props) {
                 <Box sx={{ height: 700, width: "100%", marginTop: "20px", marginBottom: "20px"}}>
                     <DataGrid
                         rows={accomodation}
-                        getRowId={(row) => row.ID}
+                        getRowId={(row) => row.AccommodationId}
                         disableColumnFilter
-                        columns={[...columns, rowAction(navigate, props.buttonName, props.buttonUrl)]}
+                        columns={[...columns, rowAction(navigate, props.buttonName, props.buttonUrl), MakeReservation(navigate, startDate, endDate, guestsNum)]}
                         autoHeight
                         density="comfortable"
                         disableSelectionOnClick

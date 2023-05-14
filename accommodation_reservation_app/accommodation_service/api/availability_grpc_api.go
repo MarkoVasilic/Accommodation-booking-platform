@@ -45,7 +45,7 @@ func createContextForAuthorization(ctx context.Context) context.Context {
 }
 
 func (handler *AvailabilityHandler) GetAllAvailabilities(ctx context.Context, request *pb.GetAllAvailabilitiesRequest) (*pb.GetAllAvailabilitiesResponse, error) {
-	//TODO pomocna metoda za dobavljanje svih dostupnosti koje mozete koristiti u drugim mikroservisima
+	//TODO pomocna metoda za dobavljanje svih dostupnosti
 	id := request.Id
 	accomodationId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
@@ -53,8 +53,24 @@ func (handler *AvailabilityHandler) GetAllAvailabilities(ctx context.Context, re
 		return nil, err
 	}
 	fmt.Println(accomodationId)
-	as, err := handler.availability_service.GetAllAvailabilities()
+
+	temp, err := primitive.ObjectIDFromHex("64580a2e9f857372a34602c2")
 	if err != nil {
+		err := status.Errorf(codes.InvalidArgument, "the provided id is not a valid ObjectID")
+		return nil, err
+	}
+
+	var as []models.Availability
+	if accomodationId == temp {
+		as, err = handler.availability_service.GetAllAvailabilities()
+	} else {
+		as, err = handler.availability_service.GetAllAvailabilitiesByAccommodationID(accomodationId)
+	}
+
+	if err != nil {
+		return nil, err
+	} else if as == nil {
+		err := status.Errorf(codes.InvalidArgument, "There is no availabilities!")
 		return nil, err
 	}
 	availabilities := []*pb.Availability{}
@@ -70,7 +86,6 @@ func (handler *AvailabilityHandler) GetAllAvailabilities(ctx context.Context, re
 }
 
 func (handler *AvailabilityHandler) GetAvailabilityById(ctx context.Context, request *pb.GetAvailabilityByIdRequest) (*pb.GetAvailabilityByIdResponse, error) {
-	//TODO
 	id := request.Id
 	objectId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
@@ -89,7 +104,6 @@ func (handler *AvailabilityHandler) GetAvailabilityById(ctx context.Context, req
 }
 
 func (handler *AvailabilityHandler) CreateAvailability(ctx context.Context, request *pb.CreateAvailabilityRequest) (*pb.CreateAvailabilityResponse, error) {
-	//TODO
 	accommodationID, err := primitive.ObjectIDFromHex(request.AccommodationID)
 	if err != nil {
 		return nil, err
@@ -98,7 +112,12 @@ func (handler *AvailabilityHandler) CreateAvailability(ctx context.Context, requ
 	startDate := request.StartDate.AsTime()
 	endDate := request.EndDate.AsTime()
 
-	availability := models.Availability{AccommodationID: accommodationID, StartDate: startDate, EndDate: endDate, Price: request.Price, IsPricePerGuest: request.IsPricePerGuest}
+	accommodation, err := handler.accommodation_service.GetAccommodationById(accommodationID)
+	if err != nil {
+		return nil, err
+	}
+
+	availability := models.Availability{AccommodationID: accommodation.ID, StartDate: startDate, EndDate: endDate, Price: request.Price, IsPricePerGuest: request.IsPricePerGuest}
 	mess, err := handler.availability_service.CreateAvailability(availability)
 	if err != nil {
 		err := status.Errorf(codes.Internal, mess)
@@ -111,19 +130,15 @@ func (handler *AvailabilityHandler) CreateAvailability(ctx context.Context, requ
 }
 
 func (handler *AvailabilityHandler) UpdateAvailability(ctx context.Context, request *pb.UpdateAvailabilityRequest) (*pb.UpdateAvailabilityResponse, error) {
-	//TODO treba dobaviti sve rezervacije i provjeriti da li postoje neke za availiabilty koji treba da se mjenja a da je isdeleted na false
-	//samo ako nema onda moze da se azurira
-	//ako imamo rezervacije ne mozemo da menjamo tj. ukoliko i ima rezervacija, ali ako je isdeleted na true ili iscanceled na true onda moze da se menja (obrisane su)
 	Id, err := primitive.ObjectIDFromHex(request.Id)
 	if err != nil {
 		return nil, err
 	}
-	println("Request", request.Id, request.StartDate, request.StartDate, request.Price, request.IsPricePerGuest)
+	//println("Request", request.Id, request.StartDate, request.StartDate, request.Price, request.IsPricePerGuest)
 	res, err := handler.reservation_client.GetAllReservations(createContextForAuthorization(ctx), &reservation_service.GetAllReservationsRequest{Id: request.Id}) //&request.Id?
 	if err != nil {
 		return nil, err
 	} else if res != nil {
-		println("1")
 		var acceptedReservations []*reservation_service.Reservation
 		for _, reservation := range res.Reservations {
 			if reservation.IsAccepted && !reservation.IsCanceled && !reservation.IsDeleted {
@@ -138,7 +153,6 @@ func (handler *AvailabilityHandler) UpdateAvailability(ctx context.Context, requ
 		if err != nil {
 			return nil, err
 		}
-		fmt.Println(avail)
 		availability := models.Availability{ID: Id, AccommodationID: avail.AccommodationID, StartDate: request.StartDate.AsTime(), EndDate: request.EndDate.AsTime(), Price: request.Price, IsPricePerGuest: request.IsPricePerGuest}
 		mess, err := handler.availability_service.UpdateAvailability(availability, request.Id)
 		if err != nil {
@@ -146,7 +160,6 @@ func (handler *AvailabilityHandler) UpdateAvailability(ctx context.Context, requ
 			return nil, err
 		}
 	} else if res == nil {
-		println("2")
 		availability := models.Availability{ID: Id, StartDate: request.StartDate.AsTime(), EndDate: request.EndDate.AsTime(), Price: request.Price, IsPricePerGuest: request.IsPricePerGuest}
 		mess, err := handler.availability_service.UpdateAvailability(availability, request.Id)
 		if err != nil {
@@ -162,24 +175,14 @@ func (handler *AvailabilityHandler) UpdateAvailability(ctx context.Context, requ
 }
 
 func (handler *AvailabilityHandler) SearchAvailability(ctx context.Context, request *pb.SearchAvailabilityRequest) (*pb.SearchAvailabilityResponse, error) {
-	//TODO, napraviti mapper, metoda je post,
-	//naci prvo sve availiabilty koji zadovoljavaju filtere
-	//Provjere:
-	// da li postoje rezervacije za isti smjestaj u preklapajucem vremenu
-	// ako da provjeriti da li su rezervisana odnosno da li je polje isaccepted na true, onda iskljuciti, a ako je i iscanceled ili isdelted na true onda ukljuciti
-	//Metoda je post, ali moze da se radi i sa query parametrima
-	//Treba napraviti mapper koji mapira dto u pb i pravi listu tih koji ce biti vraceni
-	//na frontu ce vjerovatno trebati dvije stranice jedna za guestovi i jedna za neulogovane usere, jer oni ne mogu da rezervisu
 	year, month, day := request.StartDate.AsTime().Date()
 	yearE, monthE, dayE := request.EndDate.AsTime().Date()
 	startDate := time.Date(year, month, day, int(0), int(0), int(0), int(0), time.UTC)
 	endDate := time.Date(yearE, monthE, dayE, int(0), int(0), int(0), int(0), time.UTC)
-
 	availabilities, err := handler.availability_service.GetAllAvailabilitiesByDates(startDate, endDate)
 	if err != nil {
 		return nil, err
 	}
-	//fmt.Println("GRPC", availabilities)
 	favailabilities := []models.FindAvailability{}
 	for _, avail := range availabilities {
 		accommodation, err := handler.accommodation_service.GetAccommodationById(avail.AccommodationID)
@@ -187,9 +190,8 @@ func (handler *AvailabilityHandler) SearchAvailability(ctx context.Context, requ
 			return nil, err
 		}
 		reservations, err := handler.reservation_client.GetAllReservations(createContextForAuthorization(ctx), &reservation_service.GetAllReservationsRequest{Id: string(avail.ID.Hex())})
-		//fmt.Println("Reservations", reservations)
 		if reservations == nil {
-			if accommodation.Location == request.Location && accommodation.MinGuests > int(request.GuestsNum) && accommodation.MaxGuests < int(request.GuestsNum) {
+			if accommodation.Location == request.Location && accommodation.MinGuests >= int(request.GuestsNum) && accommodation.MaxGuests <= int(request.GuestsNum) {
 				nights := endDate.Sub(startDate)
 				totalPrice := avail.Price * float64(nights)
 				findAvailability := models.FindAvailability{AccommodationId: accommodation.ID, AvailabilityID: avail.ID, HostID: accommodation.HostID, Name: accommodation.Name,
@@ -200,30 +202,31 @@ func (handler *AvailabilityHandler) SearchAvailability(ctx context.Context, requ
 		} else {
 			i := 0
 			for _, res := range reservations.Reservations {
-				if res.IsAccepted && !res.IsCanceled && !res.IsDeleted {
+				yearRes, monthRes, dayRes := res.StartDate.AsTime().Date()
+				yearERes, monthERes, dayERes := res.EndDate.AsTime().Date()
+				startDateRes := time.Date(yearRes, monthRes, dayRes, int(0), int(0), int(0), int(0), time.UTC)
+				endDateRes := time.Date(yearERes, monthERes, dayERes, int(0), int(0), int(0), int(0), time.UTC)
+				if res.IsAccepted && !res.IsCanceled && !res.IsDeleted && ((startDate.Before(startDateRes) && endDateRes.After(startDateRes)) || (startDate.After(startDateRes) && endDate.Before(endDateRes)) || (startDate.After(startDateRes) && startDate.Before(endDateRes))) {
 					i++
-					//fmt.Println("i", i)
 				}
 			}
 			if i == 0 {
 				if strings.Title(strings.ToLower(accommodation.Location)) == strings.Title(strings.ToLower(request.Location)) && int(request.GuestsNum) >= accommodation.MinGuests && int(request.GuestsNum) <= accommodation.MaxGuests {
-					//fmt.Println("IF")
-					nights := endDate.Sub(startDate)
+					duration := endDate.Sub(startDate)
+					nights := int(duration.Hours() / 24)
 					totalPrice := avail.Price * float64(nights)
 					findAvailability := models.FindAvailability{AccommodationId: accommodation.ID, AvailabilityID: avail.ID, HostID: accommodation.HostID, Name: accommodation.Name,
 						Location: accommodation.Location, Wifi: accommodation.Wifi, Kitchen: accommodation.Kitchen, AC: accommodation.AC, ParkingLot: accommodation.ParkingLot, Images: accommodation.Images,
 						StartDate: avail.StartDate, EndDate: avail.EndDate, TotalPrice: totalPrice, SinglePrice: avail.Price, IsPricePerGuest: avail.IsPricePerGuest}
-					//fmt.Println("Findavailability", findAvailability)
 					favailabilities = append(favailabilities, findAvailability)
 				} else {
-					return nil, status.Errorf(codes.InvalidArgument, "All accommodations are occupied at chosen time!")
+					return nil, status.Errorf(codes.InvalidArgument, "1All accommodations are occupied at chosen time!")
 				}
 			} else {
-				return nil, status.Errorf(codes.InvalidArgument, "All accommodations are occupied at chosen time!")
+				return nil, status.Errorf(codes.InvalidArgument, "2All accommodations are occupied at chosen time!")
 			}
 		}
 	}
-	//fmt.Println("favail", favailabilities)
 	findAvailabilities := []*pb.FindAvailability{}
 	for _, a := range favailabilities {
 		findAvailabilitiyPb := mapFindAvailability(&a)

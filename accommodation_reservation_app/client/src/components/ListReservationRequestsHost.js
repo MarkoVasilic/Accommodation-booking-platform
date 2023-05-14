@@ -42,7 +42,34 @@ const RenderDeleteReservation = (params) => {
                     });
                 }}
             >
-                Delete
+                Reject
+            </Button>
+        </strong>
+    )
+};
+
+const RenderAcceptReservation = (params) => {
+    let navigate = useNavigate();
+    return (
+        <strong>
+            <Button
+                variant="contained"
+                color="primary"
+                size="small"
+                style={{ marginLeft: 16 }}
+                onClick={() => {
+                    //proveriti url
+                    axiosApi
+                    //proslediti koji treba
+                    .put(`/accommodation/reservation/accept/`+params.row.ReservationId)
+                    .then((response) => {
+                        refreshPage();
+                    }).catch(er => {
+                        console.log(er.response);
+                    });
+                }}
+            >
+                Accept
             </Button>
         </strong>
     )
@@ -55,10 +82,18 @@ function formatSecondsToDate(seconds) {
     return date;
   }
 
+  function numOfCancelation(num) {
+    //console.log('Sec', seconds)
+    //console.log('date', date)
+    if (num == undefined || null || 0 ) return 0
+    else return num
+
+  }
+
 const columns = [
     {
         field: "Name",
-        headerName: "Name",
+        headerName: "User",
         type: "string",
         width: 300,
         sortable: false,
@@ -97,8 +132,26 @@ const columns = [
         valueGetter: params => formatSecondsToDate(params.row.EndDate.seconds)    
     },
     {
+        field: "NumOfCancelation",
+        headerName: "NumOfCancelation",
+        type: "number",
+        width: 300,
+        sortable: false,
+        filterable: false,
+        editable: false,
+        valueGetter: params => numOfCancelation(params.row.NumOfCancelation) 
+    },
+    {
+        field: "accept",
+        headerName: "Accept",
+        width: 300,
+        renderCell: RenderAcceptReservation,
+        disableClickEventBubbling: true   
+    }
+    ,
+    {
         field: "delete",
-        headerName: "Delete Reservation",
+        headerName: "Reject",
         width: 300,
         renderCell: RenderDeleteReservation,
         disableClickEventBubbling: true   
@@ -106,7 +159,7 @@ const columns = [
 ];
 
 
-function PendingReservationsList(props) {
+function ListReservationRequestsHost(props) {
     const { handleSubmit, control } = useForm();
     const [reservations, setReservations ] = useState([]);
     const [ error, setError ] = React.useState(false);
@@ -125,9 +178,13 @@ function PendingReservationsList(props) {
             console.log("ID", res.data.user.Id);
         axiosApi
             //proslediti koji treba
-            .get(`/reservation/guest/pending/`+res.data.user.Id)
+            .get(`/reservation/host/`+res.data.user.Id)
             .then((response) => {
+                
                 setReservations(response.data);
+                if (response.data ==null){
+                    setReservations([]);
+                }
                 console.log('Data', response.data)
                 console.log('RES', reservations)
             }).catch(er => {
@@ -152,7 +209,7 @@ function PendingReservationsList(props) {
                     marginBottom={3}
                     marginTop={1}
                 >
-                    Pending Reservations
+                    Reservation requests
                 </Typography>
             </Stack>
             <Paper>
@@ -200,4 +257,4 @@ function PendingReservationsList(props) {
     );
 }
 
-export default PendingReservationsList;
+export default ListReservationRequestsHost;

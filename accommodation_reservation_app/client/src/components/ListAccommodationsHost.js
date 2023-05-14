@@ -17,11 +17,8 @@ import CloseIcon from "@mui/icons-material/Close";
 import Alert from "@mui/material/Alert";
 import Collapse from "@mui/material/Collapse";
 
-function refreshPage(){
-    window.location.reload();
-}
-
-const RenderDeleteReservation = (params) => {
+//proslediti nekako id accomodationa
+const RenderCreateButton = (params) => {
     let navigate = useNavigate();
     return (
         <strong>
@@ -31,115 +28,139 @@ const RenderDeleteReservation = (params) => {
                 size="small"
                 style={{ marginLeft: 16 }}
                 onClick={() => {
-                    //proveriti url
-                    axiosApi
-                    //proslediti koji treba
-                    .put(`/accommodation/reservation/ldelete/`+params.row.ReservationId)
-                    .then((response) => {
-                        refreshPage();
-                    }).catch(er => {
-                        console.log(er.response);
-                    });
+                    return navigate('/availability/create', {state: params.row.Id});
                 }}
             >
-                Delete
+                Create availability
             </Button>
         </strong>
     )
 };
 
-function formatSecondsToDate(seconds) {
-    const date = new Date(seconds * 1000 - 7200*1000);
-    //console.log('Sec', seconds)
-    //console.log('date', date)
-    return date;
-  }
+const RenderAvailabilitiesButton = (params) => {
+    let navigate = useNavigate();
+    return (
+        <strong>
+            <Button
+                variant="contained"
+                align="left"
+                color="primary"
+                size="small"
+                style={{ marginLeft: 16 }}
+                onClick={() => {
+                    return navigate('/availabilities', {state: params.row.Id});
+                }}
+            >
+                All availabilities
+            </Button>
+        </strong>
+    )
+};
+
+
 
 const columns = [
     {
         field: "Name",
         headerName: "Name",
         type: "string",
-        width: 300,
+        width: 350,
         sortable: false,
         filterable: false,
-        editable: false,
+        editable: false
     },
     {
         field: "Location",
         headerName: "Location",
         type: "string",
-        width: 300,
+        width: 350,
         sortable: false,
         filterable: false,
-        editable: false,
+        editable: false
     },
     {
-        field: "StartDate.seconds",
-        headerName: "Start date",
-        type: "date",
-        width: 300,
-        sortable: false,
-        filterable: false,
-        editable: false,
-        format:"DD/MM/YYYY",
-        valueGetter: params => formatSecondsToDate(params.row.StartDate.seconds)    
+        field: "Create",
+        align: "left",
+        headerName: "Create Availability",
+        width: 350,
+        renderCell: RenderCreateButton,
+        disableClickEventBubbling: true   
     },
     {
-        field: "EndDate.seconds",
-        headerName: "End date",
-        type: "date",
-        width: 300,
-        sortable: false,
-        filterable: false,
-        editable: false,
-        format:"DD/MM/YYYY",
-        valueGetter: params => formatSecondsToDate(params.row.EndDate.seconds)    
-    },
-    {
-        field: "delete",
-        headerName: "Delete Reservation",
-        width: 300,
-        renderCell: RenderDeleteReservation,
+        field: "Get",
+        align: "left",
+        headerName: "All Availabilities",
+        width: 350,
+        renderCell: RenderAvailabilitiesButton,
         disableClickEventBubbling: true   
     }
 ];
 
 
-function PendingReservationsList(props) {
+function rowAction(navigate, buttonName, buttonUrl) {
+    return {
+        field: "Details",
+        headerName: buttonName,
+        align: "left",
+        headerAlign: "left",
+        sortable: false,
+        renderCell: (params) => {
+            const onClick = (e) => {
+                e.stopPropagation(); // don't select this row after clicking
+
+                const api = params.api;
+                const thisRow = params.row;
+
+                
+
+
+                return navigate("/accommodation-details", { state: thisRow });
+            };
+            return (
+                <Button
+                    variant="contained"
+                    color="secondary"
+                    size="small"
+                    onClick={onClick}
+                >
+                    {" "}
+                    <ReadMoreIcon />{" "}
+                </Button>
+            );
+        },
+    };
+}
+
+function AvailabilityList(props) {
     const { handleSubmit, control } = useForm();
-    const [reservations, setReservations ] = useState([]);
+    const [accommodations, setAccomodations ] = useState([]);
     const [ error, setError ] = React.useState(false);
     const [er, setEr] = React.useState("");
     const navigate = useNavigate();
     useEffect(() => {
         getData();
       //  onSubmit();
-    }, [setReservations]);
+    }, []);
     const date = new Date().toISOString();
 
         let getData = async () => {
         try{
-            console.log()
-            const res = await axiosApi.get('/user/logged');
-            console.log("ID", res.data.user.Id);
+        const res = await axiosApi.get('/user/logged');
+        console.log('Id',res.data.user.Id);
+
         axiosApi
-            //proslediti koji treba
-            .get(`/reservation/guest/pending/`+res.data.user.Id)
+            .get(`/accommodation/all/`+res.data.user.Id)
             .then((response) => {
-                setReservations(response.data);
-                console.log('Data', response.data)
-                console.log('RES', reservations)
+                console.log(response.data)
+                setAccomodations(response.data);
             }).catch(er => {
                 console.log(er.response);
-                setReservations([]);
+                setAccomodations([]);
             });
         }catch (err) {
                 console.log(err)
-                setReservations([]);
+                setAccomodations([]);
             }
-            console.log('RESS',reservations)
-
         };
 
     return (
@@ -152,7 +173,7 @@ function PendingReservationsList(props) {
                     marginBottom={3}
                     marginTop={1}
                 >
-                    Pending Reservations
+                    Accommodations
                 </Typography>
             </Stack>
             <Paper>
@@ -167,7 +188,7 @@ function PendingReservationsList(props) {
                                     size="small"
                                     onClick={() => {
                                         setError(false);
-                                        setReservations([])
+                                        setAccomodations([])
                                     }}
                                 >
                                     <CloseIcon fontSize="inherit" />
@@ -181,10 +202,10 @@ function PendingReservationsList(props) {
                 </Box>
                 <Box sx={{ height: 700, width: "100%", marginTop: "20px", marginBottom: "20px"}}>
                     <DataGrid
-                        rows={reservations}
-                        getRowId={(row) => row.ReservationId}
+                        rows={accommodations}
+                        getRowId={(row) => row.Id}
                         disableColumnFilter
-                        columns={columns}
+                        columns={[...columns, rowAction(navigate, props.buttonName, props.buttonUrl)]}
                         autoHeight
                         density="comfortable"
                         disableSelectionOnClick
@@ -200,4 +221,4 @@ function PendingReservationsList(props) {
     );
 }
 
-export default PendingReservationsList;
+export default AvailabilityList;
