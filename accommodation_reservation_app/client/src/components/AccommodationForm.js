@@ -85,7 +85,7 @@ function CreateAccommodationForm() {
     try {
         const resp = await axiosApi.post(url, accommodation);
 
-        //navigate("/flights-admin/all");
+        navigate("/accommodations/host");
     } catch (err) {
       const errMes = err.response.data
       setFailedAlert(true)

@@ -180,7 +180,6 @@ function rowAction(navigate, buttonName, buttonUrl, startDate, endDate, guestsNu
 
                 const api = params.api;
                 const thisRow = params.row;
-
                 return navigate("/accommodation-details", { state: thisRow });
             };
             return (

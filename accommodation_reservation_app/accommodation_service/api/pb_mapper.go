@@ -24,6 +24,10 @@ func mapAvailability(availability *models.Availability) *pb.Availability {
 func mapFindAvailability(findAvailability *models.FindAvailability) *pb.FindAvailability {
 	startDate := timestamppb.New(findAvailability.StartDate)
 	endDate := timestamppb.New(findAvailability.EndDate)
+	var imageUrls []string
+	for _, img := range findAvailability.Images {
+		imageUrls = append(imageUrls, *img)
+	}
 
 	findAvailabilityPb := &pb.FindAvailability{
 		AccommodationId: findAvailability.AccommodationId.Hex(),
@@ -35,7 +39,7 @@ func mapFindAvailability(findAvailability *models.FindAvailability) *pb.FindAvai
 		Kitchen:         findAvailability.Kitchen,
 		AC:              findAvailability.AC,
 		ParkingLot:      findAvailability.ParkingLot,
-		Images:          nil, //dodati za slike
+		Images:          imageUrls,
 		StartDate:       startDate,
 		EndDate:         endDate,
 		TotalPrice:      findAvailability.TotalPrice,
