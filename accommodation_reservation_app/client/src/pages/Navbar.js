@@ -146,7 +146,9 @@ export default function Navbar() {
 }
 
 const chooseSideMenu = (Role) => {
-    if (!Role) return { "Search flights": "/flights/all" };
+    if (!Role) return {  
+        "Search accommodations": "/accommodations/all",
+    };
     if (Role === "HOST") {
         return {
             "My accommodations": "/accommodations/host",
@@ -160,7 +162,6 @@ const chooseSideMenu = (Role) => {
         };
     } else {
         return {
-            "Search accommodations": "/accommodations/all",
         };
     }
 };

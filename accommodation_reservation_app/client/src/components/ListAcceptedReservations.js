@@ -124,7 +124,6 @@ function AcceptedReservationsList(props) {
             const res = await axiosApi.get('/user/logged');
             console.log("ID", res.data.user.Id);
         axiosApi
-            //proslediti koji treba
             .get(`/reservation/guest/accepted/`+res.data.user.Id)
             .then((response) => {
                 console.log("Reservations: ", response.data)
