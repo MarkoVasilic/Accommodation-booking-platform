@@ -58,10 +58,25 @@ func (service *AccommodationService) GetAllAccommodationsByLocation(location str
 }
 
 func (service *AccommodationService) GetAllAccommodations(hostId primitive.ObjectID) ([]models.Accommodation, error) {
-	accommodations, err := service.AccommodationRepository.GetAllAccommodations(hostId)
+	temp, err := primitive.ObjectIDFromHex("64580a2e9f857372a34602c2")
 	if err != nil {
+		err := status.Errorf(codes.InvalidArgument, "the provided id is not a valid ObjectID")
 		return nil, err
 	}
+
+	var accommodations []models.Accommodation
+	if hostId == temp {
+		accommodations, err = service.AccommodationRepository.GetAll()
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		accommodations, err = service.AccommodationRepository.GetAllAccommodations(hostId)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	return accommodations, nil
 }
 func (service *AccommodationService) DeleteAccommodationsHost(accommodations []models.Accommodation) (string, error) {

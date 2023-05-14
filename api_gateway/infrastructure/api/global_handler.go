@@ -495,7 +495,14 @@ func (handler *GlobalHandler) GetFindReservationHost(w http.ResponseWriter, r *h
 		fmt.Fprintf(w, "Failed to call GetFindReservationAcceptedGuest method: %v", err)
 		return
 	}
-	fmt.Fprintf(w, "%s", resp)
+
+	response, err := json.Marshal(resp.FindReservation)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write(response)
 }
 
 func (handler *GlobalHandler) CancelReservation(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {

@@ -96,13 +96,13 @@ func (svc *ReservationService) CreateReservation(reservation models.Reservation)
 	}
 
 	//ako nema preklapajucih i sve okej -> kreira se
-	insertErr := svc.ReservationRepository.CreateReservation(&reservation)
+	reservationId, insertErr := svc.ReservationRepository.CreateReservation(&reservation)
 	if insertErr != nil {
 		err := status.Errorf(codes.Internal, "Failed to create reservation")
 		return "Failed to create reservation", err
 	}
 
-	return "Successfully created reservation", nil
+	return reservationId.String(), nil
 }
 
 func (svc *ReservationService) CancelReservation(ReservationId primitive.ObjectID) (string, error) {

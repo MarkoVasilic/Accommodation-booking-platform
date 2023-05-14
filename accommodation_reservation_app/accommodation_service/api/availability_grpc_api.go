@@ -53,7 +53,20 @@ func (handler *AvailabilityHandler) GetAllAvailabilities(ctx context.Context, re
 		return nil, err
 	}
 	fmt.Println(accomodationId)
-	as, err := handler.availability_service.GetAllAvailabilitiesByAccommodationID(accomodationId)
+
+	temp, err := primitive.ObjectIDFromHex("64580a2e9f857372a34602c2")
+	if err != nil {
+		err := status.Errorf(codes.InvalidArgument, "the provided id is not a valid ObjectID")
+		return nil, err
+	}
+
+	var as []models.Availability
+	if accomodationId == temp {
+		as, err = handler.availability_service.GetAllAvailabilities()
+	} else {
+		as, err = handler.availability_service.GetAllAvailabilitiesByAccommodationID(accomodationId)
+	}
+
 	if err != nil {
 		return nil, err
 	} else if as == nil {

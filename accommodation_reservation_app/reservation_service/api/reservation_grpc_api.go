@@ -99,6 +99,29 @@ func (handler *ReservationHandler) CreateReservation(ctx context.Context, reques
 		err := status.Errorf(codes.Internal, mess)
 		return nil, err
 	}
+
+	//Testirati automatsku potvrdu zahteva
+	accommodation, err1 := handler.accommodation_client.GetAccommodationByAvailability(createContextForAuthorization(ctx), &accommodation_service.GetAccommodationByAvailabilityRequest{Id: request.AvailabilityID})
+	if err1 != nil {
+		err1 := status.Errorf(codes.Internal, mess)
+		return nil, err1
+	}
+
+	if accommodation.Accommodation.AutoAccept {
+		reservationId, err := primitive.ObjectIDFromHex(request.GuestId)
+		if err != nil {
+			err := status.Errorf(codes.InvalidArgument, "the provided id is not a valid ObjectID")
+			return nil, err
+		}
+
+		mess, err := handler.reservation_service.AcceptReservation(reservationId)
+		if err != nil {
+			err := status.Errorf(codes.Internal, mess)
+			return nil, err
+		}
+	}
+	////////////
+
 	response := &pb.CreateReservationResponse{
 		Message: "Success",
 	}
@@ -142,6 +165,7 @@ func (handler *ReservationHandler) GetFindReservationPendingGuest(ctx context.Co
 	response := &pb.GetFindReservationPendingGuestResponse{
 		FindReservation: findReservation,
 	}
+
 	return response, nil
 }
 
@@ -190,7 +214,7 @@ func (handler *ReservationHandler) GetFindReservationHost(ctx context.Context, r
 	//dodatno izvuci samo one gdje je isdeleted na false(dodatno i one gdje je iscanceled na false i isaccepted na false, ali to bi mogli provjeriti sa asistentom)
 	//treba napraviti mapper koji mapira na pb u obliku dto koji sam napravio i to treba da je lista za svaku rezervaciju
 	//za svaku konacnu rezervaciju izvuci listu guestova i za svakog pronaci njihove rezervacije i provjeriti koliko puta ima iscancelled i to sacuvati u polje NumOfCancellation u svakom dto
-	allAccommodations, err := handler.accommodation_client.GetAllAccommodations(createContextForAuthorization(ctx), &accommodation_service.GetAllAccommodationsRequest{Id: "tt"})
+	allAccommodations, err := handler.accommodation_client.GetAllAccommodations(createContextForAuthorization(ctx), &accommodation_service.GetAllAccommodationsRequest{Id: "64580a2e9f857372a34602c2"})
 	if err != nil {
 		err := status.Errorf(codes.InvalidArgument, "the provided id is not a valid ObjectID")
 		return nil, err
@@ -237,7 +261,7 @@ func (handler *ReservationHandler) GetFindReservationHost(ctx context.Context, r
 		}
 	}
 
-	var hostReservationsDto []models.FindReservation
+	var filteredReservations []models.FindReservation
 	for _, reservation := range hostPendingReservations {
 		user, err := handler.user_client.GetUser(createContextForAuthorization(ctx), &user_service.GetUserRequest{Id: request.Id})
 		if err != nil {
@@ -251,18 +275,28 @@ func (handler *ReservationHandler) GetFindReservationHost(ctx context.Context, r
 		}
 		canceledReservations, err := handler.reservation_service.GetAllCanceledReservationsByGuest(reservation.GuestID)
 
-		findRes := models.FindReservation{ReservationId: reservation.ID, GuestID: reservation.GuestID, Name: user.User.FirstName + " " + user.User.LastName, Location: accommodation.Accommodation.Location, StartDate: reservation.StartDate, EndDate: reservation.EndDate, NumOfCancelation: len(canceledReservations), IsAccepted: reservation.IsAccepted, IsCanceled: reservation.IsCanceled}
-		hostReservationsDto = append(hostReservationsDto, findRes)
+		findRes := models.FindReservation{
+			ReservationId:    reservation.ID,
+			GuestID:          reservation.GuestID,
+			Name:             user.User.FirstName + " " + user.User.LastName,
+			Location:         accommodation.Accommodation.Location,
+			StartDate:        reservation.StartDate,
+			EndDate:          reservation.EndDate,
+			NumOfCancelation: len(canceledReservations),
+			IsAccepted:       accommodation.Accommodation.AutoAccept,
+			IsCanceled:       reservation.IsCanceled}
+		filteredReservations = append(filteredReservations, findRes)
 	}
 
 	findReservation := []*pb.FindReservation{}
-	for _, r := range hostReservationsDto {
+	for _, r := range filteredReservations {
 		reservationsPb := mapFindReservation(&r)
 		findReservation = append(findReservation, reservationsPb)
 	}
 	response := &pb.GetFindReservationHostResponse{
 		FindReservation: findReservation,
 	}
+
 	return response, nil
 }
 
@@ -308,7 +342,6 @@ func (handler *ReservationHandler) DeleteLogicallyReservation(ctx context.Contex
 func (handler *ReservationHandler) AcceptReservation(ctx context.Context, request *pb.AcceptReservationRequest) (*pb.AcceptReservationResponse, error) {
 	//TODO postaviti isaccepted na true za rezervaciju za koju je id poslan
 	//dodatno treba dobaviti sve rezervacije i naci one sa preklopljenim vremenima za isti smjestaj i njima staviti isdeleted na true
-	fmt.Println("pogodjen endpoint accepta")
 	Id, err := primitive.ObjectIDFromHex(request.Id)
 	if err != nil {
 		err := status.Errorf(codes.InvalidArgument, "the provided id is not a valid ObjectID")
@@ -327,7 +360,8 @@ func (handler *ReservationHandler) AcceptReservation(ctx context.Context, reques
 }
 
 func (handler *ReservationHandler) GetAllReservationsHost(ctx context.Context, request *pb.GetAllReservationsHostRequest) (*pb.GetAllReservationsHostResponse, error) {
-	allAccommodations, err := handler.accommodation_client.GetAllAccommodations(createContextForAuthorization(ctx), &accommodation_service.GetAllAccommodationsRequest{Id: "tt"})
+
+	allAccommodations, err := handler.accommodation_client.GetAllAccommodations(createContextForAuthorization(ctx), &accommodation_service.GetAllAccommodationsRequest{Id: "64580a2e9f857372a34602c2"})
 	if err != nil {
 		err := status.Errorf(codes.InvalidArgument, "the provided id is not a valid ObjectID")
 		return nil, err

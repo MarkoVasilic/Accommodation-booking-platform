@@ -16,6 +16,8 @@ import SearchAvailability from './pages/SearchedAvailability';
 import SearchAvailabilityGuest from './pages/SearchedAvailabilityGuest';
 import CreateAccommodation from './pages/CreateAccommodation';
 import AccommodationsHost from './pages/AccommodationsHost'
+import ReservationRequestsHost from './pages/ReservationRequestsHost';
+import AccommodationDetailsCard from './components/AccommodationDetailsCard';
 
 function App() {
   const token = localStorage.getItem("token");
@@ -41,8 +43,10 @@ function App() {
                         <Route path="/pending-reservations" element={<PendingReservationsList />} />
                         <Route path="/accommodations/all" element={<SearchAvailability />} />
                         <Route path="/accommodations/all/guest" element={<SearchAvailabilityGuest />} />
-                        <Route path="/accommodations/create" element={<CreateAccommodation />} />
+                        <Route path="/accomodations/create" element={<CreateAccommodation />} />
                         <Route path="/accommodations/host" element={<AccommodationsHost />} />
+                        <Route path="/reservation-requests" element={<ReservationRequestsHost />} />
+                        <Route path="/accommodation-details" element={<AccommodationDetailsCard />} />
                     </Routes>
                 </div>
             </Router>

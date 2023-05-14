@@ -51,17 +51,19 @@ func (repo *ReservationRepository) GetAllReservations() ([]models.Reservation, e
 	return reservations, nil
 }
 
-func (repo *ReservationRepository) CreateReservation(reservation *models.Reservation) error {
+func (repo *ReservationRepository) CreateReservation(reservation *models.Reservation) (primitive.ObjectID, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	reservation.ID = primitive.NewObjectID()
-	_, err := repo.ReservationCollection.InsertOne(ctx, reservation)
-	if err != nil {
-		return err
+	res, _ := repo.ReservationCollection.InsertOne(ctx, reservation)
+
+	oid, ok := res.InsertedID.(primitive.ObjectID)
+	if !ok {
+
 	}
 
-	return nil
+	return oid, nil
 }
 
 func (repo *ReservationRepository) GetReservationById(id string) (models.Reservation, error) {
@@ -134,8 +136,7 @@ func (repo *ReservationRepository) GetAllCanceledReservationsByGuest(guestId pri
 	var ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	filter := bson.M{"guest_id": guestId}
-	cursor, err := repo.ReservationCollection.Find(ctx, filter)
+	cursor, err := repo.ReservationCollection.Find(ctx, bson.M{})
 	if err != nil {
 		return nil, err
 	}
@@ -147,7 +148,7 @@ func (repo *ReservationRepository) GetAllCanceledReservationsByGuest(guestId pri
 
 	var canceledReservations []models.Reservation
 	for _, r := range reservations {
-		if r.IsCanceled == true {
+		if r.IsCanceled && r.GuestID == guestId {
 			canceledReservations = append(canceledReservations, r)
 		}
 	}

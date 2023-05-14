@@ -151,6 +151,7 @@ const chooseSideMenu = (Role) => {
         return {
             "My accommodations": "/accommodations/host",
             "Create accommodation": "/accomodations/create",
+            "Reservation requests": "/reservation-requests",
         };
     } else if (Role === "GUEST") {
         return {

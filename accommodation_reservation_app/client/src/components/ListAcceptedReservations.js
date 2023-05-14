@@ -17,7 +17,6 @@ import CloseIcon from "@mui/icons-material/Close";
 import Alert from "@mui/material/Alert";
 import Collapse from "@mui/material/Collapse";
 
-
 function refreshPage(){
     window.location.reload();
 }
@@ -32,15 +31,9 @@ const RenderCancelReservation = (params) => {
                 size="small"
                 style={{ marginLeft: 16 }}
                 onClick={() => {
-                    axiosApi
-                    .put(`/accommodation/reservation/cancel/`+params.row.ReservationId)
-                    .then((response) => {
-                        console.log("AAA")
-                        console.log(response.data)
-                        refreshPage();
-                    }).catch(er => {
-                        console.log(er.response);
-                    });
+                    //proveriti url
+                    //navigate('/accommodation/reservation/cancel/'+params.row.id);
+                    //refreshPage();
                 }}
             >
                 Cancel
@@ -49,16 +42,11 @@ const RenderCancelReservation = (params) => {
     )
 };
 
-function formatSecondsToDate(seconds) {
-    const date = new Date(seconds * 1000 - 7200*1000);
-    //console.log('Sec', seconds)
-    //console.log('date', date)
-    return date;
-  }
+
 
 const columns = [
     {
-        field: "Name",
+        field: "name",
         headerName: "Name",
         type: "string",
         width: 300,
@@ -67,36 +55,47 @@ const columns = [
         editable: false,
     },
     {
-        field: "Location",
+        field: "location",
         headerName: "Location",
         type: "string",
         width: 300,
         sortable: false,
         filterable: false,
         editable: false,
+        //format:"DD/MM/YYYY hh:mm A",
+        valueFormatter: params => moment(params?.value).add(-2, 'h').format("DD/MM/YYYY hh:mm:ss A"),
     },
     {
-        field: "StartDate.seconds",
+        field: "start_date",
         headerName: "Start date",
-        type: "date",
+        type: "datetime-local",
         width: 300,
         sortable: false,
         filterable: false,
         editable: false,
-        format: "DD/MM/YYYY",
-        valueGetter: params => formatSecondsToDate(params.row.StartDate.seconds)
+        //format:"DD/MM/YYYY hh:mm A",
+        valueFormatter: params => moment(params?.value).add(-2, 'h').format("DD/MM/YYYY hh:mm:ss A"),
     },
     {
-        field: "EndDate.seconds",
+        field: "end_date",
         headerName: "End date",
-        type: "date",
+        type: "datetime-local",
         width: 300,
         sortable: false,
         filterable: false,
         editable: false,
-        format: "DD/MM/YYYY",
-        valueGetter: params => formatSecondsToDate(params.row.EndDate.seconds)
+        //format:"DD/MM/YYYY hh:mm A",
+        valueFormatter: params => moment(params?.value).add(-2, 'h').format("DD/MM/YYYY hh:mm:ss A"),
     },
+    /*{
+        field: "numGuests",
+        headerName: "Number of guests",
+        type: "number",
+        width: 300,
+        sortable: false,
+        filterable: false,
+        editable: false, 
+    },*/
     {
         field: "cancel",
         headerName: "Cancel Reservation",
@@ -121,13 +120,10 @@ function AcceptedReservationsList(props) {
 
         let getData = async () => {
         try{
-            const res = await axiosApi.get('/user/logged');
-            console.log("ID", res.data.user.Id);
         axiosApi
             //proslediti koji treba
-            .get(`/reservation/guest/accepted/`+res.data.user.Id)
+            //.get(`/reservation/guest/accepted/`+id)
             .then((response) => {
-                console.log("Reservations: ", response.data)
                 setReservations(response.data);
             }).catch(er => {
                 console.log(er.response);
@@ -137,7 +133,6 @@ function AcceptedReservationsList(props) {
                 console.log(err)
                 setReservations([]);
             }
-           // console.log('Sec',new Date(reservations[0].StartDate.seconds*1000-7200*1000))
         };
 
     return (
@@ -180,13 +175,14 @@ function AcceptedReservationsList(props) {
                 <Box sx={{ height: 700, width: "100%", marginTop: "20px", marginBottom: "20px"}}>
                     <DataGrid
                         rows={reservations}
-                        getRowId={(row) => row.ReservationId}
+                        getRowId={(row) => row.ID}
                         disableColumnFilter
-                        columns={[...columns]}
+                        columns={columns}
                         autoHeight
                         density="comfortable"
                         disableSelectionOnClick
                         rowHeight={50}
+                        pageSize={5}
                         headerHeight={35}
                         headerAlign= "left"
                         align="left"
