@@ -112,7 +112,7 @@ const columns = [
     },
 ];
 
-function MakeReservation(navigate, startDate, endDate, guestsNum) {
+function MakeReservation(navigate, startDate, endDate, guestsNum, setError, setEr) {
     return {
         field: "Make reservation",
         headerName: "Reserve",
@@ -140,7 +140,8 @@ function MakeReservation(navigate, startDate, endDate, guestsNum) {
                     console.log(response.data)
                     navigate('/pending-reservations')
                 }).catch(er => {
-                    console.log(er.response);
+                    setError(true)
+                    setEr("You cannot create reservation in the past or if you already have same reservation!")
                 });
             
 
@@ -358,7 +359,7 @@ function ListSearchedAvailabilityGuest(props) {
                         rows={accomodation}
                         getRowId={(row) => row.AccommodationId}
                         disableColumnFilter
-                        columns={[...columns, rowAction(navigate, props.buttonName, props.buttonUrl), MakeReservation(navigate, startDate, endDate, guestsNum)]}
+                        columns={[...columns, rowAction(navigate, props.buttonName, props.buttonUrl), MakeReservation(navigate, startDate, endDate, guestsNum, setError, setEr)]}
                         autoHeight
                         density="comfortable"
                         disableSelectionOnClick
