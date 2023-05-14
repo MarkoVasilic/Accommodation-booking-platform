@@ -225,6 +225,8 @@ function ListSearchedAvailabilityGuest(props) {
                     setError(false)
                 }).catch(er => {
                     console.log(er.response);
+                    setError(true)
+                    setEr("There is no accommodation for chosen dates!")
                     setAccomodation([]);
                 });
             }catch (err) {
