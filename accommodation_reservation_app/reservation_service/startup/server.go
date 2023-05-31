@@ -16,7 +16,10 @@ import (
 	"github.com/MarkoVasilic/Accommodation-booking-platform/common/proto/accommodation_service"
 	reservation "github.com/MarkoVasilic/Accommodation-booking-platform/common/proto/reservation_service"
 	"github.com/MarkoVasilic/Accommodation-booking-platform/common/proto/user_service"
+	saga "github.com/MarkoVasilic/Accommodation-booking-platform/common/saga/messaging"
+	"github.com/MarkoVasilic/Accommodation-booking-platform/common/saga/messaging/nats"
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
+	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
@@ -32,6 +35,10 @@ func NewServer(config *config.Config) *Server {
 		config: config,
 	}
 }
+
+const (
+	QueueGroup = "reservation_service"
+)
 
 func (server *Server) InitializeAccommodationClient() accommodation_service.AccommodationServiceClient {
 	accommodationEndpoint := fmt.Sprintf("%s:%s", server.config.AccommodationHost, server.config.AccommodationPort)
@@ -59,9 +66,41 @@ func (server *Server) Start() {
 	reservation_service := &service.ReservationService{ReservationRepository: reservation_repository}
 	accommodation_client := server.InitializeAccommodationClient()
 	user_client := server.InitializeUserClient()
+
+	commandSubscriber := server.initSubscriber(server.config.DeleteUserCommandSubject, QueueGroup)
+	replyPublisher := server.initPublisher(server.config.DeleteUserReplySubject)
+	server.initDeleteUserHandler(reservation_service, replyPublisher, commandSubscriber, accommodation_client, client)
+
 	reservation_handler := api.NewReservationHandler(reservation_service, accommodation_client, user_client)
 
 	server.startGrpcServer(reservation_handler)
+}
+
+func (server *Server) initPublisher(subject string) saga.Publisher {
+	publisher, err := nats.NewNATSPublisher(
+		server.config.NatsHost, server.config.NatsPort,
+		server.config.NatsUser, server.config.NatsPass, subject)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return publisher
+}
+
+func (server *Server) initSubscriber(subject, queueGroup string) saga.Subscriber {
+	subscriber, err := nats.NewNATSSubscriber(
+		server.config.NatsHost, server.config.NatsPort,
+		server.config.NatsUser, server.config.NatsPass, subject, queueGroup)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return subscriber
+}
+
+func (server *Server) initDeleteUserHandler(service *service.ReservationService, publisher saga.Publisher, subscriber saga.Subscriber, accommodation_client accommodation_service.AccommodationServiceClient, mongo_client *mongo.Client) {
+	_, err := api.NewDeleteUserCommandHandler(service, publisher, subscriber, accommodation_client, mongo_client)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func Authentication(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {

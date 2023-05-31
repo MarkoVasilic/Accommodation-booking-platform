@@ -33,7 +33,6 @@ func ConnectToDatabase(host, port string) *mongo.Client {
 	} else {
 		fmt.Println("Successfully Connected to the mongodb")
 	}
-
 	return client
 }
 

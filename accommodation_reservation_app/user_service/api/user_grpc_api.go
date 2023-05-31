@@ -96,6 +96,7 @@ func (handler *UserHandler) DeleteUser(ctx context.Context, request *pb.DeleteUs
 		}
 		return response, err
 	}
+	delete_now := false
 	if claims.Role == "GUEST" {
 		reservations, err := handler.reservation_client.GetFindReservationAcceptedGuest(createContextForAuthorization(ctx), &reservation_service.GetFindReservationAcceptedGuestRequest{Id: id})
 		if err != nil {
@@ -114,6 +115,7 @@ func (handler *UserHandler) DeleteUser(ctx context.Context, request *pb.DeleteUs
 			}
 			return response, err
 		}
+		delete_now = true
 	}
 	if claims.Role == "HOST" {
 		reservations, err := handler.reservation_client.GetAllReservationsHost(createContextForAuthorization(ctx), &reservation_service.GetAllReservationsHostRequest{Id: id})
@@ -133,27 +135,27 @@ func (handler *UserHandler) DeleteUser(ctx context.Context, request *pb.DeleteUs
 			}
 			return response, err
 		}
-		_, err = handler.reservation_client.DeleteReservationsHost(createContextForAuthorization(ctx), &reservation_service.DeleteReservationsHostRequest{Id: id})
-		if err != nil {
-			if err.Error() != "rpc error: code = InvalidArgument desc = There is no accommodations!" {
-				err := status.Errorf(codes.Internal, "something went wrong")
-				response := &pb.DeleteUserResponse{
-					Message: "something went wrong",
-				}
-				return response, err
-			}
-		}
-		_, err = handler.accommodation_client.DeleteAccommodationsByHost(createContextForAuthorization(ctx), &accommodation_service.DeleteAccommodationsByHostRequest{Id: id})
-		if err != nil {
-			err := status.Errorf(codes.Internal, "something went wrong")
-			response := &pb.DeleteUserResponse{
-				Message: "something went wrong",
-			}
-			return response, err
-		}
+		// _, err = handler.reservation_client.DeleteReservationsHost(createContextForAuthorization(ctx), &reservation_service.DeleteReservationsHostRequest{Id: id})
+		// if err != nil {
+		// 	if err.Error() != "rpc error: code = InvalidArgument desc = There is no accommodations!" {
+		// 		err := status.Errorf(codes.Internal, "something went wrong")
+		// 		response := &pb.DeleteUserResponse{
+		// 			Message: "something went wrong",
+		// 		}
+		// 		return response, err
+		// 	}
+		// }
+		// _, err = handler.accommodation_client.DeleteAccommodationsByHost(createContextForAuthorization(ctx), &accommodation_service.DeleteAccommodationsByHostRequest{Id: id})
+		// if err != nil {
+		// 	err := status.Errorf(codes.Internal, "something went wrong")
+		// 	response := &pb.DeleteUserResponse{
+		// 		Message: "something went wrong",
+		// 	}
+		// 	return response, err
+		// }
 	}
 	objectId, err := primitive.ObjectIDFromHex(id)
-	mess, err := handler.service.DeleteUser(objectId)
+	mess, err := handler.service.DeleteUser(objectId, delete_now, ClientToken)
 	if err != nil {
 		response := &pb.DeleteUserResponse{
 			Message: mess,
@@ -172,6 +174,9 @@ func (handler *UserHandler) GetLoggedUser(ctx context.Context, request *pb.GetLo
 		return nil, fmt.Errorf("No token provided")
 	}
 	claims, _ := token.ValidateToken(ClientToken)
+	if claims == nil {
+		return nil, nil
+	}
 	objectId, err := primitive.ObjectIDFromHex(claims.Uid)
 	user, err := handler.service.GetUserById(objectId)
 

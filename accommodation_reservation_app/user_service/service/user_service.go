@@ -16,6 +16,7 @@ import (
 
 type UserService struct {
 	UserRepository *repository.UserRepository
+	Orchestrator   *DeleteUserOrchestrator
 }
 
 var Validate = validator.New()
@@ -119,17 +120,24 @@ func (service *UserService) UpdateUser(user models.User, id string) (string, err
 	return "Succesffully updated user", nil
 }
 
-func (s *UserService) DeleteUser(id primitive.ObjectID) (string, error) {
-	result, err := s.UserRepository.DeleteUser(id)
-	if err != nil {
-		log.Panic(err)
-		err := status.Errorf(codes.Internal, "something went wrong")
-		return "something went wrong", err
-	}
+func (s *UserService) DeleteUser(id primitive.ObjectID, delete_now bool, ClientToken string) (string, error) {
+	if delete_now {
+		result, err := s.UserRepository.DeleteUser(id)
+		if err != nil {
+			log.Panic(err)
+			err := status.Errorf(codes.Internal, "something went wrong")
+			return "something went wrong", err
+		}
 
-	if result.DeletedCount == 0 {
-		err := status.Errorf(codes.NotFound, "no user found with the given ID")
-		return "no user found with the given ID", err
+		if result.DeletedCount == 0 {
+			err := status.Errorf(codes.NotFound, "no user found with the given ID")
+			return "no user found with the given ID", err
+		}
+		return "Succesffully deleted user", nil
+	}
+	err := s.Orchestrator.Start(id, ClientToken)
+	if err != nil {
+		return "Failed to delete user", nil
 	}
 	return "Succesffully deleted user", nil
 }

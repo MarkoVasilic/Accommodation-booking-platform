@@ -155,9 +155,13 @@ func (repo *ReservationRepository) GetAllCanceledReservationsByGuest(guestId pri
 	return canceledReservations, nil
 }
 
-func (repo *ReservationRepository) DeleteReservationById(id primitive.ObjectID) (*mongo.DeleteResult, error) {
+func (repo *ReservationRepository) DeleteReservationById(objectIDs []primitive.ObjectID) (*mongo.DeleteResult, error) {
 	var ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-
-	return repo.ReservationCollection.DeleteOne(ctx, bson.M{"_id": id})
+	filter := bson.M{
+		"_id": bson.M{
+			"$in": objectIDs,
+		},
+	}
+	return repo.ReservationCollection.DeleteMany(ctx, filter)
 }

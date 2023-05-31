@@ -107,7 +107,6 @@ func (handler *ReservationHandler) CreateReservation(ctx context.Context, reques
 			return nil, err
 		}
 	}
-	////////////
 
 	response := &pb.CreateReservationResponse{
 		Message: "Success",
