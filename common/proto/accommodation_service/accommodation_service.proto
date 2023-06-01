@@ -59,6 +59,45 @@ service AccommodationService{
                         delete: "/accommodation/availability/delete/host/id"
                 };
         }
+        rpc GetEveryAccommodation(GetEveryAccommodationRequest) returns(GetEveryAccommodationResponse) {
+        	option (google.api.http) = {
+			get: "/accommodation/accommodations"
+		};
+        }
+        rpc CreateAccommodationGrade(CreateAccommodationGradeRequest) returns (CreateAccommodationGradeResponse) {
+                option (google.api.http) = {
+                    post: "/accommodation/accommodation/grade"
+                    body: "*"
+                };
+        }
+
+        rpc GetAllAccommodationGuestGrades(GetAllAccommodationGuestGradesRequest) returns(GetAllAccommodationGuestGradesResponse) {
+        	option (google.api.http) = {
+			get: "/accommodation/accommodation/guest/grades/{id}"
+		};
+        }
+        rpc UpdateAccommodationGrade(UpdateAccommodationGradeRequest) returns (UpdateAccommodationGradeResponse) {
+                option (google.api.http) = {
+                        put: "/accommodation/accommodation/grade/{id}"
+                        body: "*"
+                };
+        }
+        rpc DeleteAccommodationGrade(DeleteAccommodationGradeRequest) returns (DeleteAccommodationGradeResponse) {
+                option (google.api.http) = {
+                        delete: "/accommodation/accommodation/grade/{id}"
+                };
+        }
+        rpc GetAllAccommodationGrade(GetAllAccommodationGradeRequest) returns(GetAllAccommodationGradeResponse) {
+        	option (google.api.http) = {
+			get: "/accommodation/accommodation/grade/{id}"
+		};
+        }
+        rpc FilterAvailability(FilterAvailabilityRequest) returns (FilterAvailabilityResponse) {
+                option (google.api.http) = {
+                        post: "/accommodation/availability/filter"
+                        body: "*"
+                };
+        }
 }
 
 message Accommodation {
@@ -196,4 +235,88 @@ message DeleteAccommodationsByHostRequest {
 
 message DeleteAccommodationsByHostResponse {
         string message = 1;
+}
+
+message GetEveryAccommodationRequest {
+}
+
+message GetEveryAccommodationResponse {
+        repeated Accommodation Accommodations = 1;
+}
+
+message AccommodationGrade {
+        string ID = 1;
+        string GuestID = 2;
+        string AccommodationID = 3;
+        string Grade = 4;
+        google.protobuf.Timestamp DateOfGrade = 5;
+}
+
+message AccommodationGradeDetails {
+        string ID = 1;
+        string GuestFirstName = 2;
+        string GuestLastName = 3;
+        string AccommodationName = 4;
+        string Grade = 5;
+        google.protobuf.Timestamp DateOfGrade = 6;
+}
+
+message CreateAccommodationGradeRequest {
+        AccommodationGrade AccommodationGrade = 1;
+}
+
+message CreateAccommodationGradeResponse {
+        string message = 1;
+}
+
+message GetAllAccommodationGuestGradesRequest {
+       string id = 1;
+}
+
+message GetAllAccommodationGuestGradesResponse {
+       repeated AccommodationGradeDetails AccommodationGradeDetails = 1;
+}
+
+message UpdateAccommodationGradeRequest {
+        string id = 1;
+        string Grade = 2;
+ }
+ 
+ message UpdateAccommodationGradeResponse {
+        string message = 1;
+ }
+
+message DeleteAccommodationGradeRequest {
+        string id = 1;
+ }
+ 
+ message DeleteAccommodationGradeResponse {
+        string message = 1;
+ }
+
+message GetAllAccommodationGradeRequest {
+        string id = 1;
+ }
+ 
+ message GetAllAccommodationGradeResponse {
+        repeated AccommodationGradeDetails AccommodationGradeDetails = 1;
+        double AverageGrade = 2;
+ }
+
+ message FilterAvailabilityRequest {
+        string Location = 1;
+        int32 GuestsNum = 2;
+        google.protobuf.Timestamp StartDate = 3;
+        google.protobuf.Timestamp EndDate = 4;
+        int32 GradeMin = 5;
+        int32 GradeMax = 6;
+        bool Wifi = 7;
+        bool Kitchen = 8;
+        bool AC = 9;
+        bool ParkingLot = 10;
+        bool ProminentHost = 11;
+}
+
+message FilterAvailabilityResponse {
+        repeated FindAvailability FindAvailability = 1;
 }

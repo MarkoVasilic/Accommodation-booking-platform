@@ -40,7 +40,7 @@ func (repo *UserRepository) GetUserByUsername(username string) (models.User, err
 	return founduser, err
 }
 
-func (repo *UserRepository) CreateUser(user *models.User) error {
+func (repo *UserRepository) CreateUser(user *models.User) (error, primitive.ObjectID) {
 	var ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	user.Id = primitive.NewObjectID()
@@ -49,7 +49,7 @@ func (repo *UserRepository) CreateUser(user *models.User) error {
 	user.Token = &token
 	user.Refresh_Token = &refreshtoken
 	_, inserterr := repo.UserCollection.InsertOne(ctx, user)
-	return inserterr
+	return inserterr, user.Id
 }
 
 func (repo *UserRepository) UpdateUser(user *models.User) error {

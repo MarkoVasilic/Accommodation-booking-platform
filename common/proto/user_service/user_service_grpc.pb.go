@@ -19,12 +19,22 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	UserService_GetUser_FullMethodName       = "/user_service.UserService/GetUser"
-	UserService_GetLoggedUser_FullMethodName = "/user_service.UserService/GetLoggedUser"
-	UserService_CreateUser_FullMethodName    = "/user_service.UserService/CreateUser"
-	UserService_Login_FullMethodName         = "/user_service.UserService/Login"
-	UserService_UpdateUser_FullMethodName    = "/user_service.UserService/UpdateUser"
-	UserService_DeleteUser_FullMethodName    = "/user_service.UserService/DeleteUser"
+	UserService_GetUser_FullMethodName              = "/user_service.UserService/GetUser"
+	UserService_GetLoggedUser_FullMethodName        = "/user_service.UserService/GetLoggedUser"
+	UserService_CreateUser_FullMethodName           = "/user_service.UserService/CreateUser"
+	UserService_Login_FullMethodName                = "/user_service.UserService/Login"
+	UserService_UpdateUser_FullMethodName           = "/user_service.UserService/UpdateUser"
+	UserService_DeleteUser_FullMethodName           = "/user_service.UserService/DeleteUser"
+	UserService_GetAllHosts_FullMethodName          = "/user_service.UserService/GetAllHosts"
+	UserService_CreateUserGrade_FullMethodName      = "/user_service.UserService/CreateUserGrade"
+	UserService_GetAllGuestGrades_FullMethodName    = "/user_service.UserService/GetAllGuestGrades"
+	UserService_UpdateUserGrade_FullMethodName      = "/user_service.UserService/UpdateUserGrade"
+	UserService_DeleteUserGrade_FullMethodName      = "/user_service.UserService/DeleteUserGrade"
+	UserService_GetAllUserGrade_FullMethodName      = "/user_service.UserService/GetAllUserGrade"
+	UserService_HostProminent_FullMethodName        = "/user_service.UserService/HostProminent"
+	UserService_UpdateNotificationOn_FullMethodName = "/user_service.UserService/UpdateNotificationOn"
+	UserService_CreateNotification_FullMethodName   = "/user_service.UserService/CreateNotification"
+	UserService_GetAllNotifications_FullMethodName  = "/user_service.UserService/GetAllNotifications"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -37,6 +47,16 @@ type UserServiceClient interface {
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 	UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*UpdateUserResponse, error)
 	DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...grpc.CallOption) (*DeleteUserResponse, error)
+	GetAllHosts(ctx context.Context, in *GetAllHostsRequest, opts ...grpc.CallOption) (*GetAllHostsResponse, error)
+	CreateUserGrade(ctx context.Context, in *CreateUserGradeRequest, opts ...grpc.CallOption) (*CreateUserGradeResponse, error)
+	GetAllGuestGrades(ctx context.Context, in *GetAllGuestGradesRequest, opts ...grpc.CallOption) (*GetAllGuestGradesResponse, error)
+	UpdateUserGrade(ctx context.Context, in *UpdateUserGradeRequest, opts ...grpc.CallOption) (*UpdateUserGradeResponse, error)
+	DeleteUserGrade(ctx context.Context, in *DeleteUserGradeRequest, opts ...grpc.CallOption) (*DeleteUserGradeResponse, error)
+	GetAllUserGrade(ctx context.Context, in *GetAllUserGradeRequest, opts ...grpc.CallOption) (*GetAllUserGradeResponse, error)
+	HostProminent(ctx context.Context, in *HostProminentRequest, opts ...grpc.CallOption) (*HostProminentResponse, error)
+	UpdateNotificationOn(ctx context.Context, in *UpdateNotificationOnRequest, opts ...grpc.CallOption) (*UpdateNotificationOnResponse, error)
+	CreateNotification(ctx context.Context, in *CreateNotificationRequest, opts ...grpc.CallOption) (*CreateNotificationResponse, error)
+	GetAllNotifications(ctx context.Context, in *GetAllNotificationsRequest, opts ...grpc.CallOption) (*GetAllNotificationsResponse, error)
 }
 
 type userServiceClient struct {
@@ -101,6 +121,96 @@ func (c *userServiceClient) DeleteUser(ctx context.Context, in *DeleteUserReques
 	return out, nil
 }
 
+func (c *userServiceClient) GetAllHosts(ctx context.Context, in *GetAllHostsRequest, opts ...grpc.CallOption) (*GetAllHostsResponse, error) {
+	out := new(GetAllHostsResponse)
+	err := c.cc.Invoke(ctx, UserService_GetAllHosts_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) CreateUserGrade(ctx context.Context, in *CreateUserGradeRequest, opts ...grpc.CallOption) (*CreateUserGradeResponse, error) {
+	out := new(CreateUserGradeResponse)
+	err := c.cc.Invoke(ctx, UserService_CreateUserGrade_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) GetAllGuestGrades(ctx context.Context, in *GetAllGuestGradesRequest, opts ...grpc.CallOption) (*GetAllGuestGradesResponse, error) {
+	out := new(GetAllGuestGradesResponse)
+	err := c.cc.Invoke(ctx, UserService_GetAllGuestGrades_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) UpdateUserGrade(ctx context.Context, in *UpdateUserGradeRequest, opts ...grpc.CallOption) (*UpdateUserGradeResponse, error) {
+	out := new(UpdateUserGradeResponse)
+	err := c.cc.Invoke(ctx, UserService_UpdateUserGrade_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) DeleteUserGrade(ctx context.Context, in *DeleteUserGradeRequest, opts ...grpc.CallOption) (*DeleteUserGradeResponse, error) {
+	out := new(DeleteUserGradeResponse)
+	err := c.cc.Invoke(ctx, UserService_DeleteUserGrade_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) GetAllUserGrade(ctx context.Context, in *GetAllUserGradeRequest, opts ...grpc.CallOption) (*GetAllUserGradeResponse, error) {
+	out := new(GetAllUserGradeResponse)
+	err := c.cc.Invoke(ctx, UserService_GetAllUserGrade_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) HostProminent(ctx context.Context, in *HostProminentRequest, opts ...grpc.CallOption) (*HostProminentResponse, error) {
+	out := new(HostProminentResponse)
+	err := c.cc.Invoke(ctx, UserService_HostProminent_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) UpdateNotificationOn(ctx context.Context, in *UpdateNotificationOnRequest, opts ...grpc.CallOption) (*UpdateNotificationOnResponse, error) {
+	out := new(UpdateNotificationOnResponse)
+	err := c.cc.Invoke(ctx, UserService_UpdateNotificationOn_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) CreateNotification(ctx context.Context, in *CreateNotificationRequest, opts ...grpc.CallOption) (*CreateNotificationResponse, error) {
+	out := new(CreateNotificationResponse)
+	err := c.cc.Invoke(ctx, UserService_CreateNotification_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) GetAllNotifications(ctx context.Context, in *GetAllNotificationsRequest, opts ...grpc.CallOption) (*GetAllNotificationsResponse, error) {
+	out := new(GetAllNotificationsResponse)
+	err := c.cc.Invoke(ctx, UserService_GetAllNotifications_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
@@ -111,6 +221,16 @@ type UserServiceServer interface {
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
 	UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserResponse, error)
 	DeleteUser(context.Context, *DeleteUserRequest) (*DeleteUserResponse, error)
+	GetAllHosts(context.Context, *GetAllHostsRequest) (*GetAllHostsResponse, error)
+	CreateUserGrade(context.Context, *CreateUserGradeRequest) (*CreateUserGradeResponse, error)
+	GetAllGuestGrades(context.Context, *GetAllGuestGradesRequest) (*GetAllGuestGradesResponse, error)
+	UpdateUserGrade(context.Context, *UpdateUserGradeRequest) (*UpdateUserGradeResponse, error)
+	DeleteUserGrade(context.Context, *DeleteUserGradeRequest) (*DeleteUserGradeResponse, error)
+	GetAllUserGrade(context.Context, *GetAllUserGradeRequest) (*GetAllUserGradeResponse, error)
+	HostProminent(context.Context, *HostProminentRequest) (*HostProminentResponse, error)
+	UpdateNotificationOn(context.Context, *UpdateNotificationOnRequest) (*UpdateNotificationOnResponse, error)
+	CreateNotification(context.Context, *CreateNotificationRequest) (*CreateNotificationResponse, error)
+	GetAllNotifications(context.Context, *GetAllNotificationsRequest) (*GetAllNotificationsResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -135,6 +255,36 @@ func (UnimplementedUserServiceServer) UpdateUser(context.Context, *UpdateUserReq
 }
 func (UnimplementedUserServiceServer) DeleteUser(context.Context, *DeleteUserRequest) (*DeleteUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteUser not implemented")
+}
+func (UnimplementedUserServiceServer) GetAllHosts(context.Context, *GetAllHostsRequest) (*GetAllHostsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAllHosts not implemented")
+}
+func (UnimplementedUserServiceServer) CreateUserGrade(context.Context, *CreateUserGradeRequest) (*CreateUserGradeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateUserGrade not implemented")
+}
+func (UnimplementedUserServiceServer) GetAllGuestGrades(context.Context, *GetAllGuestGradesRequest) (*GetAllGuestGradesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAllGuestGrades not implemented")
+}
+func (UnimplementedUserServiceServer) UpdateUserGrade(context.Context, *UpdateUserGradeRequest) (*UpdateUserGradeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserGrade not implemented")
+}
+func (UnimplementedUserServiceServer) DeleteUserGrade(context.Context, *DeleteUserGradeRequest) (*DeleteUserGradeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteUserGrade not implemented")
+}
+func (UnimplementedUserServiceServer) GetAllUserGrade(context.Context, *GetAllUserGradeRequest) (*GetAllUserGradeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAllUserGrade not implemented")
+}
+func (UnimplementedUserServiceServer) HostProminent(context.Context, *HostProminentRequest) (*HostProminentResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method HostProminent not implemented")
+}
+func (UnimplementedUserServiceServer) UpdateNotificationOn(context.Context, *UpdateNotificationOnRequest) (*UpdateNotificationOnResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateNotificationOn not implemented")
+}
+func (UnimplementedUserServiceServer) CreateNotification(context.Context, *CreateNotificationRequest) (*CreateNotificationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateNotification not implemented")
+}
+func (UnimplementedUserServiceServer) GetAllNotifications(context.Context, *GetAllNotificationsRequest) (*GetAllNotificationsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAllNotifications not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
@@ -257,6 +407,186 @@ func _UserService_DeleteUser_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_GetAllHosts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAllHostsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetAllHosts(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_GetAllHosts_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetAllHosts(ctx, req.(*GetAllHostsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_CreateUserGrade_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateUserGradeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).CreateUserGrade(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_CreateUserGrade_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).CreateUserGrade(ctx, req.(*CreateUserGradeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_GetAllGuestGrades_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAllGuestGradesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetAllGuestGrades(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_GetAllGuestGrades_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetAllGuestGrades(ctx, req.(*GetAllGuestGradesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_UpdateUserGrade_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateUserGradeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).UpdateUserGrade(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_UpdateUserGrade_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).UpdateUserGrade(ctx, req.(*UpdateUserGradeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_DeleteUserGrade_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteUserGradeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).DeleteUserGrade(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_DeleteUserGrade_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).DeleteUserGrade(ctx, req.(*DeleteUserGradeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_GetAllUserGrade_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAllUserGradeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetAllUserGrade(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_GetAllUserGrade_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetAllUserGrade(ctx, req.(*GetAllUserGradeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_HostProminent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(HostProminentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).HostProminent(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_HostProminent_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).HostProminent(ctx, req.(*HostProminentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_UpdateNotificationOn_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateNotificationOnRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).UpdateNotificationOn(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_UpdateNotificationOn_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).UpdateNotificationOn(ctx, req.(*UpdateNotificationOnRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_CreateNotification_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateNotificationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).CreateNotification(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_CreateNotification_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).CreateNotification(ctx, req.(*CreateNotificationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_GetAllNotifications_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAllNotificationsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetAllNotifications(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_GetAllNotifications_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetAllNotifications(ctx, req.(*GetAllNotificationsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -287,6 +617,46 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteUser",
 			Handler:    _UserService_DeleteUser_Handler,
+		},
+		{
+			MethodName: "GetAllHosts",
+			Handler:    _UserService_GetAllHosts_Handler,
+		},
+		{
+			MethodName: "CreateUserGrade",
+			Handler:    _UserService_CreateUserGrade_Handler,
+		},
+		{
+			MethodName: "GetAllGuestGrades",
+			Handler:    _UserService_GetAllGuestGrades_Handler,
+		},
+		{
+			MethodName: "UpdateUserGrade",
+			Handler:    _UserService_UpdateUserGrade_Handler,
+		},
+		{
+			MethodName: "DeleteUserGrade",
+			Handler:    _UserService_DeleteUserGrade_Handler,
+		},
+		{
+			MethodName: "GetAllUserGrade",
+			Handler:    _UserService_GetAllUserGrade_Handler,
+		},
+		{
+			MethodName: "HostProminent",
+			Handler:    _UserService_HostProminent_Handler,
+		},
+		{
+			MethodName: "UpdateNotificationOn",
+			Handler:    _UserService_UpdateNotificationOn_Handler,
+		},
+		{
+			MethodName: "CreateNotification",
+			Handler:    _UserService_CreateNotification_Handler,
+		},
+		{
+			MethodName: "GetAllNotifications",
+			Handler:    _UserService_GetAllNotifications_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

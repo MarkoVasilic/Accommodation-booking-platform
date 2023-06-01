@@ -19,16 +19,22 @@ import (
 
 type UserHandler struct {
 	pb.UnimplementedUserServiceServer
-	service              *service.UserService
-	accommodation_client accommodation_service.AccommodationServiceClient
-	reservation_client   reservation_service.ReservationServiceClient
+	service                 *service.UserService
+	grade_service           *service.GradeService
+	notification_service    *service.NotificationService
+	notification_on_service *service.NotificationOnService
+	accommodation_client    accommodation_service.AccommodationServiceClient
+	reservation_client      reservation_service.ReservationServiceClient
 }
 
-func NewUserHandler(service *service.UserService, accommodation_client accommodation_service.AccommodationServiceClient, reservation_client reservation_service.ReservationServiceClient) *UserHandler {
+func NewUserHandler(service *service.UserService, grade_service *service.GradeService, notification_service *service.NotificationService, notification_on_service *service.NotificationOnService, accommodation_client accommodation_service.AccommodationServiceClient, reservation_client reservation_service.ReservationServiceClient) *UserHandler {
 	return &UserHandler{
-		service:              service,
-		accommodation_client: accommodation_client,
-		reservation_client:   reservation_client,
+		service:                 service,
+		grade_service:           grade_service,
+		notification_service:    notification_service,
+		notification_on_service: notification_on_service,
+		accommodation_client:    accommodation_client,
+		reservation_client:      reservation_client,
 	}
 }
 
@@ -60,8 +66,14 @@ func (handler *UserHandler) GetUser(ctx context.Context, request *pb.GetUserRequ
 
 func (handler *UserHandler) CreateUser(ctx context.Context, request *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
 	user := models.User{Username: &request.Username, FirstName: &request.FirstName, LastName: &request.LastName, Password: &request.Password, Email: &request.Email, Address: &request.Address, Role: (*models.Role)(&request.Role)}
-	mess, err := handler.service.CreateUser(user)
+	mess, err, user_id := handler.service.CreateUser(user)
 	if err != nil {
+		err := status.Errorf(codes.Internal, mess)
+		return nil, err
+	}
+	err = handler.notification_on_service.InitializeNotificationsOn(user_id)
+	if err != nil {
+		handler.service.DeleteUser(user_id, true, "")
 		err := status.Errorf(codes.Internal, mess)
 		return nil, err
 	}
@@ -135,24 +147,6 @@ func (handler *UserHandler) DeleteUser(ctx context.Context, request *pb.DeleteUs
 			}
 			return response, err
 		}
-		// _, err = handler.reservation_client.DeleteReservationsHost(createContextForAuthorization(ctx), &reservation_service.DeleteReservationsHostRequest{Id: id})
-		// if err != nil {
-		// 	if err.Error() != "rpc error: code = InvalidArgument desc = There is no accommodations!" {
-		// 		err := status.Errorf(codes.Internal, "something went wrong")
-		// 		response := &pb.DeleteUserResponse{
-		// 			Message: "something went wrong",
-		// 		}
-		// 		return response, err
-		// 	}
-		// }
-		// _, err = handler.accommodation_client.DeleteAccommodationsByHost(createContextForAuthorization(ctx), &accommodation_service.DeleteAccommodationsByHostRequest{Id: id})
-		// if err != nil {
-		// 	err := status.Errorf(codes.Internal, "something went wrong")
-		// 	response := &pb.DeleteUserResponse{
-		// 		Message: "something went wrong",
-		// 	}
-		// 	return response, err
-		// }
 	}
 	objectId, err := primitive.ObjectIDFromHex(id)
 	mess, err := handler.service.DeleteUser(objectId, delete_now, ClientToken)
@@ -204,3 +198,86 @@ func (handler *UserHandler) Login(ctx context.Context, request *pb.LoginRequest)
 	}
 	return response, nil
 }
+
+/*
+func (handler *UserHandler) GetAllGuestGrades(ctx context.Context, request *pb.GetAllGuestGradesRequest) (*pb.GetAllGuestGradesResponse, error) {
+	//TODO pomocna metoda za dobavljanje svih ocijena guesta za poslani id guesta
+	//a vraca se lista dtova koji sam napravio
+}
+*/
+
+/*
+func (handler *UserHandler) GetAllHosts(ctx context.Context, request *pb.GetAllHostsRequest) (*pb.GetAllHostsResponse, error) {
+	//TODO pomocna metoda za dobavljanje svih hostova, ne salje se nista
+	//a vraca se lista dtova koji sam napravio
+}
+*/
+
+func (handler *UserHandler) CreateUserGrade(ctx context.Context, request *pb.CreateUserGradeRequest) (*pb.CreateUserGradeResponse, error) {
+	//TODO zahtjev 1.11 kreiranje ocijene
+	//ClientToken, _ := grpc_auth.AuthFromMD(ctx, "Bearer")
+	//claims, _ := token.ValidateToken(ClientToken)
+	//ovako se izvlaci id osobe koja salje zahtjev, id se nalazi u claims.Uid
+	//provjeriti uslov da li moze da ga ocijeni
+	response := &pb.CreateUserGradeResponse{
+		Message: "Success",
+	}
+	return response, nil
+}
+
+func (handler *UserHandler) UpdateUserGrade(ctx context.Context, request *pb.UpdateUserGradeRequest) (*pb.UpdateUserGradeResponse, error) {
+	//TODO zahtjev 1.11 azuriranje ocijene, provjeriti da li je njegova ocijena da li smije da je promijeni
+	response := &pb.UpdateUserGradeResponse{
+		Message: "Success",
+	}
+	return response, nil
+}
+
+func (handler *UserHandler) DeleteUserGrade(ctx context.Context, request *pb.DeleteUserGradeRequest) (*pb.DeleteUserGradeResponse, error) {
+	//TODO zahtjev 1.11 brisanje ocijene, provjeriti da li je njegova ocijena da li smije da je obrise
+	response := &pb.DeleteUserGradeResponse{
+		Message: "Success",
+	}
+	return response, nil
+}
+
+/*
+func (handler *UserHandler) GetAllUserGrade(ctx context.Context, request *pb.GetAllUserGradeRequest) (*pb.GetAllUserGradeResponse, error) {
+	//TODO zahtjev 1.11 dobavljanje svih ocijena koje je host dobio salje se id hosta
+	//treba da se vrati lista svih ocijena tog hosta, napravio sam dto kako treba da izgleda
+	// i treba da se izracuna prosijecna ocijena, vjerovatno cete morati mapper praviti neki da to vratite
+}*/
+
+func (handler *UserHandler) HostProminent(ctx context.Context, request *pb.HostProminentRequest) (*pb.HostProminentResponse, error) {
+	//TODO zahtjev 1.13, salje se id hosta ili ga izvucite kao gore sto sam naveo i vraca se bool koje je true ako je istaknut i false ako nije
+	//na frontu mozete staviti na ono profile kad se otvori dodatno dugme koje ovo provjerava ili samo da napravite jos jedno polje koje kaze da li je istaknut ili ne
+	//samo pazite da je ovo samo za hosta, a na frontu stranica profila je ista za guesta i hosta pa morate to nekako da razdvojite
+	response := &pb.HostProminentResponse{
+		Prominent: true,
+	}
+	return response, nil
+}
+
+func (handler *UserHandler) UpdateNotificationOn(ctx context.Context, request *pb.UpdateNotificationOnRequest) (*pb.UpdateNotificationOnResponse, error) {
+	//TODO zahtjev 1.15, azuriranje odgovarajuceg tipa notifikacije da li je ukljuceno ili ne
+	response := &pb.UpdateNotificationOnResponse{
+		Message: "Success",
+	}
+	return response, nil
+}
+
+func (handler *UserHandler) CreateNotification(ctx context.Context, request *pb.CreateNotificationRequest) (*pb.CreateNotificationResponse, error) {
+	//TODO zahtjev 1.15, kreiranje notifikacije
+	response := &pb.CreateNotificationResponse{
+		Message: "Success",
+	}
+	return response, nil
+}
+
+/*
+func (handler *UserHandler) GetAllNotifications(ctx context.Context, request *pb.GetAllNotificationsRequest) (*pb.GetAllNotificationsResponse, error) {
+	//TODO zahtjev 1.15, dobavljanje notifikacija, treba provjeriti koje su ukljucene i te dobaviti za korisnika za kojeg je id poslan
+	//mozes dodatno sortirati po datumu pravljenja da se vide najnovije
+	//postoji i polje seen kojeg mozes ukljuciti a i ne moras, neka stoji samo ako ne zelis
+
+}*/

@@ -28,6 +28,13 @@ const (
 	AccommodationService_UpdateAvailability_FullMethodName             = "/accommodation_service.AccommodationService/UpdateAvailability"
 	AccommodationService_SearchAvailability_FullMethodName             = "/accommodation_service.AccommodationService/SearchAvailability"
 	AccommodationService_DeleteAccommodationsByHost_FullMethodName     = "/accommodation_service.AccommodationService/DeleteAccommodationsByHost"
+	AccommodationService_GetEveryAccommodation_FullMethodName          = "/accommodation_service.AccommodationService/GetEveryAccommodation"
+	AccommodationService_CreateAccommodationGrade_FullMethodName       = "/accommodation_service.AccommodationService/CreateAccommodationGrade"
+	AccommodationService_GetAllAccommodationGuestGrades_FullMethodName = "/accommodation_service.AccommodationService/GetAllAccommodationGuestGrades"
+	AccommodationService_UpdateAccommodationGrade_FullMethodName       = "/accommodation_service.AccommodationService/UpdateAccommodationGrade"
+	AccommodationService_DeleteAccommodationGrade_FullMethodName       = "/accommodation_service.AccommodationService/DeleteAccommodationGrade"
+	AccommodationService_GetAllAccommodationGrade_FullMethodName       = "/accommodation_service.AccommodationService/GetAllAccommodationGrade"
+	AccommodationService_FilterAvailability_FullMethodName             = "/accommodation_service.AccommodationService/FilterAvailability"
 )
 
 // AccommodationServiceClient is the client API for AccommodationService service.
@@ -43,6 +50,13 @@ type AccommodationServiceClient interface {
 	UpdateAvailability(ctx context.Context, in *UpdateAvailabilityRequest, opts ...grpc.CallOption) (*UpdateAvailabilityResponse, error)
 	SearchAvailability(ctx context.Context, in *SearchAvailabilityRequest, opts ...grpc.CallOption) (*SearchAvailabilityResponse, error)
 	DeleteAccommodationsByHost(ctx context.Context, in *DeleteAccommodationsByHostRequest, opts ...grpc.CallOption) (*DeleteAccommodationsByHostResponse, error)
+	GetEveryAccommodation(ctx context.Context, in *GetEveryAccommodationRequest, opts ...grpc.CallOption) (*GetEveryAccommodationResponse, error)
+	CreateAccommodationGrade(ctx context.Context, in *CreateAccommodationGradeRequest, opts ...grpc.CallOption) (*CreateAccommodationGradeResponse, error)
+	GetAllAccommodationGuestGrades(ctx context.Context, in *GetAllAccommodationGuestGradesRequest, opts ...grpc.CallOption) (*GetAllAccommodationGuestGradesResponse, error)
+	UpdateAccommodationGrade(ctx context.Context, in *UpdateAccommodationGradeRequest, opts ...grpc.CallOption) (*UpdateAccommodationGradeResponse, error)
+	DeleteAccommodationGrade(ctx context.Context, in *DeleteAccommodationGradeRequest, opts ...grpc.CallOption) (*DeleteAccommodationGradeResponse, error)
+	GetAllAccommodationGrade(ctx context.Context, in *GetAllAccommodationGradeRequest, opts ...grpc.CallOption) (*GetAllAccommodationGradeResponse, error)
+	FilterAvailability(ctx context.Context, in *FilterAvailabilityRequest, opts ...grpc.CallOption) (*FilterAvailabilityResponse, error)
 }
 
 type accommodationServiceClient struct {
@@ -134,6 +148,69 @@ func (c *accommodationServiceClient) DeleteAccommodationsByHost(ctx context.Cont
 	return out, nil
 }
 
+func (c *accommodationServiceClient) GetEveryAccommodation(ctx context.Context, in *GetEveryAccommodationRequest, opts ...grpc.CallOption) (*GetEveryAccommodationResponse, error) {
+	out := new(GetEveryAccommodationResponse)
+	err := c.cc.Invoke(ctx, AccommodationService_GetEveryAccommodation_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accommodationServiceClient) CreateAccommodationGrade(ctx context.Context, in *CreateAccommodationGradeRequest, opts ...grpc.CallOption) (*CreateAccommodationGradeResponse, error) {
+	out := new(CreateAccommodationGradeResponse)
+	err := c.cc.Invoke(ctx, AccommodationService_CreateAccommodationGrade_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accommodationServiceClient) GetAllAccommodationGuestGrades(ctx context.Context, in *GetAllAccommodationGuestGradesRequest, opts ...grpc.CallOption) (*GetAllAccommodationGuestGradesResponse, error) {
+	out := new(GetAllAccommodationGuestGradesResponse)
+	err := c.cc.Invoke(ctx, AccommodationService_GetAllAccommodationGuestGrades_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accommodationServiceClient) UpdateAccommodationGrade(ctx context.Context, in *UpdateAccommodationGradeRequest, opts ...grpc.CallOption) (*UpdateAccommodationGradeResponse, error) {
+	out := new(UpdateAccommodationGradeResponse)
+	err := c.cc.Invoke(ctx, AccommodationService_UpdateAccommodationGrade_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accommodationServiceClient) DeleteAccommodationGrade(ctx context.Context, in *DeleteAccommodationGradeRequest, opts ...grpc.CallOption) (*DeleteAccommodationGradeResponse, error) {
+	out := new(DeleteAccommodationGradeResponse)
+	err := c.cc.Invoke(ctx, AccommodationService_DeleteAccommodationGrade_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accommodationServiceClient) GetAllAccommodationGrade(ctx context.Context, in *GetAllAccommodationGradeRequest, opts ...grpc.CallOption) (*GetAllAccommodationGradeResponse, error) {
+	out := new(GetAllAccommodationGradeResponse)
+	err := c.cc.Invoke(ctx, AccommodationService_GetAllAccommodationGrade_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accommodationServiceClient) FilterAvailability(ctx context.Context, in *FilterAvailabilityRequest, opts ...grpc.CallOption) (*FilterAvailabilityResponse, error) {
+	out := new(FilterAvailabilityResponse)
+	err := c.cc.Invoke(ctx, AccommodationService_FilterAvailability_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AccommodationServiceServer is the server API for AccommodationService service.
 // All implementations must embed UnimplementedAccommodationServiceServer
 // for forward compatibility
@@ -147,6 +224,13 @@ type AccommodationServiceServer interface {
 	UpdateAvailability(context.Context, *UpdateAvailabilityRequest) (*UpdateAvailabilityResponse, error)
 	SearchAvailability(context.Context, *SearchAvailabilityRequest) (*SearchAvailabilityResponse, error)
 	DeleteAccommodationsByHost(context.Context, *DeleteAccommodationsByHostRequest) (*DeleteAccommodationsByHostResponse, error)
+	GetEveryAccommodation(context.Context, *GetEveryAccommodationRequest) (*GetEveryAccommodationResponse, error)
+	CreateAccommodationGrade(context.Context, *CreateAccommodationGradeRequest) (*CreateAccommodationGradeResponse, error)
+	GetAllAccommodationGuestGrades(context.Context, *GetAllAccommodationGuestGradesRequest) (*GetAllAccommodationGuestGradesResponse, error)
+	UpdateAccommodationGrade(context.Context, *UpdateAccommodationGradeRequest) (*UpdateAccommodationGradeResponse, error)
+	DeleteAccommodationGrade(context.Context, *DeleteAccommodationGradeRequest) (*DeleteAccommodationGradeResponse, error)
+	GetAllAccommodationGrade(context.Context, *GetAllAccommodationGradeRequest) (*GetAllAccommodationGradeResponse, error)
+	FilterAvailability(context.Context, *FilterAvailabilityRequest) (*FilterAvailabilityResponse, error)
 	mustEmbedUnimplementedAccommodationServiceServer()
 }
 
@@ -180,6 +264,27 @@ func (UnimplementedAccommodationServiceServer) SearchAvailability(context.Contex
 }
 func (UnimplementedAccommodationServiceServer) DeleteAccommodationsByHost(context.Context, *DeleteAccommodationsByHostRequest) (*DeleteAccommodationsByHostResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteAccommodationsByHost not implemented")
+}
+func (UnimplementedAccommodationServiceServer) GetEveryAccommodation(context.Context, *GetEveryAccommodationRequest) (*GetEveryAccommodationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetEveryAccommodation not implemented")
+}
+func (UnimplementedAccommodationServiceServer) CreateAccommodationGrade(context.Context, *CreateAccommodationGradeRequest) (*CreateAccommodationGradeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateAccommodationGrade not implemented")
+}
+func (UnimplementedAccommodationServiceServer) GetAllAccommodationGuestGrades(context.Context, *GetAllAccommodationGuestGradesRequest) (*GetAllAccommodationGuestGradesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAllAccommodationGuestGrades not implemented")
+}
+func (UnimplementedAccommodationServiceServer) UpdateAccommodationGrade(context.Context, *UpdateAccommodationGradeRequest) (*UpdateAccommodationGradeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateAccommodationGrade not implemented")
+}
+func (UnimplementedAccommodationServiceServer) DeleteAccommodationGrade(context.Context, *DeleteAccommodationGradeRequest) (*DeleteAccommodationGradeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteAccommodationGrade not implemented")
+}
+func (UnimplementedAccommodationServiceServer) GetAllAccommodationGrade(context.Context, *GetAllAccommodationGradeRequest) (*GetAllAccommodationGradeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAllAccommodationGrade not implemented")
+}
+func (UnimplementedAccommodationServiceServer) FilterAvailability(context.Context, *FilterAvailabilityRequest) (*FilterAvailabilityResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FilterAvailability not implemented")
 }
 func (UnimplementedAccommodationServiceServer) mustEmbedUnimplementedAccommodationServiceServer() {}
 
@@ -356,6 +461,132 @@ func _AccommodationService_DeleteAccommodationsByHost_Handler(srv interface{}, c
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AccommodationService_GetEveryAccommodation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetEveryAccommodationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccommodationServiceServer).GetEveryAccommodation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AccommodationService_GetEveryAccommodation_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccommodationServiceServer).GetEveryAccommodation(ctx, req.(*GetEveryAccommodationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AccommodationService_CreateAccommodationGrade_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateAccommodationGradeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccommodationServiceServer).CreateAccommodationGrade(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AccommodationService_CreateAccommodationGrade_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccommodationServiceServer).CreateAccommodationGrade(ctx, req.(*CreateAccommodationGradeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AccommodationService_GetAllAccommodationGuestGrades_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAllAccommodationGuestGradesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccommodationServiceServer).GetAllAccommodationGuestGrades(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AccommodationService_GetAllAccommodationGuestGrades_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccommodationServiceServer).GetAllAccommodationGuestGrades(ctx, req.(*GetAllAccommodationGuestGradesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AccommodationService_UpdateAccommodationGrade_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateAccommodationGradeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccommodationServiceServer).UpdateAccommodationGrade(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AccommodationService_UpdateAccommodationGrade_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccommodationServiceServer).UpdateAccommodationGrade(ctx, req.(*UpdateAccommodationGradeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AccommodationService_DeleteAccommodationGrade_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteAccommodationGradeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccommodationServiceServer).DeleteAccommodationGrade(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AccommodationService_DeleteAccommodationGrade_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccommodationServiceServer).DeleteAccommodationGrade(ctx, req.(*DeleteAccommodationGradeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AccommodationService_GetAllAccommodationGrade_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAllAccommodationGradeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccommodationServiceServer).GetAllAccommodationGrade(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AccommodationService_GetAllAccommodationGrade_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccommodationServiceServer).GetAllAccommodationGrade(ctx, req.(*GetAllAccommodationGradeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AccommodationService_FilterAvailability_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FilterAvailabilityRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccommodationServiceServer).FilterAvailability(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AccommodationService_FilterAvailability_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccommodationServiceServer).FilterAvailability(ctx, req.(*FilterAvailabilityRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AccommodationService_ServiceDesc is the grpc.ServiceDesc for AccommodationService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -398,6 +629,34 @@ var AccommodationService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteAccommodationsByHost",
 			Handler:    _AccommodationService_DeleteAccommodationsByHost_Handler,
+		},
+		{
+			MethodName: "GetEveryAccommodation",
+			Handler:    _AccommodationService_GetEveryAccommodation_Handler,
+		},
+		{
+			MethodName: "CreateAccommodationGrade",
+			Handler:    _AccommodationService_CreateAccommodationGrade_Handler,
+		},
+		{
+			MethodName: "GetAllAccommodationGuestGrades",
+			Handler:    _AccommodationService_GetAllAccommodationGuestGrades_Handler,
+		},
+		{
+			MethodName: "UpdateAccommodationGrade",
+			Handler:    _AccommodationService_UpdateAccommodationGrade_Handler,
+		},
+		{
+			MethodName: "DeleteAccommodationGrade",
+			Handler:    _AccommodationService_DeleteAccommodationGrade_Handler,
+		},
+		{
+			MethodName: "GetAllAccommodationGrade",
+			Handler:    _AccommodationService_GetAllAccommodationGrade_Handler,
+		},
+		{
+			MethodName: "FilterAvailability",
+			Handler:    _AccommodationService_FilterAvailability_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

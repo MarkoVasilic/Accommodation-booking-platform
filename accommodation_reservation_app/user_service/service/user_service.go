@@ -28,43 +28,43 @@ func (service *UserService) GetUserById(id primitive.ObjectID) (models.User, err
 	return founduser, err
 }
 
-func (service *UserService) CreateUser(user models.User) (string, error) {
+func (service *UserService) CreateUser(user models.User) (string, error, primitive.ObjectID) {
 	var _, cancel = context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	validationErr := Validate.Struct(user)
 	if validationErr != nil {
 		err := status.Errorf(codes.InvalidArgument, "user fields are not valid")
-		return "user fields are not valid", err
+		return "user fields are not valid", err, primitive.NilObjectID
 	}
 
 	count_email, err := service.UserRepository.CountByEmail(*user.Email)
 	if err != nil {
 		log.Panic(err)
 		err := status.Errorf(codes.Internal, "something went wrong")
-		return "something went wrong", err
+		return "something went wrong", err, primitive.NilObjectID
 	}
 	if count_email > 0 {
 		err := status.Errorf(codes.NotFound, "user with that email already exists")
-		return "user with that email already exists", err
+		return "user with that email already exists", err, primitive.NilObjectID
 	}
 	count_username, err := service.UserRepository.CountByUsername(*user.Username)
 	if err != nil {
 		log.Panic(err)
 		err := status.Errorf(codes.Internal, "something went wrong")
-		return "something went wrong", err
+		return "something went wrong", err, primitive.NilObjectID
 	}
 	if count_username > 0 {
 		err := status.Errorf(codes.NotFound, "user with that username already exists")
-		return "user with that username already exists", err
+		return "user with that username already exists", err, primitive.NilObjectID
 	} else {
-		inserterr := service.UserRepository.CreateUser(&user)
+		inserterr, user_id := service.UserRepository.CreateUser(&user)
 
 		if inserterr != nil {
 			log.Panic(err)
 			err := status.Errorf(codes.Internal, "something went wrong")
-			return "something went wrong", err
+			return "something went wrong", err, user_id
 		}
-		return "Succesffully added new user", nil
+		return "Succesffully added new user", nil, user_id
 	}
 }
 

@@ -5,6 +5,7 @@ option go_package = "github.com/MarkoVasilic/Accommodation-booking-platform/comm
 package user_service;
 
 import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
 
 service UserService{
         rpc GetUser(GetUserRequest) returns(GetUserResponse) {
@@ -39,6 +40,63 @@ service UserService{
                 option (google.api.http) = {
                         delete: "/accommodation/user/{id}"
                 };
+        }
+        rpc GetAllHosts(GetAllHostsRequest) returns(GetAllHostsResponse) {
+        	option (google.api.http) = {
+			get: "/accommodation/user/host/all"
+		};
+        }
+        rpc CreateUserGrade(CreateUserGradeRequest) returns (CreateUserGradeResponse) {
+                option (google.api.http) = {
+                    post: "/accommodation/user/grade"
+                    body: "*"
+                };
+        }
+
+        rpc GetAllGuestGrades(GetAllGuestGradesRequest) returns(GetAllGuestGradesResponse) {
+        	option (google.api.http) = {
+			get: "/accommodation/user/guest/grades/{id}"
+		};
+        }
+        rpc UpdateUserGrade(UpdateUserGradeRequest) returns (UpdateUserGradeResponse) {
+                option (google.api.http) = {
+                        put: "/accommodation/user/grade/{id}"
+                        body: "*"
+                };
+        }
+        rpc DeleteUserGrade(DeleteUserGradeRequest) returns (DeleteUserGradeResponse) {
+                option (google.api.http) = {
+                        delete: "/accommodation/user/grade/{id}"
+                };
+        }
+        rpc GetAllUserGrade(GetAllUserGradeRequest) returns(GetAllUserGradeResponse) {
+        	option (google.api.http) = {
+			get: "/accommodation/user/grade/{id}"
+		};
+        }
+        rpc HostProminent(HostProminentRequest) returns(HostProminentResponse) {
+        	option (google.api.http) = {
+			get: "/accommodation/user/prominent/{id}"
+		};
+        }
+
+        rpc UpdateNotificationOn(UpdateNotificationOnRequest) returns (UpdateNotificationOnResponse) {
+                option (google.api.http) = {
+                        put: "/accommodation/user/notificationon/{id}"
+                        body: "*"
+                };
+        }
+
+        rpc CreateNotification(CreateNotificationRequest) returns (CreateNotificationResponse) {
+                option (google.api.http) = {
+                    post: "/accommodation/user/notification"
+                    body: "*"
+                };
+        }
+        rpc GetAllNotifications(GetAllNotificationsRequest) returns(GetAllNotificationsResponse) {
+        	option (google.api.http) = {
+			get: "/accommodation/user/notification/{id}"
+		};
         }
 }
 
@@ -112,4 +170,133 @@ message DeleteUserRequest {
 
 message DeleteUserResponse {
         string message = 1;
+}
+
+message HostDetails {
+        string id = 1;
+        string FirstName = 2;
+        string LastName = 3;
+}
+
+message GetAllHostsRequest {
+}
+
+message GetAllHostsResponse {
+        repeated HostDetails Hosts = 1;
+}
+
+message UserGrade {
+        string ID = 1;
+        string GuestID = 2;
+        string HostID = 3;
+        string Grade = 4;
+        google.protobuf.Timestamp DateOfGrade = 5;
+}
+
+message CreateUserGradeRequest {
+        string GuestID = 1;
+        string HostID = 2;
+        string Grade = 3;
+        google.protobuf.Timestamp DateOfGrade = 4;
+}
+
+message CreateUserGradeResponse {
+        string message = 1;
+}
+
+message GetAllGuestGradesRequest {
+        string id = 1;
+}
+
+message GetAllGuestGradesResponse {
+        repeated UserGrade UserGradeDetails = 1;
+}
+
+message UpdateUserGradeRequest {
+        string id = 1;
+        string Grade = 2;
+}
+
+message UpdateUserGradeResponse {
+        string message = 1;
+}
+
+message DeleteUserGradeRequest {
+        string id = 1;
+}
+
+message DeleteUserGradeResponse {
+        string message = 1;
+}
+
+message UserGradeDetails {
+        string ID = 1;
+        string GuestFirstName = 2;
+        string GuestLastName = 3;
+        string HostFirstName = 4;
+        string HostLastName = 5;
+        string Grade = 6;
+        google.protobuf.Timestamp DateOfGrade = 7;
+}
+
+message GetAllUserGradeRequest {
+        string id = 1;
+}
+
+message GetAllUserGradeResponse {
+        repeated UserGradeDetails UserGradeDetails = 1;
+        double AverageGrade = 2;
+}
+
+message HostProminentRequest {
+        string id = 1;
+}
+
+message HostProminentResponse {
+        bool Prominent = 1;
+}
+
+message Notification {
+        string id = 1;
+        string UserId = 2;
+        string Type = 3;
+        string Message = 4;
+        google.protobuf.Timestamp DateOfNotification = 5; 
+        bool seen = 6;
+}
+
+message NotificationOn {
+        string id = 1;
+        string UserId = 2;
+        string Type = 3;
+        bool on = 4;
+}
+
+message UpdateNotificationOnRequest {
+        string id = 1;
+        string Type = 2;
+        bool on = 3;
+}
+
+message UpdateNotificationOnResponse {
+        string message = 1;
+}
+
+message CreateNotificationRequest {
+        string UserId = 2;
+        string Type = 3;
+        string Message = 4;
+        google.protobuf.Timestamp DateOfNotification = 5; 
+}
+
+message CreateNotificationResponse {
+        string message = 1;
+}
+
+message GetAllNotificationsRequest {
+        string id = 1;
+}
+
+message GetAllNotificationsResponse {
+        repeated Notification Notifications = 1;
 }

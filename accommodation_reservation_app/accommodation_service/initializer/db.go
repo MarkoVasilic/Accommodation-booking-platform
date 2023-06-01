@@ -46,3 +46,8 @@ func AvailabilityCollection(client *mongo.Client) *mongo.Collection {
 	var collection *mongo.Collection = client.Database(DATABASE).Collection("Availabilities")
 	return collection
 }
+
+func GradeCollection(client *mongo.Client) *mongo.Collection {
+	var collection *mongo.Collection = client.Database(DATABASE).Collection("AccommodationGrades")
+	return collection
+}

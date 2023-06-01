@@ -63,6 +63,18 @@ func (server *Server) Start() {
 	user_collection := initializer.UserCollection(client)
 	user_repository := &repository.UserRepository{UserCollection: user_collection}
 
+	grade_collection := initializer.GradeCollection(client)
+	grade_repository := &repository.GradeRepository{GradeCollection: grade_collection}
+	grade_service := &service.GradeService{GradeRepository: grade_repository}
+
+	notification_collection := initializer.NotificationCollection(client)
+	notification_repository := &repository.NotificationRepository{NotificationCollection: notification_collection}
+	notification_service := &service.NotificationService{NotificationRepository: notification_repository}
+
+	notification_on_collection := initializer.NotificationOnCollection(client)
+	notification_on_repository := &repository.NotificationOnRepository{NotificationOnCollection: notification_on_collection}
+	notification_on_service := &service.NotificationOnService{NotificationOnRepository: notification_on_repository}
+
 	commandPublisher := server.initPublisher(server.config.DeleteUserCommandSubject)
 	replySubscriber := server.initSubscriber(server.config.DeleteUserReplySubject, QueueGroup)
 	deleteUserOrchestrator := server.initDeleteUserOrchestrator(commandPublisher, replySubscriber)
@@ -71,7 +83,7 @@ func (server *Server) Start() {
 
 	accommodation_client := server.InitializeAccommodationClient()
 	reservation_client := server.InitializeReservationClient()
-	user_handler := api.NewUserHandler(user_service, accommodation_client, reservation_client)
+	user_handler := api.NewUserHandler(user_service, grade_service, notification_service, notification_on_service, accommodation_client, reservation_client)
 
 	commandSubscriber := server.initSubscriber(server.config.DeleteUserCommandSubject, QueueGroup)
 	replyPublisher := server.initPublisher(server.config.DeleteUserReplySubject)
@@ -172,6 +184,7 @@ func checkIsRoleHost(fullMethod string, ClientToken string) bool {
 			"GetFindReservationHost",
 			"DeleteLogicallyReservation",
 			"AcceptReservation",
+			"HostProminent",
 		}
 		return checkRoles(fullMethod, skipMethods)
 	}
@@ -189,6 +202,10 @@ func checkIsRoleGuest(fullMethod string, ClientToken string) bool {
 			"GetFindReservationAcceptedGuest",
 			"CancelReservation",
 			"DeleteLogicallyReservation",
+			"CreateUserGrade",
+			"UpdateUserGrade",
+			"DeleteUserGrade",
+			"GetAllUserGrade",
 		}
 		return checkRoles(fullMethod, skipMethods)
 	}

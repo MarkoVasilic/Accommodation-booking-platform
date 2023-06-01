@@ -41,3 +41,18 @@ func UserCollection(client *mongo.Client) *mongo.Collection {
 	var collection *mongo.Collection = client.Database(DATABASE).Collection("Users")
 	return collection
 }
+
+func GradeCollection(client *mongo.Client) *mongo.Collection {
+	var collection *mongo.Collection = client.Database(DATABASE).Collection("UserGrades")
+	return collection
+}
+
+func NotificationCollection(client *mongo.Client) *mongo.Collection {
+	var collection *mongo.Collection = client.Database(DATABASE).Collection("Notifications")
+	return collection
+}
+
+func NotificationOnCollection(client *mongo.Client) *mongo.Collection {
+	var collection *mongo.Collection = client.Database(DATABASE).Collection("NotificationsOn")
+	return collection
+}

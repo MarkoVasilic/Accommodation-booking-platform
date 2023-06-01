@@ -17,14 +17,16 @@ type AccommodationHandler struct {
 	pb.UnimplementedAccommodationServiceServer
 	accommodation_service *service.AccommodationService
 	availability_service  *service.AvailabilityService
+	grade_service         *service.GradeService
 	user_client           user_service.UserServiceClient
 	reservation_client    reservation_service.ReservationServiceClient
 }
 
-func NewAccommodationHandler(accommodation_service *service.AccommodationService, availability_service *service.AvailabilityService, user_client user_service.UserServiceClient, reservation_client reservation_service.ReservationServiceClient) *AccommodationHandler {
+func NewAccommodationHandler(accommodation_service *service.AccommodationService, availability_service *service.AvailabilityService, grade_service *service.GradeService, user_client user_service.UserServiceClient, reservation_client reservation_service.ReservationServiceClient) *AccommodationHandler {
 	return &AccommodationHandler{
 		accommodation_service: accommodation_service,
 		availability_service:  availability_service,
+		grade_service:         grade_service,
 		user_client:           user_client,
 		reservation_client:    reservation_client,
 	}
@@ -160,3 +162,52 @@ func (handler *AccommodationHandler) DeleteAccommodationsByHost(ctx context.Cont
 	}
 	return response, nil
 }
+
+/*
+func (handler *AccommodationHandler) GetAllAccommodationGuestGrades(ctx context.Context, request *pb.GetAllAccommodationGuestGradesRequest) (*pb.GetAllAccommodationGuestGradesResponse, error) {
+	//TODO pomocna metoda za dobavljanje svih ocijena guesta za poslani id guesta
+	//a vraca se lista dtova koji sam napravio
+}
+*/
+
+/*
+func (handler *AccommodationHandler) GetEveryAccommodation(ctx context.Context, request *pb.GetEveryAccommodationRequest) (*pb.GetEveryAccommodationResponse, error) {
+	//TODO pomocna metoda za dobavljanje svih smjestaja, ne salje se nista
+	//a vraca se lista smjestaja
+}
+*/
+
+func (handler *AccommodationHandler) CreateAccommodationGrade(ctx context.Context, request *pb.CreateAccommodationGradeRequest) (*pb.CreateAccommodationGradeResponse, error) {
+	//TODO zahtjev 1.12 kreiranje ocijene
+	//ClientToken, _ := grpc_auth.AuthFromMD(ctx, "Bearer")
+	//claims, _ := token.ValidateToken(ClientToken)
+	//ovako se izvlaci id osobe koja salje zahtjev, id se nalazi u claims.Uid
+	//provjeriti uslov da li moze da ga ocijeni
+	response := &pb.CreateAccommodationGradeResponse{
+		Message: "Success",
+	}
+	return response, nil
+}
+
+func (handler *AccommodationHandler) UpdateAccommodationGrade(ctx context.Context, request *pb.UpdateAccommodationGradeRequest) (*pb.UpdateAccommodationGradeResponse, error) {
+	//TODO zahtjev 1.12 azuriranje ocijene, provjeriti da li je njegova ocijena da li smije da je promijeni
+	response := &pb.UpdateAccommodationGradeResponse{
+		Message: "Success",
+	}
+	return response, nil
+}
+
+func (handler *AccommodationHandler) DeleteAccommodationGrade(ctx context.Context, request *pb.DeleteAccommodationGradeRequest) (*pb.DeleteAccommodationGradeResponse, error) {
+	//TODO zahtjev 1.12 brisanje ocijene, provjeriti da li je njegova ocijena da li smije da je obrise
+	response := &pb.DeleteAccommodationGradeResponse{
+		Message: "Success",
+	}
+	return response, nil
+}
+
+/*
+func (handler *AccommodationHandler) GetAllAccommodationGrade(ctx context.Context, request *pb.GetAllAccommodationGradeRequest) (*pb.GetAllAccommodationGradeResponse, error) {
+	//TODO zahtjev 1.12 dobavljanje svih ocijena koje je smjestaj dobio salje se id smjestaja
+	//treba da se vrati lista svih ocijena tog smjestaja, napravio sam dto kako treba da izgleda
+	// i treba da se izracuna prosijecna ocijena, vjerovatno cete morati mapper praviti neki da to vratite
+}*/

@@ -125,6 +125,86 @@ func (handler *GlobalHandler) Init(mux *runtime.ServeMux) {
 	if err != nil {
 		panic(err)
 	}
+
+	err = mux.HandlePath("GET", "/user/guest/grades", handler.GetAllGuestGrades)
+	if err != nil {
+		panic(err)
+	}
+
+	err = mux.HandlePath("GET", "/user/host/all", handler.GetAllHosts)
+	if err != nil {
+		panic(err)
+	}
+
+	err = mux.HandlePath("POST", "/user/grade", handler.CreateUserGrade)
+	if err != nil {
+		panic(err)
+	}
+
+	err = mux.HandlePath("PUT", "/user/grade/{id}", handler.UpdateUserGrade)
+	if err != nil {
+		panic(err)
+	}
+
+	err = mux.HandlePath("DELETE", "/user/grade/{id}", handler.DeleteUserGrade)
+	if err != nil {
+		panic(err)
+	}
+
+	err = mux.HandlePath("GET", "/user/grade/{id}", handler.GetAllUserGrade)
+	if err != nil {
+		panic(err)
+	}
+
+	err = mux.HandlePath("GET", "/user/prominent/{id}", handler.HostProminent)
+	if err != nil {
+		panic(err)
+	}
+
+	err = mux.HandlePath("GET", "/accommodations", handler.GetEveryAccommodation)
+	if err != nil {
+		panic(err)
+	}
+
+	err = mux.HandlePath("POST", "/accommodation/grade", handler.CreateAccommodationGrade)
+	if err != nil {
+		panic(err)
+	}
+
+	err = mux.HandlePath("PUT", "/accommodation/guest/grades/{id}", handler.UpdateAccommodationGrade)
+	if err != nil {
+		panic(err)
+	}
+
+	err = mux.HandlePath("DELETE", "/accommodation/grade/{id}", handler.DeleteAccommodationGrade)
+	if err != nil {
+		panic(err)
+	}
+
+	err = mux.HandlePath("GET", "/accommodation/grade/{id}", handler.GetAllAccommodationGrade)
+	if err != nil {
+		panic(err)
+	}
+
+	err = mux.HandlePath("POST", "/availability/filter", handler.FilterAvailability)
+	if err != nil {
+		panic(err)
+	}
+
+	err = mux.HandlePath("PUT", "/user/notificationon/{id}", handler.UpdateNotificationOn)
+	if err != nil {
+		panic(err)
+	}
+
+	err = mux.HandlePath("POST", "/user/notification", handler.CreateNotification)
+	if err != nil {
+		panic(err)
+	}
+	err = mux.HandlePath("GET", "/user/notification/{id}", handler.GetAllNotifications)
+	if err != nil {
+		panic(err)
+	}
+
 }
 
 func createContextForAuthorization(header []string) context.Context {
@@ -526,4 +606,68 @@ func (handler *GlobalHandler) AcceptReservation(w http.ResponseWriter, r *http.R
 		return
 	}
 	fmt.Fprintf(w, "%s", resp)
+}
+
+func (handler *GlobalHandler) GetAllGuestGrades(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+	//TODO
+}
+
+func (handler *GlobalHandler) GetAllHosts(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+	//TODO
+}
+
+func (handler *GlobalHandler) CreateUserGrade(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+	//TODO
+}
+
+func (handler *GlobalHandler) UpdateUserGrade(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+	//TODO
+}
+
+func (handler *GlobalHandler) DeleteUserGrade(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+	//TODO
+}
+
+func (handler *GlobalHandler) GetAllUserGrade(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+	//TODO
+}
+
+func (handler *GlobalHandler) HostProminent(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+	//TODO
+}
+
+func (handler *GlobalHandler) GetEveryAccommodation(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+	//TODO
+}
+
+func (handler *GlobalHandler) CreateAccommodationGrade(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+	//TODO
+}
+
+func (handler *GlobalHandler) UpdateAccommodationGrade(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+	//TODO
+}
+
+func (handler *GlobalHandler) DeleteAccommodationGrade(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+	//TODO
+}
+
+func (handler *GlobalHandler) GetAllAccommodationGrade(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+	//TODO
+}
+
+func (handler *GlobalHandler) FilterAvailability(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+	//TODO
+}
+
+func (handler *GlobalHandler) UpdateNotificationOn(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+	//TODO
+}
+
+func (handler *GlobalHandler) CreateNotification(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+	//TODO
+}
+
+func (handler *GlobalHandler) GetAllNotifications(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+	//TODO
 }

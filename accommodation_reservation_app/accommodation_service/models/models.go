@@ -29,3 +29,11 @@ type Availability struct {
 	Price           float64            `bson:"price" json:"price" validate:"required,min=0"`
 	IsPricePerGuest bool               `bson:"is_price_per_guest" json:"is_price_per_guest" default:"false"`
 }
+
+type AccommodationGrade struct {
+	ID              primitive.ObjectID `bson:"_id" json:"_id"`
+	GuestID         primitive.ObjectID `bson:"guest_id" json:"guest_id" validate:"required"`
+	AccommodationID primitive.ObjectID `bson:"accommodation_id" json:"accommodation_id" validate:"required"`
+	Grade           int                `bson:"grade" json:"grade" validate:"required,min=1, max=5"`
+	DateOfGrade     time.Time          `bson:"date_of_grade" json:"date_of_grade" validate:"required"`
+}

@@ -69,6 +69,10 @@ func (server *Server) Start() {
 	availability_repository := &repository.AvailabilityRepository{AvailabilityCollection: availability_collection}
 	availability_service := &service.AvailabilityService{AvailabilityRepository: availability_repository}
 
+	grade_collection := initializer.GradeCollection(client)
+	grade_repository := &repository.GradeRepository{GradeCollection: grade_collection}
+	grade_service := &service.GradeService{GradeRepository: grade_repository}
+
 	user_client := server.InitializeUserClient()
 	reservation_client := server.InitializeReservationClient()
 
@@ -76,8 +80,8 @@ func (server *Server) Start() {
 	replyPublisher := server.initPublisher(server.config.DeleteUserReplySubject)
 	server.initDeleteUserHandler(accommodation_service, availability_service, replyPublisher, commandSubscriber)
 
-	accommodation_handler := api.NewAccommodationHandler(accommodation_service, availability_service, user_client, reservation_client)
-	availability_handler := api.NewAvailabilityHandler(accommodation_service, availability_service, user_client, reservation_client)
+	accommodation_handler := api.NewAccommodationHandler(accommodation_service, availability_service, grade_service, user_client, reservation_client)
+	availability_handler := api.NewAvailabilityHandler(accommodation_service, availability_service, grade_service, user_client, reservation_client)
 
 	global_handler := api.NewGlobalHandler(accommodation_handler, availability_handler)
 

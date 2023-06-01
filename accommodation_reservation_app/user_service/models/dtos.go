@@ -17,3 +17,18 @@ type FindReservation struct {
 	IsAccepted       bool               `bson:"is_accepted" json:"is_accepted"`
 	IsCanceled       bool               `bson:"is_canceled" json:"is_canceled"`
 }
+
+type UserGradeDetails struct {
+	GuestFirstName string    `bson:"guest_first_name" json:"guest_first_name"`
+	GuestLastName  string    `bson:"guest_last_name" json:"guest_last_name"`
+	HostFirstName  string    `bson:"host_first_name" json:"host_first_name"`
+	HostLastName   string    `bson:"host_last_name" json:"host_last_name"`
+	Grade          int       `bson:"grade" json:"grade"`
+	DateOfGrade    time.Time `bson:"date_of_grade" json:"date_of_grade"`
+}
+
+type HostDetails struct {
+	Id        primitive.ObjectID `bson:"id" json:"id"`
+	FirstName string             `bson:"first_name" json:"first_name"`
+	LastName  string             `bson:"last_name" json:"last_name"`
+}

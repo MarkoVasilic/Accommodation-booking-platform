@@ -21,14 +21,16 @@ type AvailabilityHandler struct {
 	pb.UnimplementedAccommodationServiceServer
 	accommodation_service *service.AccommodationService
 	availability_service  *service.AvailabilityService
+	grade_service         *service.GradeService
 	user_client           user_service.UserServiceClient
 	reservation_client    reservation_service.ReservationServiceClient
 }
 
-func NewAvailabilityHandler(accommodation_service *service.AccommodationService, availability_service *service.AvailabilityService, user_client user_service.UserServiceClient, reservation_client reservation_service.ReservationServiceClient) *AvailabilityHandler {
+func NewAvailabilityHandler(accommodation_service *service.AccommodationService, availability_service *service.AvailabilityService, grade_service *service.GradeService, user_client user_service.UserServiceClient, reservation_client reservation_service.ReservationServiceClient) *AvailabilityHandler {
 	return &AvailabilityHandler{
 		accommodation_service: accommodation_service,
 		availability_service:  availability_service,
+		grade_service:         grade_service,
 		user_client:           user_client,
 		reservation_client:    reservation_client,
 	}
@@ -234,3 +236,13 @@ func (handler *AvailabilityHandler) SearchAvailability(ctx context.Context, requ
 	}
 	return response, nil
 }
+
+/*
+func (handler *AvailabilityHandler) FilterAvailability(ctx context.Context, request *pb.FilterAvailabilityRequest) (*pb.FilterAvailabilityResponse, error) {
+	//filtriranje smjestaja zahtjev 1.14 mozete iskoristit search metodu ali sa dodanim poljima, prosiren je request mozete vidjeti u proto
+	//na frontu mozete zamjeniti da se ne koristi vise SearchAvailabilty nego ovo ili da imate dvije odvojene metode kako vam je lakse
+	response := &pb.FilterAvailabilityResponse{
+		FindAvailability: findAvailabilities,
+	}
+	return response, nil
+}*/
