@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/MarkoVasilic/Accommodation-booking-platform/api_gateway/infrastructure/api"
 	"github.com/MarkoVasilic/Accommodation-booking-platform/api_gateway/infrastructure/services"
@@ -61,6 +62,12 @@ func (server *Server) Start() {
 	allowedMethods := handlers.AllowedMethods([]string{"PUT", "PATCH", "POST", "GET", "OPTIONS", "DELETE"})
 	allowedHeaders := handlers.AllowedHeaders([]string{"Origin", "X-Api-Key", "X-Requested-With", "Content-Type", "Accept", "Authorization"})
 	handler := handlers.CORS(allowedOrigins, allowedMethods, allowedHeaders)(server.mux)
-
-	log.Fatal(http.ListenAndServe(fmt.Sprintf("localhost:%s", server.config.Port), handler))
+	fmt.Println("api gateway running")
+	url := fmt.Sprintf("127.0.0.1:%s", server.config.Port)
+	if os.Getenv("RUN_ENV") == "production" {
+		url = fmt.Sprintf("0.0.0.0:%s", server.config.Port)
+	} else {
+		url = fmt.Sprintf("127.0.0.1:%s", server.config.Port)
+	}
+	log.Fatal(http.ListenAndServe(url, handler))
 }

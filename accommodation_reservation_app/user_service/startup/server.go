@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"os"
 	"strings"
 
 	"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/user_service/api"
@@ -195,7 +196,13 @@ func checkIsRoleGuest(fullMethod string, ClientToken string) bool {
 }
 
 func (server *Server) startGrpcServer(userHandler *api.UserHandler) {
-	listener, err := net.Listen("tcp", fmt.Sprintf("localhost:%s", server.config.Port))
+	url := fmt.Sprintf("user_service:%s", server.config.Port)
+	if os.Getenv("RUN_ENV") == "production" {
+		url = fmt.Sprintf("user_service:%s", server.config.Port)
+	} else {
+		url = fmt.Sprintf("localhost:%s", server.config.Port)
+	}
+	listener, err := net.Listen("tcp", url)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
