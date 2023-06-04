@@ -3,6 +3,8 @@ package api
 import (
 	"context"
 	"fmt"
+	"strconv"
+	"time"
 
 	"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/user_service/models"
 	"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/user_service/service"
@@ -215,28 +217,64 @@ func (handler *UserHandler) GetAllHosts(ctx context.Context, request *pb.GetAllH
 
 func (handler *UserHandler) CreateUserGrade(ctx context.Context, request *pb.CreateUserGradeRequest) (*pb.CreateUserGradeResponse, error) {
 	//TODO zahtjev 1.11 kreiranje ocijene
-	//ClientToken, _ := grpc_auth.AuthFromMD(ctx, "Bearer")
-	//claims, _ := token.ValidateToken(ClientToken)
+	ClientToken, _ := grpc_auth.AuthFromMD(ctx, "Bearer")
+	claims, _ := token.ValidateToken(ClientToken)
 	//ovako se izvlaci id osobe koja salje zahtjev, id se nalazi u claims.Uid
 	//provjeriti uslov da li moze da ga ocijeni
+	guestId, err := primitive.ObjectIDFromHex(claims.Uid)
+	if err != nil {
+		err := status.Errorf(codes.InvalidArgument, "the provided id is not a valid ObjectID")
+		return nil, err
+	}
+	hostId, err := primitive.ObjectIDFromHex(request.HostID)
+	if err != nil {
+		err := status.Errorf(codes.InvalidArgument, "the provided id is not a valid ObjectID")
+		return nil, err
+	}
+	grade, err := strconv.Atoi(request.Grade)
+	userGrade := models.UserGrade{GuestID: guestId, HostID: hostId, Grade: grade, DateOfGrade: time.Now()}
+	mess, err := handler.grade_service.CreateUserGrade(userGrade)
+	if err != nil {
+		err := status.Errorf(codes.Internal, mess)
+		return nil, err
+	}
 	response := &pb.CreateUserGradeResponse{
-		Message: "Success",
+		Message: mess,
 	}
 	return response, nil
 }
 
 func (handler *UserHandler) UpdateUserGrade(ctx context.Context, request *pb.UpdateUserGradeRequest) (*pb.UpdateUserGradeResponse, error) {
 	//TODO zahtjev 1.11 azuriranje ocijene, provjeriti da li je njegova ocijena da li smije da je promijeni
+	mess, err := handler.grade_service.UpdateUserGrade( /*request.Grade*/ 5, request.Id) //izmeniti proto pa otkomentarisati
+	if err != nil {
+		err := status.Errorf(codes.InvalidArgument, mess)
+		return nil, err
+	}
 	response := &pb.UpdateUserGradeResponse{
-		Message: "Success",
+		Message: mess,
 	}
 	return response, nil
 }
 
 func (handler *UserHandler) DeleteUserGrade(ctx context.Context, request *pb.DeleteUserGradeRequest) (*pb.DeleteUserGradeResponse, error) {
 	//TODO zahtjev 1.11 brisanje ocijene, provjeriti da li je njegova ocijena da li smije da je obrise
+	ClientToken, _ := grpc_auth.AuthFromMD(ctx, "Bearer")
+	claims, _ := token.ValidateToken(ClientToken)
+	//ovako se izvlaci id osobe koja salje zahtjev, id se nalazi u claims.Uid
+	//provjeriti uslov da li moze da ga ocijeni
+	_, err := primitive.ObjectIDFromHex(claims.Uid)
+	if err != nil {
+		err := status.Errorf(codes.InvalidArgument, "the provided logged user id is not a valid ObjectID")
+		return nil, err
+	}
+	mess, err := handler.grade_service.DeleteUserGrade(request.Id, claims.Uid)
+	if err != nil {
+		err := status.Errorf(codes.InvalidArgument, mess)
+		return nil, err
+	}
 	response := &pb.DeleteUserGradeResponse{
-		Message: "Success",
+		Message: mess,
 	}
 	return response, nil
 }

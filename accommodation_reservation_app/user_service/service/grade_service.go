@@ -34,7 +34,7 @@ func (service *GradeService) CreateUserGrade(userGrade models.UserGrade) (string
 	return "Successfully created user grade", nil
 }
 
-func (service *GradeService) UpdateUserGrade(id string, grade int) (string, error) {
+func (service *GradeService) UpdateUserGrade(grade int, id string) (string, error) {
 	objectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		err := status.Errorf(codes.InvalidArgument, "Invalid ID format")
@@ -42,19 +42,13 @@ func (service *GradeService) UpdateUserGrade(id string, grade int) (string, erro
 	}
 
 	//provera da li postoji ocena
-	_, err = service.GradeRepository.GetGradeById(objectID)
+	userGrade, err := service.GradeRepository.GetGradeById(objectID)
 	if err != nil {
 		err := status.Errorf(codes.NotFound, "There is no grade with that ID")
 		return "There is no grade with that ID", err
 	}
-
-	//izmeni ocenu
-	userGrade := &models.UserGrade{
-		ID:    objectID,
-		Grade: grade,
-	}
-
-	err = service.GradeRepository.UpdateUserGrade(userGrade)
+	userGrade.Grade = grade
+	err = service.GradeRepository.UpdateUserGrade(&userGrade)
 	if err != nil {
 		err := status.Errorf(codes.Internal, "Failed to update grade")
 		return "Failed to update grade", err
@@ -63,18 +57,29 @@ func (service *GradeService) UpdateUserGrade(id string, grade int) (string, erro
 	return "Successfully updated grade", nil
 }
 
-func (service *GradeService) DeleteUserGrade(id string) (string, error) {
+func (service *GradeService) DeleteUserGrade(id string, loggedUserId string) (string, error) {
 	objectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		err := status.Errorf(codes.InvalidArgument, "Invalid ID format")
 		return "Invalid ID format", err
 	}
 
+	logged, err := primitive.ObjectIDFromHex(loggedUserId)
+	if err != nil {
+		err := status.Errorf(codes.InvalidArgument, "Invalid ID format")
+		return "Invalid ID format", err
+	}
+
 	// da li postoji ocena
-	_, err = service.GradeRepository.GetGradeById(objectID)
+	userGrade, err := service.GradeRepository.GetGradeById(objectID)
 	if err != nil {
 		err := status.Errorf(codes.NotFound, "There is no grade with that ID")
 		return "There is no grade with that ID", err
+	}
+
+	// da li je to ocena ulogovanog usera
+	if logged != userGrade.GuestID {
+		return "You cannot delete grade that is not yours!", status.Errorf(codes.InvalidArgument, "Invalid ID format")
 	}
 
 	// brisanje ocene

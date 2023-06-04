@@ -31,7 +31,8 @@ func (repo *GradeRepository) UpdateUserGrade(userGrade *models.UserGrade) error 
 	filter := bson.M{"_id": userGrade.ID}
 	update := bson.M{
 		"$set": bson.M{
-			"grade": userGrade.Grade,
+			"grade":         userGrade.Grade,
+			"date_of_grade": time.Now(),
 		},
 	}
 
