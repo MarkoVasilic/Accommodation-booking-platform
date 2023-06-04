@@ -1,8 +1,11 @@
 package api
 
 import (
+	"strconv"
+
 	"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/user_service/models"
 	pb "github.com/MarkoVasilic/Accommodation-booking-platform/common/proto/user_service"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func mapUser(user *models.User) *pb.User {
@@ -18,4 +21,17 @@ func mapUser(user *models.User) *pb.User {
 		Role:      string(*user.Role),
 	}
 	return userPb
+}
+
+func mapGrade(userGrade *models.UserGrade) *pb.UserGrade {
+	dateOfGrade := timestamppb.New(userGrade.DateOfGrade)
+	grade := strconv.Itoa(userGrade.Grade)
+	userGradePb := &pb.UserGrade{
+		ID:          userGrade.ID.Hex(),
+		GuestID:     userGrade.GuestID.Hex(),
+		HostID:      userGrade.HostID.Hex(),
+		Grade:       grade,
+		DateOfGrade: dateOfGrade,
+	}
+	return userGradePb
 }
