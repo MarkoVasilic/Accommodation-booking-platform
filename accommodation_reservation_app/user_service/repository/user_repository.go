@@ -89,3 +89,23 @@ func (repo *UserRepository) CountByUsername(username string) (int64, error) {
 	defer cancel()
 	return repo.UserCollection.CountDocuments(ctx, bson.M{"username": username})
 }
+
+func (repo *UserRepository) GetAllHosts() ([]models.User, error) {
+	var ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{"role": "HOST"}
+
+	cursor, err := repo.UserCollection.Find(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	var hosts []models.User
+	if err := cursor.All(ctx, &hosts); err != nil {
+		return nil, err
+	}
+
+	return hosts, nil
+}

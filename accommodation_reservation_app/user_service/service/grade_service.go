@@ -86,3 +86,35 @@ func (service *GradeService) DeleteUserGrade(id string) (string, error) {
 
 	return "Successfully deleted grade", nil
 }
+
+func (service *GradeService) GetAllGuestGrades(guestID string) ([]models.UserGrade, error) {
+	objectID, err := primitive.ObjectIDFromHex(guestID)
+	if err != nil {
+		err := status.Errorf(codes.InvalidArgument, "Invalid ID format")
+		return nil, err
+	}
+
+	grades, err := service.GradeRepository.GetAllGuestGrades(objectID)
+	if err != nil {
+		err := status.Errorf(codes.InvalidArgument, "Failed to retrieve guest grades")
+		return nil, err
+	}
+
+	return grades, nil
+}
+
+func (service *GradeService) GetAllUserGrade(hostID string) ([]models.UserGrade, error) {
+	objectID, err := primitive.ObjectIDFromHex(hostID)
+	if err != nil {
+		err := status.Errorf(codes.InvalidArgument, "Invalid ID format")
+		return nil, err
+	}
+
+	grades, err := service.GradeRepository.GetAllUserGrade(objectID)
+	if err != nil {
+		err := status.Errorf(codes.InvalidArgument, "Failed to retrieve user grades")
+		return nil, err
+	}
+
+	return grades, nil
+}

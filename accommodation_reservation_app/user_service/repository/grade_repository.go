@@ -53,3 +53,42 @@ func (repo *GradeRepository) DeleteUserGrade(id primitive.ObjectID) (*mongo.Dele
 
 	return repo.GradeCollection.DeleteOne(ctx, bson.M{"_id": id})
 }
+
+func (repo *GradeRepository) GetAllGuestGrades(guestID primitive.ObjectID) ([]models.UserGrade, error) {
+	var ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{"guest_id": guestID}
+	cursor, err := repo.GradeCollection.Find(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	var grades []models.UserGrade
+	if err := cursor.All(ctx, &grades); err != nil {
+		return nil, err
+	}
+
+	return grades, nil
+}
+
+func (repo *GradeRepository) GetAllUserGrade(hostID primitive.ObjectID) ([]models.UserGrade, error) {
+	var ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{"host_id": hostID}
+
+	cursor, err := repo.GradeCollection.Find(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	var grades []models.UserGrade
+	if err := cursor.All(ctx, &grades); err != nil {
+		return nil, err
+	}
+
+	return grades, nil
+}
