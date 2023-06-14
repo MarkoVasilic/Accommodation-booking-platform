@@ -169,7 +169,7 @@ message GetAvailabilityByIdRequest {
 }
 
 message GetAvailabilityByIdResponse {
-        Accommodation accommodation = 1;
+        Availability availability = 1;
 }
 
 message GetAccommodationByIdRequest {
@@ -177,7 +177,7 @@ message GetAccommodationByIdRequest {
 }
 
 message GetAccommodationByIdResponse {
-        Availability availability = 1;
+        Accommodation accommodation = 1;
 }
 
 message GetAllAvailabilitiesRequest {
