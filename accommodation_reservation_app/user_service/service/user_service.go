@@ -156,3 +156,12 @@ func (service *UserService) Login(user models.User) (models.User, string) {
 	generate.UpdateAllTokens(service.UserRepository.UserCollection, token, refreshToken, founduser.User_ID)
 	return founduser, ""
 }
+
+func (service *UserService) GetAllHosts() ([]models.User, error) {
+	hosts, err := service.UserRepository.GetAllHosts()
+	if err != nil {
+		return nil, err
+	}
+
+	return hosts, nil
+}
