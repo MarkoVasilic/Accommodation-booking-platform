@@ -36,6 +36,11 @@ service AccommodationService{
                 get: "/accommodation/availability/one/{id}"
             };
         }
+        rpc GetAccommodationById(GetAccommodationByIdRequest) returns(GetAccommodationByIdResponse) {
+                option (google.api.http) = {
+                get: "/accommodation/one/{id}"
+            };
+        }
         rpc CreateAvailability(CreateAvailabilityRequest) returns (CreateAvailabilityResponse) {
                 option (google.api.http) = {
                     post: "/accommodation/availability"
@@ -164,6 +169,14 @@ message GetAvailabilityByIdRequest {
 }
 
 message GetAvailabilityByIdResponse {
+        Accommodation accommodation = 1;
+}
+
+message GetAccommodationByIdRequest {
+        string id = 1;
+}
+
+message GetAccommodationByIdResponse {
         Availability availability = 1;
 }
 
@@ -248,7 +261,7 @@ message AccommodationGrade {
         string ID = 1;
         string GuestID = 2;
         string AccommodationID = 3;
-        string Grade = 4;
+        double Grade = 4;
         google.protobuf.Timestamp DateOfGrade = 5;
 }
 
@@ -257,7 +270,7 @@ message AccommodationGradeDetails {
         string GuestFirstName = 2;
         string GuestLastName = 3;
         string AccommodationName = 4;
-        string Grade = 5;
+        double Grade = 5;
         google.protobuf.Timestamp DateOfGrade = 6;
 }
 
@@ -279,7 +292,7 @@ message GetAllAccommodationGuestGradesResponse {
 
 message UpdateAccommodationGradeRequest {
         string id = 1;
-        string Grade = 2;
+        double Grade = 2;
  }
  
  message UpdateAccommodationGradeResponse {

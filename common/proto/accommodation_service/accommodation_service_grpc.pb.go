@@ -24,6 +24,7 @@ const (
 	AccommodationService_GetAccommodationByAvailability_FullMethodName = "/accommodation_service.AccommodationService/GetAccommodationByAvailability"
 	AccommodationService_GetAllAvailabilities_FullMethodName           = "/accommodation_service.AccommodationService/GetAllAvailabilities"
 	AccommodationService_GetAvailabilityById_FullMethodName            = "/accommodation_service.AccommodationService/GetAvailabilityById"
+	AccommodationService_GetAccommodationById_FullMethodName           = "/accommodation_service.AccommodationService/GetAccommodationById"
 	AccommodationService_CreateAvailability_FullMethodName             = "/accommodation_service.AccommodationService/CreateAvailability"
 	AccommodationService_UpdateAvailability_FullMethodName             = "/accommodation_service.AccommodationService/UpdateAvailability"
 	AccommodationService_SearchAvailability_FullMethodName             = "/accommodation_service.AccommodationService/SearchAvailability"
@@ -46,6 +47,7 @@ type AccommodationServiceClient interface {
 	GetAccommodationByAvailability(ctx context.Context, in *GetAccommodationByAvailabilityRequest, opts ...grpc.CallOption) (*GetAccommodationByAvailabilityResponse, error)
 	GetAllAvailabilities(ctx context.Context, in *GetAllAvailabilitiesRequest, opts ...grpc.CallOption) (*GetAllAvailabilitiesResponse, error)
 	GetAvailabilityById(ctx context.Context, in *GetAvailabilityByIdRequest, opts ...grpc.CallOption) (*GetAvailabilityByIdResponse, error)
+	GetAccommodationById(ctx context.Context, in *GetAccommodationByIdRequest, opts ...grpc.CallOption) (*GetAccommodationByIdResponse, error)
 	CreateAvailability(ctx context.Context, in *CreateAvailabilityRequest, opts ...grpc.CallOption) (*CreateAvailabilityResponse, error)
 	UpdateAvailability(ctx context.Context, in *UpdateAvailabilityRequest, opts ...grpc.CallOption) (*UpdateAvailabilityResponse, error)
 	SearchAvailability(ctx context.Context, in *SearchAvailabilityRequest, opts ...grpc.CallOption) (*SearchAvailabilityResponse, error)
@@ -106,6 +108,15 @@ func (c *accommodationServiceClient) GetAllAvailabilities(ctx context.Context, i
 func (c *accommodationServiceClient) GetAvailabilityById(ctx context.Context, in *GetAvailabilityByIdRequest, opts ...grpc.CallOption) (*GetAvailabilityByIdResponse, error) {
 	out := new(GetAvailabilityByIdResponse)
 	err := c.cc.Invoke(ctx, AccommodationService_GetAvailabilityById_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accommodationServiceClient) GetAccommodationById(ctx context.Context, in *GetAccommodationByIdRequest, opts ...grpc.CallOption) (*GetAccommodationByIdResponse, error) {
+	out := new(GetAccommodationByIdResponse)
+	err := c.cc.Invoke(ctx, AccommodationService_GetAccommodationById_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -220,6 +231,7 @@ type AccommodationServiceServer interface {
 	GetAccommodationByAvailability(context.Context, *GetAccommodationByAvailabilityRequest) (*GetAccommodationByAvailabilityResponse, error)
 	GetAllAvailabilities(context.Context, *GetAllAvailabilitiesRequest) (*GetAllAvailabilitiesResponse, error)
 	GetAvailabilityById(context.Context, *GetAvailabilityByIdRequest) (*GetAvailabilityByIdResponse, error)
+	GetAccommodationById(context.Context, *GetAccommodationByIdRequest) (*GetAccommodationByIdResponse, error)
 	CreateAvailability(context.Context, *CreateAvailabilityRequest) (*CreateAvailabilityResponse, error)
 	UpdateAvailability(context.Context, *UpdateAvailabilityRequest) (*UpdateAvailabilityResponse, error)
 	SearchAvailability(context.Context, *SearchAvailabilityRequest) (*SearchAvailabilityResponse, error)
@@ -252,6 +264,9 @@ func (UnimplementedAccommodationServiceServer) GetAllAvailabilities(context.Cont
 }
 func (UnimplementedAccommodationServiceServer) GetAvailabilityById(context.Context, *GetAvailabilityByIdRequest) (*GetAvailabilityByIdResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAvailabilityById not implemented")
+}
+func (UnimplementedAccommodationServiceServer) GetAccommodationById(context.Context, *GetAccommodationByIdRequest) (*GetAccommodationByIdResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAccommodationById not implemented")
 }
 func (UnimplementedAccommodationServiceServer) CreateAvailability(context.Context, *CreateAvailabilityRequest) (*CreateAvailabilityResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateAvailability not implemented")
@@ -385,6 +400,24 @@ func _AccommodationService_GetAvailabilityById_Handler(srv interface{}, ctx cont
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AccommodationServiceServer).GetAvailabilityById(ctx, req.(*GetAvailabilityByIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AccommodationService_GetAccommodationById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAccommodationByIdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccommodationServiceServer).GetAccommodationById(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AccommodationService_GetAccommodationById_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccommodationServiceServer).GetAccommodationById(ctx, req.(*GetAccommodationByIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -613,6 +646,10 @@ var AccommodationService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAvailabilityById",
 			Handler:    _AccommodationService_GetAvailabilityById_Handler,
+		},
+		{
+			MethodName: "GetAccommodationById",
+			Handler:    _AccommodationService_GetAccommodationById_Handler,
 		},
 		{
 			MethodName: "CreateAvailability",
