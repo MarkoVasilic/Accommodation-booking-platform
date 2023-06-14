@@ -661,13 +661,67 @@ func (handler *GlobalHandler) FilterAvailability(w http.ResponseWriter, r *http.
 }
 
 func (handler *GlobalHandler) UpdateNotificationOn(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
-	//TODO
+	user_id := pathParams["id"]
+	if user_id == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	var notificationOn domain.NotificationOn
+	err := json.NewDecoder(r.Body).Decode(&notificationOn)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, "Failed to parse request body: %v", err)
+		return
+	}
+	resp, err := handler.userService.UpdateNotificationOn(createContextForAuthorization(r.Header["Authorization"]), &user_service.UpdateNotificationOnRequest{Id: user_id, Type: notificationOn.Type, On: notificationOn.On})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "Failed to call UpdateNotificationOn method: %v", err)
+		return
+	}
+	fmt.Fprintf(w, "%s", resp)
+
 }
 
 func (handler *GlobalHandler) CreateNotification(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
-	//TODO
+	var notification domain.Notification
+	err := json.NewDecoder(r.Body).Decode(&notification)
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, "Failed to parse request body: %v", err)
+		return
+	}
+	resp, err := handler.userService.CreateNotification(createContextForAuthorization(r.Header["Authorization"]), &user_service.CreateNotificationRequest{UserId: notification.UserID, Type: notification.Type, Message: *notification.Message, DateOfNotification: nil})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "Failed to call CreateUser method: %v", err)
+		return
+	}
+
+	fmt.Fprintf(w, "%s", resp)
 }
 
 func (handler *GlobalHandler) GetAllNotifications(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
 	//TODO
+	id := pathParams["id"]
+	if id == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	resp, err := handler.userService.GetAllNotifications(createContextForAuthorization(r.Header["Authorization"]), &user_service.GetAllNotificationsRequest{Id: id})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "Failed to call GetAllNotifications method: %v", err)
+		return
+	}
+	//fmt.Fprintf(w, "%s", resp)
+	response, err := json.Marshal(resp.Notifications)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write(response)
 }

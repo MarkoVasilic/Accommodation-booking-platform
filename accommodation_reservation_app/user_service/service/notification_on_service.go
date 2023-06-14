@@ -1,6 +1,10 @@
 package service
 
 import (
+	"context"
+	"log"
+	"time"
+
 	"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/user_service/models"
 	"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/user_service/repository"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -32,4 +36,32 @@ func (service *NotificationOnService) InitializeNotificationsOn(userID primitive
 		}
 	}
 	return nil
+}
+
+func (service *NotificationOnService) UpdateNotificationOn(notification_on models.NotificationOn, user_id string) (string, error) {
+	var _, cancel = context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	userId, err := primitive.ObjectIDFromHex(user_id)
+	if err != nil {
+		err := status.Errorf(codes.Internal, "Id conversion failed")
+		return "Id conversion failed", err
+	}
+
+	foundnotification, founderr := service.NotificationOnRepository.GetNotificationByUserAndType(userId, notification_on.Type)
+	if founderr != nil {
+		err := status.Errorf(codes.Internal, "something went wrong")
+		return "something went wrong", err
+	}
+
+	notification_on.ID = foundnotification.ID
+	notification_on.UserID = userId
+
+	inserterr := service.NotificationOnRepository.UpdateNotificationOn(&notification_on)
+	if inserterr != nil {
+		log.Panic(err)
+		err := status.Errorf(codes.Internal, "something went wrong")
+		return "something went wrong", err
+	}
+	return "Succesffully updated notification on", nil
+
 }

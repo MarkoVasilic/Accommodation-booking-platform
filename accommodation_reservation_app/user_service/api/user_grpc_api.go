@@ -298,6 +298,15 @@ func (handler *UserHandler) HostProminent(ctx context.Context, request *pb.HostP
 
 func (handler *UserHandler) UpdateNotificationOn(ctx context.Context, request *pb.UpdateNotificationOnRequest) (*pb.UpdateNotificationOnResponse, error) {
 	//TODO zahtjev 1.15, azuriranje odgovarajuceg tipa notifikacije da li je ukljuceno ili ne
+	user_id := request.Id
+	notificationOn := models.NotificationOn{Type: (*models.NotificationType)(&request.Type), On: request.On}
+
+	mess, err := handler.notification_on_service.UpdateNotificationOn(notificationOn, user_id)
+	if err != nil {
+		err := status.Errorf(codes.Internal, mess)
+		return nil, err
+	}
+
 	response := &pb.UpdateNotificationOnResponse{
 		Message: "Success",
 	}
@@ -306,16 +315,60 @@ func (handler *UserHandler) UpdateNotificationOn(ctx context.Context, request *p
 
 func (handler *UserHandler) CreateNotification(ctx context.Context, request *pb.CreateNotificationRequest) (*pb.CreateNotificationResponse, error) {
 	//TODO zahtjev 1.15, kreiranje notifikacije
+	userId, err := primitive.ObjectIDFromHex(request.UserId)
+	if err != nil {
+		err := status.Errorf(codes.Internal, "Id conversion failed")
+		response1 := &pb.CreateNotificationResponse{
+			Message: "Id conversion failed",
+		}
+		return response1, err
+	}
+
+	notification := models.Notification{UserID: userId, Type: (*models.NotificationType)(&request.Type), Message: &request.Message, DateOfNotification: time.Now(), Seen: false}
+	mess, err := handler.notification_service.CreateNotification(notification)
+	if err != nil {
+		err := status.Errorf(codes.Internal, mess)
+		response2 := &pb.CreateNotificationResponse{
+			Message: "Error with creating notification",
+		}
+		return response2, err
+	}
+
 	response := &pb.CreateNotificationResponse{
 		Message: "Success",
 	}
 	return response, nil
 }
 
-/*
 func (handler *UserHandler) GetAllNotifications(ctx context.Context, request *pb.GetAllNotificationsRequest) (*pb.GetAllNotificationsResponse, error) {
 	//TODO zahtjev 1.15, dobavljanje notifikacija, treba provjeriti koje su ukljucene i te dobaviti za korisnika za kojeg je id poslan
 	//mozes dodatno sortirati po datumu pravljenja da se vide najnovije
 	//postoji i polje seen kojeg mozes ukljuciti a i ne moras, neka stoji samo ako ne zelis
+	userId, err := primitive.ObjectIDFromHex(request.Id)
+	if err != nil {
+		err := status.Errorf(codes.Internal, "Id conversion failed")
+		return nil, err
+	}
 
-}*/
+	notifications, err := handler.notification_service.GetNotificationByUser(userId)
+	if err != nil {
+		return nil, err
+	} else if notifications == nil {
+		err := status.Errorf(codes.InvalidArgument, "There is no notifications!")
+		return nil, err
+	}
+
+	//sortiraj
+
+	user_notifications := []*pb.Notification{}
+	for _, n := range notifications {
+		notificationPb := mapNotification(&n)
+		user_notifications = append(user_notifications, notificationPb)
+	}
+
+	response := &pb.GetAllNotificationsResponse{
+		Notifications: user_notifications,
+	}
+
+	return response, nil
+}

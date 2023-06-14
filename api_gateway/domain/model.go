@@ -47,3 +47,19 @@ type Reservation struct {
 	IsCanceled     bool
 	IsDeleted      bool
 }
+
+type NotificationOn struct {
+	ID     string
+	UserID string
+	Type   string
+	On     bool
+}
+
+type Notification struct {
+	ID                 string
+	UserID             string
+	Type               string
+	Message            *string
+	DateOfNotification time.Time
+	Seen               bool
+}

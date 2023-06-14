@@ -168,6 +168,9 @@ func shouldSkipInterceptor(fullMethod string) bool {
 		"CreateUser",
 		"Login",
 		"SearchAvailability",
+		"UpdateNotificationOn",
+		"CreateNotification",
+		"GetAllNotifications",
 	}
 	return checkRoles(fullMethod, skipMethods)
 }

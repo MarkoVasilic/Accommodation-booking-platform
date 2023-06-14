@@ -35,3 +35,16 @@ func mapGrade(userGrade *models.UserGrade) *pb.UserGrade {
 	}
 	return userGradePb
 }
+
+func mapNotification(notification *models.Notification) *pb.Notification {
+	dateOfNotification := timestamppb.New(notification.DateOfNotification)
+	notificationPb := &pb.Notification{
+		Id:                 notification.ID.Hex(),
+		UserId:             notification.UserID.Hex(),
+		Type:               string(*notification.Type),
+		Message:            *notification.Message,
+		DateOfNotification: dateOfNotification,
+		Seen:               notification.Seen,
+	}
+	return notificationPb
+}
