@@ -4,6 +4,8 @@ import (
 	"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/accommodation_service/models"
 	pb "github.com/MarkoVasilic/Accommodation-booking-platform/common/proto/accommodation_service"
 	"google.golang.org/protobuf/types/known/timestamppb"
+
+	"strconv"
 )
 
 func mapAvailability(availability *models.Availability) *pb.Availability {
@@ -72,4 +74,32 @@ func mapAccommodation(accommodation *models.Accommodation) *pb.Accommodation {
 	}
 
 	return accommodationPb
+}
+
+func mapAccommodationGrade(accommodationGrade *models.AccommodationGrade) *pb.AccommodationGrade {
+	dateOfGrade := timestamppb.New(accommodationGrade.DateOfGrade)
+	grade := strconv.Itoa(accommodationGrade.Grade)
+	accommodationGradePb := &pb.AccommodationGrade{
+		ID:              accommodationGrade.ID.Hex(),
+		GuestID:         accommodationGrade.GuestID.Hex(),
+		AccommodationID: accommodationGrade.AccommodationID.Hex(),
+		Grade:           grade,
+		DateOfGrade:     dateOfGrade,
+	}
+
+	return accommodationGradePb
+}
+
+func mapAccommodationGradeDetails(accommodationGrade *models.AccommodationGradeDetails) *pb.AccommodationGradeDetails {
+	dateOfGrade := timestamppb.New(accommodationGrade.DateOfGrade)
+	grade := strconv.Itoa(accommodationGrade.Grade)
+	accommodationGradeDetailsPb := &pb.AccommodationGradeDetails{
+		GuestFirstName:    accommodationGrade.GuestFirstName,
+		GuestLastName:     accommodationGrade.GuestLastName,
+		AccommodationName: accommodationGrade.AccommodationName,
+		Grade:             grade,
+		DateOfGrade:       dateOfGrade,
+	}
+
+	return accommodationGradeDetailsPb
 }

@@ -47,7 +47,10 @@ func (service *GradeService) UpdateUserGrade(grade int, id string) (string, erro
 		err := status.Errorf(codes.NotFound, "There is no grade with that ID")
 		return "There is no grade with that ID", err
 	}
+
+	//izmeni ocenu
 	userGrade.Grade = grade
+
 	err = service.GradeRepository.UpdateUserGrade(&userGrade)
 	if err != nil {
 		err := status.Errorf(codes.Internal, "Failed to update grade")
@@ -71,14 +74,14 @@ func (service *GradeService) DeleteUserGrade(id string, loggedUserId string) (st
 	}
 
 	// da li postoji ocena
-	userGrade, err := service.GradeRepository.GetGradeById(objectID)
+	grade, err := service.GradeRepository.GetGradeById(objectID)
 	if err != nil {
 		err := status.Errorf(codes.NotFound, "There is no grade with that ID")
 		return "There is no grade with that ID", err
 	}
 
 	// da li je to ocena ulogovanog usera
-	if logged != userGrade.GuestID {
+	if logged != grade.GuestID {
 		return "You cannot delete grade that is not yours!", status.Errorf(codes.InvalidArgument, "Invalid ID format")
 	}
 

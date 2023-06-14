@@ -35,3 +35,17 @@ func mapGrade(userGrade *models.UserGrade) *pb.UserGrade {
 	}
 	return userGradePb
 }
+
+func mapUserGradeDetails(gradeDetails *models.UserGradeDetails) *pb.UserGradeDetails {
+	dateOfGrade := timestamppb.New(gradeDetails.DateOfGrade)
+	grade := strconv.Itoa(gradeDetails.Grade)
+	userGradeDetailsPb := &pb.UserGradeDetails{
+		GuestFirstName: gradeDetails.GuestFirstName,
+		GuestLastName:  gradeDetails.GuestLastName,
+		HostFirstName:  gradeDetails.HostFirstName,
+		HostLastName:   gradeDetails.GuestLastName,
+		Grade:          grade,
+		DateOfGrade:    dateOfGrade,
+	}
+	return userGradeDetailsPb
+}

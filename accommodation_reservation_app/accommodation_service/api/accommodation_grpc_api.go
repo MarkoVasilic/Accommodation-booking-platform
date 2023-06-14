@@ -2,12 +2,16 @@ package api
 
 import (
 	"context"
+	"strconv"
+	"time"
 
 	"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/accommodation_service/models"
 	"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/accommodation_service/service"
+	"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/accommodation_service/token"
 	pb "github.com/MarkoVasilic/Accommodation-booking-platform/common/proto/accommodation_service"
 	"github.com/MarkoVasilic/Accommodation-booking-platform/common/proto/reservation_service"
 	"github.com/MarkoVasilic/Accommodation-booking-platform/common/proto/user_service"
+	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -163,12 +167,44 @@ func (handler *AccommodationHandler) DeleteAccommodationsByHost(ctx context.Cont
 	return response, nil
 }
 
-/*
 func (handler *AccommodationHandler) GetAllAccommodationGuestGrades(ctx context.Context, request *pb.GetAllAccommodationGuestGradesRequest) (*pb.GetAllAccommodationGuestGradesResponse, error) {
 	//TODO pomocna metoda za dobavljanje svih ocijena guesta za poslani id guesta
 	//a vraca se lista dtova koji sam napravio
+	id := request.Id
+	_, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		err := status.Errorf(codes.InvalidArgument, "the provided guestId is not a valid ObjectID")
+		return nil, err
+	}
+	res, err := handler.grade_service.GetAllAccommodationGuestGrades(request.Id)
+	if err != nil {
+		return nil, err
+	}
+	user, err := handler.user_client.GetUser(createContextForAuthorization(ctx), &user_service.GetUserRequest{Id: request.Id}) //&request.Id?
+	if err != nil {
+		return nil, err
+	}
+	//var sum int
+	var gradeDTOs []models.AccommodationGradeDetails
+	for _, grade := range res {
+		//accomodation, err := handler.accommodation_client.GetAllAccommodations(createContextForAuthorization(ctx), &reservation_service.GetAllReservationsRequest{Id: request.Id}) //&request.Id? //gteById
+		gradeDTO := models.AccommodationGradeDetails{GuestFirstName: *&user.User.FirstName, GuestLastName: *&user.User.LastName, AccommodationName: "", Grade: grade.Grade, DateOfGrade: grade.DateOfGrade}
+		gradeDTOs = append(gradeDTOs, gradeDTO)
+		//sum = sum + grade.Grade
+	}
+	//avergeGrade := float64(sum/ len(res))
+	gradesDetails := []*pb.AccommodationGradeDetails{}
+	for _, r := range gradeDTOs {
+		gradesPb := mapAccommodationGradeDetails(&r)
+		gradesDetails = append(gradesDetails, gradesPb)
+	}
+	response := &pb.GetAllAccommodationGuestGradesResponse{
+		AccommodationGradeDetails: gradesDetails,
+		//AverageGrade: avergeGrade,
+
+	}
+	return response, nil
 }
-*/
 
 /*
 func (handler *AccommodationHandler) GetEveryAccommodation(ctx context.Context, request *pb.GetEveryAccommodationRequest) (*pb.GetEveryAccommodationResponse, error) {
@@ -183,31 +219,100 @@ func (handler *AccommodationHandler) CreateAccommodationGrade(ctx context.Contex
 	//claims, _ := token.ValidateToken(ClientToken)
 	//ovako se izvlaci id osobe koja salje zahtjev, id se nalazi u claims.Uid
 	//provjeriti uslov da li moze da ga ocijeni
+	guestId, err := primitive.ObjectIDFromHex(request.AccommodationGrade.GuestID)
+	if err != nil {
+		err := status.Errorf(codes.InvalidArgument, "the provided id is not a valid ObjectID")
+		return nil, err
+	}
+	accommodationId, err := primitive.ObjectIDFromHex(request.AccommodationGrade.AccommodationID)
+	if err != nil {
+		err := status.Errorf(codes.InvalidArgument, "the provided id is not a valid ObjectID")
+		return nil, err
+	}
+	grade, err := strconv.Atoi(request.AccommodationGrade.Grade)
+	accommodationGrade := models.AccommodationGrade{GuestID: guestId, AccommodationID: accommodationId, Grade: grade, DateOfGrade: time.Now()}
+	mess, err := handler.grade_service.CreateAccommodationGrade(accommodationGrade)
+	if err != nil {
+		err := status.Errorf(codes.Internal, mess)
+		return nil, err
+	}
+
 	response := &pb.CreateAccommodationGradeResponse{
-		Message: "Success",
+		Message: mess,
 	}
 	return response, nil
 }
 
 func (handler *AccommodationHandler) UpdateAccommodationGrade(ctx context.Context, request *pb.UpdateAccommodationGradeRequest) (*pb.UpdateAccommodationGradeResponse, error) {
 	//TODO zahtjev 1.12 azuriranje ocijene, provjeriti da li je njegova ocijena da li smije da je promijeni
+	mess, err := handler.grade_service.UpdateAccommodationGrade( /*request.Grade*/ 5, request.Id) //izmeniti proto pa otkomentarisati
+	if err != nil {
+		err := status.Errorf(codes.InvalidArgument, mess)
+		return nil, err
+	}
 	response := &pb.UpdateAccommodationGradeResponse{
-		Message: "Success",
+		Message: mess,
 	}
 	return response, nil
 }
 
 func (handler *AccommodationHandler) DeleteAccommodationGrade(ctx context.Context, request *pb.DeleteAccommodationGradeRequest) (*pb.DeleteAccommodationGradeResponse, error) {
 	//TODO zahtjev 1.12 brisanje ocijene, provjeriti da li je njegova ocijena da li smije da je obrise
+	ClientToken, _ := grpc_auth.AuthFromMD(ctx, "Bearer")
+	claims, _ := token.ValidateToken(ClientToken)
+	//ovako se izvlaci id osobe koja salje zahtjev, id se nalazi u claims.Uid
+	//provjeriti uslov da li moze da ga ocijeni
+	_, err := primitive.ObjectIDFromHex(claims.Uid)
+	if err != nil {
+		err := status.Errorf(codes.InvalidArgument, "the provided logged user id is not a valid ObjectID")
+		return nil, err
+	}
+	mess, err := handler.grade_service.DeleteAccommodationGrade(claims.Uid, request.Id)
+	if err != nil {
+		err := status.Errorf(codes.InvalidArgument, mess)
+		return nil, err
+	}
 	response := &pb.DeleteAccommodationGradeResponse{
-		Message: "Success",
+		Message: mess,
 	}
 	return response, nil
 }
 
-/*
 func (handler *AccommodationHandler) GetAllAccommodationGrade(ctx context.Context, request *pb.GetAllAccommodationGradeRequest) (*pb.GetAllAccommodationGradeResponse, error) {
 	//TODO zahtjev 1.12 dobavljanje svih ocijena koje je smjestaj dobio salje se id smjestaja
 	//treba da se vrati lista svih ocijena tog smjestaja, napravio sam dto kako treba da izgleda
 	// i treba da se izracuna prosijecna ocijena, vjerovatno cete morati mapper praviti neki da to vratite
-}*/
+	id := request.Id
+	_, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		err := status.Errorf(codes.InvalidArgument, "the provided accommodationId is not a valid ObjectID")
+		return nil, err
+	}
+	accommodationGrades, err := handler.grade_service.GetAllAccommodationGrade(request.Id)
+	if err != nil {
+		return nil, err
+	}
+	user, err := handler.user_client.GetUser(createContextForAuthorization(ctx), &user_service.GetUserRequest{Id: "UserId"})
+	if err != nil {
+		return nil, err
+	}
+	var sum int
+	var gradeDTOs []models.AccommodationGradeDetails
+	for _, grade := range accommodationGrades {
+		//accomodation, err := handler.accommodation_client.GetAllAccommodations(createContextForAuthorization(ctx), &reservation_service.GetAllReservationsRequest{Id: request.Id}) //&request.Id? //gteById
+		gradeDTO := models.AccommodationGradeDetails{GuestFirstName: *&user.User.FirstName, GuestLastName: *&user.User.LastName, AccommodationName: "", Grade: grade.Grade, DateOfGrade: grade.DateOfGrade}
+		gradeDTOs = append(gradeDTOs, gradeDTO)
+		sum = sum + grade.Grade
+	}
+	avergeGrade := float64(sum / len(accommodationGrades))
+	gradesDetails := []*pb.AccommodationGradeDetails{}
+	for _, r := range gradeDTOs {
+		gradesPb := mapAccommodationGradeDetails(&r)
+		gradesDetails = append(gradesDetails, gradesPb)
+	}
+	response := &pb.GetAllAccommodationGradeResponse{
+		AccommodationGradeDetails: gradesDetails,
+		AverageGrade:              avergeGrade,
+	}
+	return response, nil
+}
