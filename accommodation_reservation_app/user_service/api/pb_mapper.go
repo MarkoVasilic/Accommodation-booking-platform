@@ -1,8 +1,6 @@
 package api
 
 import (
-	"strconv"
-
 	"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/user_service/models"
 	pb "github.com/MarkoVasilic/Accommodation-booking-platform/common/proto/user_service"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -25,12 +23,11 @@ func mapUser(user *models.User) *pb.User {
 
 func mapGrade(userGrade *models.UserGrade) *pb.UserGrade {
 	dateOfGrade := timestamppb.New(userGrade.DateOfGrade)
-	grade := strconv.Itoa(userGrade.Grade)
 	userGradePb := &pb.UserGrade{
 		ID:          userGrade.ID.Hex(),
 		GuestID:     userGrade.GuestID.Hex(),
 		HostID:      userGrade.HostID.Hex(),
-		Grade:       grade,
+		Grade:       float64(userGrade.Grade),
 		DateOfGrade: dateOfGrade,
 	}
 	return userGradePb
@@ -38,13 +35,12 @@ func mapGrade(userGrade *models.UserGrade) *pb.UserGrade {
 
 func mapUserGradeDetails(gradeDetails *models.UserGradeDetails) *pb.UserGradeDetails {
 	dateOfGrade := timestamppb.New(gradeDetails.DateOfGrade)
-	grade := strconv.Itoa(gradeDetails.Grade)
 	userGradeDetailsPb := &pb.UserGradeDetails{
 		GuestFirstName: gradeDetails.GuestFirstName,
 		GuestLastName:  gradeDetails.GuestLastName,
 		HostFirstName:  gradeDetails.HostFirstName,
 		HostLastName:   gradeDetails.GuestLastName,
-		Grade:          grade,
+		Grade:          float64(gradeDetails.Grade),
 		DateOfGrade:    dateOfGrade,
 	}
 	return userGradeDetailsPb

@@ -3,7 +3,6 @@ package api
 import (
 	"context"
 	"fmt"
-	"strconv"
 	"time"
 
 	"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/user_service/models"
@@ -230,7 +229,7 @@ func (handler *UserHandler) GetAllGuestGrades(ctx context.Context, request *pb.G
 		gradesDetails = append(gradesDetails, gradesPb)
 	}
 	response := &pb.GetAllGuestGradesResponse{
-		UserGradeDetails: gradesDetails, //proto
+		UserGradeDetails: gradesDetails,
 	}
 	return response, nil
 }
@@ -258,8 +257,7 @@ func (handler *UserHandler) CreateUserGrade(ctx context.Context, request *pb.Cre
 		err := status.Errorf(codes.InvalidArgument, "the provided id is not a valid ObjectID")
 		return nil, err
 	}
-	grade, err := strconv.Atoi(request.Grade)
-	userGrade := models.UserGrade{GuestID: guestId, HostID: hostId, Grade: grade, DateOfGrade: time.Now()}
+	userGrade := models.UserGrade{GuestID: guestId, HostID: hostId, Grade: int(request.Grade), DateOfGrade: time.Now()}
 	mess, err := handler.grade_service.CreateUserGrade(userGrade)
 	if err != nil {
 		err := status.Errorf(codes.Internal, mess)

@@ -180,14 +180,15 @@ func (handler *AccommodationHandler) GetAllAccommodationGuestGrades(ctx context.
 	if err != nil {
 		return nil, err
 	}
-	user, err := handler.user_client.GetUser(createContextForAuthorization(ctx), &user_service.GetUserRequest{Id: request.Id}) //&request.Id?
+	user, err := handler.user_client.GetUser(createContextForAuthorization(ctx), &user_service.GetUserRequest{Id: request.Id})
 	if err != nil {
 		return nil, err
 	}
 	//var sum int
 	var gradeDTOs []models.AccommodationGradeDetails
 	for _, grade := range res {
-		//accomodation, err := handler.accommodation_client.GetAllAccommodations(createContextForAuthorization(ctx), &reservation_service.GetAllReservationsRequest{Id: request.Id}) //&request.Id? //gteById
+		//getAccommById - proto
+		//accomodation, err := handler.accommodation_service.GetAccommodationById(createContextForAuthorization(ctx), &accommodation_service.GetAccommodationByIdRequest{Id: request.Id})
 		gradeDTO := models.AccommodationGradeDetails{GuestFirstName: *&user.User.FirstName, GuestLastName: *&user.User.LastName, AccommodationName: "", Grade: grade.Grade, DateOfGrade: grade.DateOfGrade}
 		gradeDTOs = append(gradeDTOs, gradeDTO)
 		//sum = sum + grade.Grade
