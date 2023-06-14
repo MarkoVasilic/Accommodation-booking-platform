@@ -98,6 +98,11 @@ service UserService{
 			get: "/accommodation/user/notification/{id}"
 		};
         }
+        rpc GetUserNotificationsOn(GetUserNotificationsOnRequest) returns(GetUserNotificationsOnResponse) {
+        	option (google.api.http) = {
+			get: "/accommodation/user/notificationsOn/{id}"
+		};
+        }
 }
 
 message User {
@@ -189,14 +194,14 @@ message UserGrade {
         string ID = 1;
         string GuestID = 2;
         string HostID = 3;
-        string Grade = 4;
+        double Grade = 4;
         google.protobuf.Timestamp DateOfGrade = 5;
 }
 
 message CreateUserGradeRequest {
         string GuestID = 1;
         string HostID = 2;
-        string Grade = 3;
+        double Grade = 3;
         google.protobuf.Timestamp DateOfGrade = 4;
 }
 
@@ -209,12 +214,12 @@ message GetAllGuestGradesRequest {
 }
 
 message GetAllGuestGradesResponse {
-        repeated UserGrade UserGradeDetails = 1;
+        repeated UserGradeDetails UserGradeDetails = 1;
 }
 
 message UpdateUserGradeRequest {
         string id = 1;
-        string Grade = 2;
+        double Grade = 2;
 }
 
 message UpdateUserGradeResponse {
@@ -235,7 +240,7 @@ message UserGradeDetails {
         string GuestLastName = 3;
         string HostFirstName = 4;
         string HostLastName = 5;
-        string Grade = 6;
+        double Grade = 6;
         google.protobuf.Timestamp DateOfGrade = 7;
 }
 
@@ -299,4 +304,12 @@ message GetAllNotificationsRequest {
 
 message GetAllNotificationsResponse {
         repeated Notification Notifications = 1;
+}
+
+message GetUserNotificationsOnRequest {
+        string id = 1;
+}
+
+message GetUserNotificationsOnResponse {
+        repeated NotificationOn Notifications = 1;
 }

@@ -19,22 +19,23 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	UserService_GetUser_FullMethodName              = "/user_service.UserService/GetUser"
-	UserService_GetLoggedUser_FullMethodName        = "/user_service.UserService/GetLoggedUser"
-	UserService_CreateUser_FullMethodName           = "/user_service.UserService/CreateUser"
-	UserService_Login_FullMethodName                = "/user_service.UserService/Login"
-	UserService_UpdateUser_FullMethodName           = "/user_service.UserService/UpdateUser"
-	UserService_DeleteUser_FullMethodName           = "/user_service.UserService/DeleteUser"
-	UserService_GetAllHosts_FullMethodName          = "/user_service.UserService/GetAllHosts"
-	UserService_CreateUserGrade_FullMethodName      = "/user_service.UserService/CreateUserGrade"
-	UserService_GetAllGuestGrades_FullMethodName    = "/user_service.UserService/GetAllGuestGrades"
-	UserService_UpdateUserGrade_FullMethodName      = "/user_service.UserService/UpdateUserGrade"
-	UserService_DeleteUserGrade_FullMethodName      = "/user_service.UserService/DeleteUserGrade"
-	UserService_GetAllUserGrade_FullMethodName      = "/user_service.UserService/GetAllUserGrade"
-	UserService_HostProminent_FullMethodName        = "/user_service.UserService/HostProminent"
-	UserService_UpdateNotificationOn_FullMethodName = "/user_service.UserService/UpdateNotificationOn"
-	UserService_CreateNotification_FullMethodName   = "/user_service.UserService/CreateNotification"
-	UserService_GetAllNotifications_FullMethodName  = "/user_service.UserService/GetAllNotifications"
+	UserService_GetUser_FullMethodName                = "/user_service.UserService/GetUser"
+	UserService_GetLoggedUser_FullMethodName          = "/user_service.UserService/GetLoggedUser"
+	UserService_CreateUser_FullMethodName             = "/user_service.UserService/CreateUser"
+	UserService_Login_FullMethodName                  = "/user_service.UserService/Login"
+	UserService_UpdateUser_FullMethodName             = "/user_service.UserService/UpdateUser"
+	UserService_DeleteUser_FullMethodName             = "/user_service.UserService/DeleteUser"
+	UserService_GetAllHosts_FullMethodName            = "/user_service.UserService/GetAllHosts"
+	UserService_CreateUserGrade_FullMethodName        = "/user_service.UserService/CreateUserGrade"
+	UserService_GetAllGuestGrades_FullMethodName      = "/user_service.UserService/GetAllGuestGrades"
+	UserService_UpdateUserGrade_FullMethodName        = "/user_service.UserService/UpdateUserGrade"
+	UserService_DeleteUserGrade_FullMethodName        = "/user_service.UserService/DeleteUserGrade"
+	UserService_GetAllUserGrade_FullMethodName        = "/user_service.UserService/GetAllUserGrade"
+	UserService_HostProminent_FullMethodName          = "/user_service.UserService/HostProminent"
+	UserService_UpdateNotificationOn_FullMethodName   = "/user_service.UserService/UpdateNotificationOn"
+	UserService_CreateNotification_FullMethodName     = "/user_service.UserService/CreateNotification"
+	UserService_GetAllNotifications_FullMethodName    = "/user_service.UserService/GetAllNotifications"
+	UserService_GetUserNotificationsOn_FullMethodName = "/user_service.UserService/GetUserNotificationsOn"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -57,6 +58,7 @@ type UserServiceClient interface {
 	UpdateNotificationOn(ctx context.Context, in *UpdateNotificationOnRequest, opts ...grpc.CallOption) (*UpdateNotificationOnResponse, error)
 	CreateNotification(ctx context.Context, in *CreateNotificationRequest, opts ...grpc.CallOption) (*CreateNotificationResponse, error)
 	GetAllNotifications(ctx context.Context, in *GetAllNotificationsRequest, opts ...grpc.CallOption) (*GetAllNotificationsResponse, error)
+	GetUserNotificationsOn(ctx context.Context, in *GetUserNotificationsOnRequest, opts ...grpc.CallOption) (*GetUserNotificationsOnResponse, error)
 }
 
 type userServiceClient struct {
@@ -211,6 +213,15 @@ func (c *userServiceClient) GetAllNotifications(ctx context.Context, in *GetAllN
 	return out, nil
 }
 
+func (c *userServiceClient) GetUserNotificationsOn(ctx context.Context, in *GetUserNotificationsOnRequest, opts ...grpc.CallOption) (*GetUserNotificationsOnResponse, error) {
+	out := new(GetUserNotificationsOnResponse)
+	err := c.cc.Invoke(ctx, UserService_GetUserNotificationsOn_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
@@ -231,6 +242,7 @@ type UserServiceServer interface {
 	UpdateNotificationOn(context.Context, *UpdateNotificationOnRequest) (*UpdateNotificationOnResponse, error)
 	CreateNotification(context.Context, *CreateNotificationRequest) (*CreateNotificationResponse, error)
 	GetAllNotifications(context.Context, *GetAllNotificationsRequest) (*GetAllNotificationsResponse, error)
+	GetUserNotificationsOn(context.Context, *GetUserNotificationsOnRequest) (*GetUserNotificationsOnResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -285,6 +297,9 @@ func (UnimplementedUserServiceServer) CreateNotification(context.Context, *Creat
 }
 func (UnimplementedUserServiceServer) GetAllNotifications(context.Context, *GetAllNotificationsRequest) (*GetAllNotificationsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllNotifications not implemented")
+}
+func (UnimplementedUserServiceServer) GetUserNotificationsOn(context.Context, *GetUserNotificationsOnRequest) (*GetUserNotificationsOnResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserNotificationsOn not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
@@ -587,6 +602,24 @@ func _UserService_GetAllNotifications_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_GetUserNotificationsOn_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserNotificationsOnRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetUserNotificationsOn(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_GetUserNotificationsOn_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetUserNotificationsOn(ctx, req.(*GetUserNotificationsOnRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -657,6 +690,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAllNotifications",
 			Handler:    _UserService_GetAllNotifications_Handler,
+		},
+		{
+			MethodName: "GetUserNotificationsOn",
+			Handler:    _UserService_GetUserNotificationsOn_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
