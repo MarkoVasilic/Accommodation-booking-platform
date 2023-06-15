@@ -155,12 +155,14 @@ const chooseSideMenu = (Role) => {
             "Create accommodation": "/accomodations/create",
             "Reservation requests": "/reservation-requests",
             "Search accommodations": "/accommodations/all",
+            "Notifications":"/notifications-host"
         };
     } else if (Role === "GUEST") {
         return {
             "Search accommodations": "/accommodations/all/guest",
             "Pending reservations": "/pending-reservations",
             "Accepted reservations": "/accepted-reservations",
+            "Notifications":"/notifications-guest"
         };
     } else {
         return {

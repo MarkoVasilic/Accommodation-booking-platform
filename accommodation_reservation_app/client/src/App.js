@@ -18,6 +18,8 @@ import CreateAccommodation from './pages/CreateAccommodation';
 import AccommodationsHost from './pages/AccommodationsHost'
 import ReservationRequestsHost from './pages/ReservationRequestsHost';
 import AccommodationDetailsCard from './components/AccommodationDetailsCard';
+import NotificationsGuest from './pages/NotificationsGuest';
+import NotificationsHost from './pages/NotificationsHost';
 
 function App() {
   const token = localStorage.getItem("token");
@@ -47,6 +49,8 @@ function App() {
                         <Route path="/accommodations/host" element={<AccommodationsHost />} />
                         <Route path="/reservation-requests" element={<ReservationRequestsHost />} />
                         <Route path="/accommodation-details" element={<AccommodationDetailsCard />} />
+                        <Route path="/notifications-guest" element={<NotificationsGuest />} />
+                        <Route path="/notifications-host" element={<NotificationsHost/>} />
                     </Routes>
                 </div>
             </Router>
