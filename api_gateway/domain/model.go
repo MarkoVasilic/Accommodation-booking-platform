@@ -63,3 +63,19 @@ type Notification struct {
 	DateOfNotification time.Time
 	Seen               bool
 }
+
+type UserGrade struct {
+	ID          string
+	GuestID     string
+	HostID      string
+	Grade       float64
+	DateOfGrade time.Time
+}
+
+type AccommodationGrade struct {
+	ID              string
+	GuestID         string
+	AccommodationID string
+	Grade           float64
+	DateOfGrade     time.Time
+}

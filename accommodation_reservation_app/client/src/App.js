@@ -20,6 +20,20 @@ import ReservationRequestsHost from './pages/ReservationRequestsHost';
 import AccommodationDetailsCard from './components/AccommodationDetailsCard';
 import NotificationsGuest from './pages/NotificationsGuest';
 import NotificationsHost from './pages/NotificationsHost';
+import HostsList from './components/ListHosts';
+import RateHost from './pages/RateHost';
+import HostGradesUser from './pages/HostGradesForUserList';
+import UserGradesForHosts from './pages/UserGradesForHostList';
+import UpdateHostGrade from './pages/UpdateHostGrade';
+import HostGradesHost from './pages/HostGradesForHostList';
+import AccommodationsList from './pages/AccommodationsList';
+import RateAccommodation from './pages/RateAccommodation';
+import AccommodationGradesUser from './pages/AccommodationGradesForUserList';
+import UserGradesForAccommodations from './pages/UserGradesForAccommodationList';
+import UpdateAccommodationGrade from './pages/UpdateAccommodationGrade';
+import AccommodationGradesHost from './pages/AccommodationGradesForHostList';
+import UserProfileHost from './pages/UserProfileHost';
+
 
 function App() {
   const token = localStorage.getItem("token");
@@ -51,6 +65,19 @@ function App() {
                         <Route path="/accommodation-details" element={<AccommodationDetailsCard />} />
                         <Route path="/notifications-guest" element={<NotificationsGuest />} />
                         <Route path="/notifications-host" element={<NotificationsHost/>} />
+                        <Route path="/user/hosts-list" element={<HostsList/>} />
+                        <Route path="/host/rate" element={<RateHost/>} />
+                        <Route path="/host/all-grades" element={<HostGradesUser/>} />
+                        <Route path="/user/hosts-grades" element={<UserGradesForHosts/>} /> 
+                        <Route path="/host-grade/update" element={<UpdateHostGrade/>} /> 
+                        <Route path="/host/my-grades" element={<HostGradesHost/>} /> 
+                        <Route path="/user/accommodations-list" element={<AccommodationsList/>} />
+                        <Route path="/accommodation/rate" element={<RateAccommodation/>} />
+                        <Route path="/accommodation/all-grades" element={<AccommodationGradesUser/>} />
+                        <Route path="/user/accommodations-grades" element={<UserGradesForAccommodations/>} /> 
+                        <Route path="/accommodation-grade/update" element={<UpdateAccommodationGrade/>} /> 
+                        <Route path="/host/accommodation-grades" element={<AccommodationGradesHost/>} />
+                        <Route path="/user-profile-host" element={<UserProfileHost/>} />
                     </Routes>
                 </div>
             </Router>
@@ -59,3 +86,6 @@ function App() {
 }
 
 export default App;
+
+
+

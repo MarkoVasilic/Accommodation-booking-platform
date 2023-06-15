@@ -21,18 +21,17 @@ func mapUser(user *models.User) *pb.User {
 	return userPb
 }
 
-/*func mapGrade(userGrade *models.UserGrade) *pb.UserGrade {
+func mapGrade(userGrade *models.UserGrade) *pb.UserGrade {
 	dateOfGrade := timestamppb.New(userGrade.DateOfGrade)
-	grade := strconv.Itoa(userGrade.Grade)
 	userGradePb := &pb.UserGrade{
 		ID:          userGrade.ID.Hex(),
 		GuestID:     userGrade.GuestID.Hex(),
 		HostID:      userGrade.HostID.Hex(),
-		Grade:       grade,
+		Grade:       float64(userGrade.Grade),
 		DateOfGrade: dateOfGrade,
 	}
 	return userGradePb
-}*/
+}
 
 func mapNotification(notification *models.Notification) *pb.Notification {
 	dateOfNotification := timestamppb.New(notification.DateOfNotification)
@@ -55,4 +54,26 @@ func mapNotificationOn(notification *models.NotificationOn) *pb.NotificationOn {
 		On:     notification.On,
 	}
 	return notificationPb
+}
+
+func mapUserGradeDetails(gradeDetails *models.UserGradeDetails) *pb.UserGradeDetails {
+	dateOfGrade := timestamppb.New(gradeDetails.DateOfGrade)
+	userGradeDetailsPb := &pb.UserGradeDetails{
+		GuestFirstName: gradeDetails.GuestFirstName,
+		GuestLastName:  gradeDetails.GuestLastName,
+		HostFirstName:  gradeDetails.HostFirstName,
+		HostLastName:   gradeDetails.GuestLastName,
+		Grade:          float64(gradeDetails.Grade),
+		DateOfGrade:    dateOfGrade,
+	}
+	return userGradeDetailsPb
+}
+
+func mapHost(hostDetails *models.HostDetails) *pb.HostDetails {
+	hostDetailsPb := &pb.HostDetails{
+		Id:        hostDetails.Id.Hex(),
+		FirstName: hostDetails.FirstName,
+		LastName:  hostDetails.LastName,
+	}
+	return hostDetailsPb
 }

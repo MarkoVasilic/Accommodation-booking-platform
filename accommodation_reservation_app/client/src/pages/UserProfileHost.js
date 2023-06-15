@@ -1,4 +1,4 @@
-import PersonalInformationCard from "../components/PersonalInformationCard";
+import PersonalInformationCardHost from "../components/PersonalInformationCardHost";
 import { green } from '@mui/material/colors';
 import { Typography, Paper, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
@@ -13,8 +13,8 @@ import IconButton from "@mui/material/IconButton";
 import Collapse from "@mui/material/Collapse";
 import CloseIcon from "@mui/icons-material/Close";
 
-export default function UserProfile() {
-    const listOfAllowedUsers = ["GUEST", "HOST"];
+export default function UserProfileHost() {
+    const listOfAllowedUsers = ["HOST"];
     let navigate = useNavigate();
     const [failedAlert, setFailedAlert] = React.useState(false);
     const routeChange = () =>{ 
@@ -117,7 +117,7 @@ export default function UserProfile() {
                 Personal information
             </Typography>
             <Paper elevation={10} sx={{ p: { sm: 2, xs: 2 } }}>
-            <PersonalInformationCard></PersonalInformationCard>
+            <PersonalInformationCardHost></PersonalInformationCardHost>
             </Paper>
         </Stack>
         <Box sx={{ width: "100%" }}>

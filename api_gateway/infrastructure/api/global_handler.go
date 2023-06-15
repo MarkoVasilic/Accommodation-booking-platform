@@ -126,7 +126,7 @@ func (handler *GlobalHandler) Init(mux *runtime.ServeMux) {
 		panic(err)
 	}
 
-	err = mux.HandlePath("GET", "/user/guest/grades", handler.GetAllGuestGrades)
+	err = mux.HandlePath("GET", "/user/guest/grades/{guestId}", handler.GetAllGuestGrades)
 	if err != nil {
 		panic(err)
 	}
@@ -614,54 +614,303 @@ func (handler *GlobalHandler) AcceptReservation(w http.ResponseWriter, r *http.R
 
 func (handler *GlobalHandler) GetAllGuestGrades(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
 	//TODO
+	id := pathParams["guestId"]
+	if id == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	resp, err := handler.userService.GetAllGuestGrades(createContextForAuthorization(r.Header["Authorization"]), &user_service.GetAllGuestGradesRequest{Id: id})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "Failed to call GetAllGuestGrades method: %v", err)
+		return
+	}
+	//fmt.Fprintf(w, "%s", resp)
+	response, err := json.Marshal(resp.UserGradeDetails)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write(response)
 }
 
 func (handler *GlobalHandler) GetAllHosts(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
-	//TODO
+	resp, err := handler.userService.GetAllHosts(createContextForAuthorization(r.Header["Authorization"]), &user_service.GetAllHostsRequest{})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "Failed to call GetAllHosts method: %v", err)
+		return
+	}
+	//fmt.Fprintf(w, "%s", resp)
+	response, err := json.Marshal(resp.Hosts)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write(response)
 }
 
 func (handler *GlobalHandler) CreateUserGrade(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
 	//TODO
+	var userGrade domain.UserGrade
+	err := json.NewDecoder(r.Body).Decode(&userGrade)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, "Failed to parse request body: %v", err)
+		return
+	}
+	dateOfGrade := timestamppb.New(userGrade.DateOfGrade)
+	resp, err := handler.userService.CreateUserGrade(createContextForAuthorization(r.Header["Authorization"]), &user_service.CreateUserGradeRequest{
+		GuestID:     userGrade.GuestID,
+		HostID:      userGrade.HostID,
+		Grade:       userGrade.Grade,
+		DateOfGrade: dateOfGrade,
+	})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "Failed to call CreateUserGrade method: %v", err)
+		return
+	}
+
+	fmt.Fprintf(w, "%s", resp)
+
 }
 
 func (handler *GlobalHandler) UpdateUserGrade(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
 	//TODO
+	id := pathParams["id"]
+	if id == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	var userGrade domain.UserGrade
+	err := json.NewDecoder(r.Body).Decode(&userGrade)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, "Failed to parse request body: %v", err)
+		return
+	}
+
+	resp, err := handler.userService.UpdateUserGrade(createContextForAuthorization(r.Header["Authorization"]), &user_service.UpdateUserGradeRequest{Id: userGrade.ID, Grade: userGrade.Grade})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "Failed to call UpdateUserGrade method: %v", err)
+		return
+	}
+	fmt.Fprintf(w, "%s", resp)
 }
 
 func (handler *GlobalHandler) DeleteUserGrade(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
 	//TODO
+	id := pathParams["id"]
+	if id == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	resp, err := handler.userService.DeleteUserGrade(createContextForAuthorization(r.Header["Authorization"]), &user_service.DeleteUserGradeRequest{Id: id})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "Failed to call DeleteUserGrade method: %v", err)
+		return
+	}
+	fmt.Fprintf(w, "%s", resp)
 }
 
 func (handler *GlobalHandler) GetAllUserGrade(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
 	//TODO
+	id := pathParams["id"]
+	if id == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	resp, err := handler.userService.GetAllUserGrade(createContextForAuthorization(r.Header["Authorization"]), &user_service.GetAllUserGradeRequest{Id: id})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "Failed to call GetAllUserGrade method: %v", err)
+		return
+	}
+	//fmt.Fprintf(w, "%s", resp)
+	response, err := json.Marshal(resp.AverageGrade) //fali resp.UserGradeDetails
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write(response)
+
 }
 
 func (handler *GlobalHandler) HostProminent(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
 	//TODO
+	id := pathParams["id"]
+	if id == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	resp, err := handler.userService.HostProminent(createContextForAuthorization(r.Header["Authorization"]), &user_service.HostProminentRequest{Id: id})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "Failed to call HostProminent method: %v", err)
+		return
+	}
+	//fmt.Fprintf(w, "%s", resp)
+	response, err := json.Marshal(resp.Prominent)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write(response)
+
 }
 
 func (handler *GlobalHandler) GetEveryAccommodation(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
 	//TODO
+	resp, err := handler.accommodationService.GetEveryAccommodation(createContextForAuthorization(r.Header["Authorization"]), &accommodation_service.GetEveryAccommodationRequest{})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "Failed to call GetEveryAccommodation method: %v", err)
+		return
+	}
+	//fmt.Fprintf(w, "%s", resp)
+	response, err := json.Marshal(resp.Accommodations)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write(response)
+
 }
 
 func (handler *GlobalHandler) CreateAccommodationGrade(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
 	//TODO
+	var accommodationGrade domain.AccommodationGrade
+	err := json.NewDecoder(r.Body).Decode(&accommodationGrade)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, "Failed to parse request body: %v", err)
+		return
+	}
+	dateOfGrade := timestamppb.New(accommodationGrade.DateOfGrade)
+	resp, err := handler.accommodationService.CreateAccommodationGrade(createContextForAuthorization(r.Header["Authorization"]), &accommodation_service.CreateAccommodationGradeRequest{AccommodationGrade: &accommodation_service.AccommodationGrade{
+		ID:              accommodationGrade.ID,
+		GuestID:         accommodationGrade.GuestID,
+		AccommodationID: accommodationGrade.AccommodationID,
+		Grade:           accommodationGrade.Grade,
+		DateOfGrade:     dateOfGrade,
+	}})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "Failed to call CreateUserGrade method: %v", err)
+		return
+	}
+
+	fmt.Fprintf(w, "%s", resp)
 }
 
 func (handler *GlobalHandler) UpdateAccommodationGrade(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
 	//TODO
+	id := pathParams["id"]
+	if id == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	var accommodationGrade domain.AccommodationGrade
+	err := json.NewDecoder(r.Body).Decode(&accommodationGrade)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, "Failed to parse request body: %v", err)
+		return
+	}
+
+	resp, err := handler.accommodationService.UpdateAccommodationGrade(createContextForAuthorization(r.Header["Authorization"]), &accommodation_service.UpdateAccommodationGradeRequest{Id: accommodationGrade.ID, Grade: accommodationGrade.Grade})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "Failed to call UpdateAccommodationGrade method: %v", err)
+		return
+	}
+	fmt.Fprintf(w, "%s", resp)
 }
 
 func (handler *GlobalHandler) DeleteAccommodationGrade(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
 	//TODO
+	id := pathParams["id"]
+	if id == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	resp, err := handler.accommodationService.DeleteAccommodationGrade(createContextForAuthorization(r.Header["Authorization"]), &accommodation_service.DeleteAccommodationGradeRequest{Id: id})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "Failed to call DeleteAccommodationGrade method: %v", err)
+		return
+	}
+	fmt.Fprintf(w, "%s", resp)
 }
 
 func (handler *GlobalHandler) GetAllAccommodationGrade(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
 	//TODO
+	id := pathParams["id"]
+	if id == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	resp, err := handler.accommodationService.GetAllAccommodationGrade(createContextForAuthorization(r.Header["Authorization"]), &accommodation_service.GetAllAccommodationGradeRequest{Id: id})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "Failed to call GetAllAccommodationGrade method: %v", err)
+		return
+	}
+	//fmt.Fprintf(w, "%s", resp)
+	response, err := json.Marshal(resp.AverageGrade)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write(response)
+
 }
 
 func (handler *GlobalHandler) FilterAvailability(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
 	//TODO
+	var filterAvailability domain.FilterAvailability
+	err := json.NewDecoder(r.Body).Decode(&filterAvailability)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, "Failed to parse request body: %v", err)
+		return
+	}
+	startDate := timestamppb.New(filterAvailability.StartDate)
+	endDate := timestamppb.New(filterAvailability.EndDate)
+	resp, err := handler.accommodationService.FilterAvailability(createContextForAuthorization(r.Header["Authorization"]), &accommodation_service.FilterAvailabilityRequest{
+		Location:      filterAvailability.Location,
+		GuestsNum:     int32(filterAvailability.GuestsNum),
+		StartDate:     startDate,
+		EndDate:       endDate,
+		GradeMin:      int32(filterAvailability.GradeMin),
+		GradeMax:      int32(filterAvailability.GradeMax),
+		Wifi:          filterAvailability.Wifi,
+		Kitchen:       filterAvailability.Kitchen,
+		AC:            filterAvailability.AC,
+		ParkingLot:    filterAvailability.ParkingLot,
+		ProminentHost: filterAvailability.ProminentHost,
+	})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "Failed to call FilterAvailability method: %v", err)
+		return
+	}
+	response, err := json.Marshal(resp.FindAvailability)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write(response)
 }
 
 func (handler *GlobalHandler) UpdateNotificationOn(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
