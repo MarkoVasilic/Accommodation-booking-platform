@@ -17,8 +17,11 @@ import CloseIcon from "@mui/icons-material/Close";
 import Alert from "@mui/material/Alert";
 import Collapse from "@mui/material/Collapse";
 
-//proslediti nekako id accomodationa
-const RenderCreateButton = (params) => {
+function refreshPage(){
+    window.location.reload();
+}
+
+const RenderUpdateHostGrade = (params) => {
     let navigate = useNavigate();
     return (
         <strong>
@@ -28,51 +31,39 @@ const RenderCreateButton = (params) => {
                 size="small"
                 style={{ marginLeft: 16 }}
                 onClick={() => {
-                    return navigate('/availability/create', {state: params.row.Id});
+                    console.log(params.row)
+                    navigate('/host-grade/update', {state: params.row});
                 }}
             >
-                Create availability
+                Update
             </Button>
         </strong>
     )
 };
 
-const RenderAvailabilitiesButton = (params) => {
+const RenderDeleteHostGrade = (params) => {
     let navigate = useNavigate();
     return (
         <strong>
             <Button
                 variant="contained"
-                align="left"
                 color="primary"
                 size="small"
                 style={{ marginLeft: 16 }}
                 onClick={() => {
-                    return navigate('/availabilities', {state: params.row.Id});
+                    //proveriti url
+                    axiosApi
+                    //proslediti koji treba
+                    //ne reservationId
+                    //.delete(`/user/grade/`+params.row.ReservationId)
+                    .then((response) => {
+                        refreshPage();
+                    }).catch(er => {
+                        console.log(er.response);
+                    });
                 }}
             >
-                All availabilities
-            </Button>
-        </strong>
-    )
-};
-
-
-const RenderAllGradesButton = (params) => {
-    let navigate = useNavigate();
-    return (
-        <strong>
-            <Button
-                variant="contained"
-                align="left"
-                color="primary"
-                size="small"
-                style={{ marginLeft: 16 }}
-                onClick={() => {
-                    return navigate('/host/accommodation-grades', {state: params.row.Id});
-                }}
-            >
-                All Grades
+                Delete
             </Button>
         </strong>
     )
@@ -81,114 +72,105 @@ const RenderAllGradesButton = (params) => {
 
 const columns = [
     {
+        field: "FirstName",
+        headerName: "Host first name",
+        type: "string",
+        width: 230,
+        sortable: false,
+        filterable: false,
+        editable: false,
+    },
+    {
+        field: "LastName",
+        headerName: "Host last name",
+        type: "string",
+        width: 230,
+        sortable: false,
+        filterable: false,
+        editable: false,
+    },
+    {
         field: "Name",
-        headerName: "Name",
+        headerName: "Accommodation Name",
         type: "string",
-        width: 350,
+        width: 230,
         sortable: false,
         filterable: false,
-        editable: false
+        editable: false,
     },
     {
-        field: "Location",
-        headerName: "Location",
-        type: "string",
-        width: 350,
+        field: "Grade",
+        headerName: "Grade",
+        type: "number",
+        width: 200,
         sortable: false,
         filterable: false,
-        editable: false
+        editable: false,  
     },
     {
-        field: "Create",
-        align: "left",
-        headerName: "Create Availability",
-        width: 350,
-        renderCell: RenderCreateButton,
+        //proveriti za tip i to ostalo
+        field: "DateOfGrade",
+        headerName: "Date of grade",
+        type: "date",
+        width: 200,
+        sortable: false,
+        filterable: false,
+        editable: false,
+        format: "DD/MM/YYYY",
+        //valueGetter: params => formatSecondsToDate(params.row.StartDate.seconds)
+    },
+    {
+        field: "update",
+        headerName: "Update grade",
+        width: 200,
+        renderCell: RenderUpdateHostGrade,
         disableClickEventBubbling: true   
     },
     {
-        field: "Get",
-        align: "left",
-        headerName: "All Availabilities",
-        width: 350,
-        renderCell: RenderAvailabilitiesButton,
-        disableClickEventBubbling: true   
-    },
-    {
-        field: "Grades",
-        align: "left",
-        headerName: "All Grades",
-        width: 350,
-        renderCell: RenderAllGradesButton,
+        field: "delete",
+        headerName: "Delete grade",
+        width: 200,
+        renderCell: RenderDeleteHostGrade,
         disableClickEventBubbling: true   
     }
 ];
 
 
-function rowAction(navigate, buttonName, buttonUrl) {
-    return {
-        field: "Details",
-        headerName: buttonName,
-        align: "left",
-        headerAlign: "left",
-        sortable: false,
-        renderCell: (params) => {
-            const onClick = (e) => {
-                e.stopPropagation(); // don't select this row after clicking
-
-                const api = params.api;
-                const thisRow = params.row;
-
-                
-
-
-                return navigate("/accommodation-details", { state: thisRow });
-            };
-            return (
-                <Button
-                    variant="contained"
-                    color="secondary"
-                    size="small"
-                    onClick={onClick}
-                >
-                    {" "}
-                    <ReadMoreIcon />{" "}
-                </Button>
-            );
-        },
-    };
-}
-
-function AvailabilityList(props) {
+function HostGradesUser(props) {
     const { handleSubmit, control } = useForm();
-    const [accommodations, setAccomodations ] = useState([]);
+    const [grades, setGrades ] = useState([]);
     const [ error, setError ] = React.useState(false);
     const [er, setEr] = React.useState("");
     const navigate = useNavigate();
     useEffect(() => {
         getData();
       //  onSubmit();
-    }, []);
+    }, [setGrades]);
     const date = new Date().toISOString();
 
         let getData = async () => {
         try{
-        const res = await axiosApi.get('/user/logged');
-        console.log('Id',res.data.user.Id);
-
+            //console.log()
+            //const res = await axiosApi.get('/user/logged');
+            //console.log("ID", res.data.user.Id);
         axiosApi
-            .get(`/accommodation/all/`+res.data.user.Id)
+            //proslediti koji treba (proveriti jel ovaj)
+            //znam da {id} ne treba ovako ali cisto url
+            //.get(`/user/grade/{id}`)
             .then((response) => {
-                console.log(response.data)
-                setAccomodations(response.data);
+                setGrades(response.data);
+                console.log('Data', response.data)
+                console.log('RES', grades)
             }).catch(er => {
                 console.log(er.response);
-                setAccomodations([]);
+                setGrades([]);
             });
         }catch (err) {
                 console.log(err)
-                setAccomodations([]);
+                setGrades([]);
             }
+            console.log('RESS',grades)
+
         };
 
     return (
@@ -201,7 +183,7 @@ function AvailabilityList(props) {
                     marginBottom={3}
                     marginTop={1}
                 >
-                    Accommodations
+                    My Grades For Hosts
                 </Typography>
             </Stack>
             <Paper>
@@ -216,7 +198,7 @@ function AvailabilityList(props) {
                                     size="small"
                                     onClick={() => {
                                         setError(false);
-                                        setAccomodations([])
+                                        setGrades([])
                                     }}
                                 >
                                     <CloseIcon fontSize="inherit" />
@@ -230,10 +212,10 @@ function AvailabilityList(props) {
                 </Box>
                 <Box sx={{ height: 700, width: "100%", marginTop: "20px", marginBottom: "20px"}}>
                     <DataGrid
-                        rows={accommodations}
-                        getRowId={(row) => row.Id}
+                        rows={grades}
+                        //getRowId={(row) => row.ReservationId}
                         disableColumnFilter
-                        columns={[...columns, rowAction(navigate, props.buttonName, props.buttonUrl)]}
+                        columns={columns}
                         autoHeight
                         density="comfortable"
                         disableSelectionOnClick
@@ -249,4 +231,4 @@ function AvailabilityList(props) {
     );
 }
 
-export default AvailabilityList;
+export default HostGradesUser;
