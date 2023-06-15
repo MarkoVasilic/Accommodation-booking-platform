@@ -204,6 +204,10 @@ func (handler *GlobalHandler) Init(mux *runtime.ServeMux) {
 	if err != nil {
 		panic(err)
 	}
+	err = mux.HandlePath("GET", "/user/notificationsOn/{id}", handler.GetUserNotificationsOn)
+	if err != nil {
+		panic(err)
+	}
 
 }
 
@@ -711,6 +715,30 @@ func (handler *GlobalHandler) GetAllNotifications(w http.ResponseWriter, r *http
 	}
 
 	resp, err := handler.userService.GetAllNotifications(createContextForAuthorization(r.Header["Authorization"]), &user_service.GetAllNotificationsRequest{Id: id})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "Failed to call GetAllNotifications method: %v", err)
+		return
+	}
+	//fmt.Fprintf(w, "%s", resp)
+	response, err := json.Marshal(resp.Notifications)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write(response)
+}
+
+func (handler *GlobalHandler) GetUserNotificationsOn(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+	//TODO
+	id := pathParams["id"]
+	if id == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	resp, err := handler.userService.GetUserNotificationsOn(createContextForAuthorization(r.Header["Authorization"]), &user_service.GetUserNotificationsOnRequest{Id: id})
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, "Failed to call GetAllNotifications method: %v", err)
