@@ -101,7 +101,7 @@ func (service *GradeService) GetAllAccommodationGrade(accommodationID string) ([
 	return grades, nil
 }
 
-func (service *GradeService) UpdateAccommodationGrade(grade int, id string) (string, error) {
+func (service *GradeService) UpdateAccommodationGrade(grade int, id string, loggedUserId string) (string, error) {
 	objectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		err := status.Errorf(codes.InvalidArgument, "Invalid ID format")
@@ -113,6 +113,18 @@ func (service *GradeService) UpdateAccommodationGrade(grade int, id string) (str
 	if err != nil {
 		err := status.Errorf(codes.NotFound, "There is no grade with that ID")
 		return "There is no grade with that ID", err
+	}
+
+	//provera da li je ocena ulogovanog
+	logged, err := primitive.ObjectIDFromHex(loggedUserId)
+	if err != nil {
+		err := status.Errorf(codes.InvalidArgument, "Invalid ID format")
+		return "Invalid ID format", err
+	}
+
+	// da li je to ocena ulogovanog usera
+	if logged != accommodationGrade.GuestID {
+		return "You cannot update grade that is not yours!", status.Errorf(codes.InvalidArgument, "Invalid ID format")
 	}
 
 	accommodationGrade.Grade = grade

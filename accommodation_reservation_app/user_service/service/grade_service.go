@@ -34,7 +34,7 @@ func (service *GradeService) CreateUserGrade(userGrade models.UserGrade) (string
 	return "Successfully created user grade", nil
 }
 
-func (service *GradeService) UpdateUserGrade(grade int, id string) (string, error) {
+func (service *GradeService) UpdateUserGrade(grade int, id string, loggedUserId string) (string, error) {
 	objectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		err := status.Errorf(codes.InvalidArgument, "Invalid ID format")
@@ -46,6 +46,18 @@ func (service *GradeService) UpdateUserGrade(grade int, id string) (string, erro
 	if err != nil {
 		err := status.Errorf(codes.NotFound, "There is no grade with that ID")
 		return "There is no grade with that ID", err
+	}
+
+	//provera da li je ocena ulogovanog
+	logged, err := primitive.ObjectIDFromHex(loggedUserId)
+	if err != nil {
+		err := status.Errorf(codes.InvalidArgument, "Invalid ID format")
+		return "Invalid ID format", err
+	}
+
+	// da li je to ocena ulogovanog usera
+	if logged != userGrade.GuestID {
+		return "You cannot update grade that is not yours!", status.Errorf(codes.InvalidArgument, "Invalid ID format")
 	}
 
 	//izmeni ocenu

@@ -45,3 +45,12 @@ func mapUserGradeDetails(gradeDetails *models.UserGradeDetails) *pb.UserGradeDet
 	}
 	return userGradeDetailsPb
 }
+
+func mapHost(hostDetails *models.HostDetails) *pb.HostDetails {
+	hostDetailsPb := &pb.HostDetails{
+		Id:        hostDetails.Id.Hex(),
+		FirstName: hostDetails.FirstName,
+		LastName:  hostDetails.LastName,
+	}
+	return hostDetailsPb
+}
