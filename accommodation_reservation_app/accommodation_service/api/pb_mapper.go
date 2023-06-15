@@ -73,3 +73,29 @@ func mapAccommodation(accommodation *models.Accommodation) *pb.Accommodation {
 
 	return accommodationPb
 }
+
+func mapAccommodationGrade(accommodationGrade *models.AccommodationGrade) *pb.AccommodationGrade {
+	dateOfGrade := timestamppb.New(accommodationGrade.DateOfGrade)
+	accommodationGradePb := &pb.AccommodationGrade{
+		ID:              accommodationGrade.ID.Hex(),
+		GuestID:         accommodationGrade.GuestID.Hex(),
+		AccommodationID: accommodationGrade.AccommodationID.Hex(),
+		Grade:           float64(accommodationGrade.Grade),
+		DateOfGrade:     dateOfGrade,
+	}
+
+	return accommodationGradePb
+}
+
+func mapAccommodationGradeDetails(accommodationGrade *models.AccommodationGradeDetails) *pb.AccommodationGradeDetails {
+	dateOfGrade := timestamppb.New(accommodationGrade.DateOfGrade)
+	accommodationGradeDetailsPb := &pb.AccommodationGradeDetails{
+		GuestFirstName:    accommodationGrade.GuestFirstName,
+		GuestLastName:     accommodationGrade.GuestLastName,
+		AccommodationName: accommodationGrade.AccommodationName,
+		Grade:             float64(accommodationGrade.Grade),
+		DateOfGrade:       dateOfGrade,
+	}
+
+	return accommodationGradeDetailsPb
+}

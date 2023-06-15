@@ -3,7 +3,6 @@ package api
 import (
 	"context"
 	"fmt"
-	"strconv"
 	"time"
 
 	"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/user_service/models"
@@ -201,19 +200,88 @@ func (handler *UserHandler) Login(ctx context.Context, request *pb.LoginRequest)
 	return response, nil
 }
 
-/*
 func (handler *UserHandler) GetAllGuestGrades(ctx context.Context, request *pb.GetAllGuestGradesRequest) (*pb.GetAllGuestGradesResponse, error) {
 	//TODO pomocna metoda za dobavljanje svih ocijena guesta za poslani id guesta
 	//a vraca se lista dtova koji sam napravio
+	id := request.Id
+	guestId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		err := status.Errorf(codes.InvalidArgument, "the provided guestId is not a valid ObjectID")
+		return nil, err
+	}
+	res, err := handler.grade_service.GetAllGuestGrades(request.Id)
+	if err != nil {
+		return nil, err
+	}
+	user, err := handler.service.GetUserById(guestId)
+	if err != nil {
+		return nil, err
+	}
+	var gradeDTOs []models.UserGradeDetails
+	for _, grade := range res {
+		host, err := handler.service.GetUserById(grade.HostID)
+		if err != nil {
+			return nil, err
+		}
+		gradeDTO := models.UserGradeDetails{GuestFirstName: *user.FirstName, GuestLastName: *user.LastName, HostFirstName: *host.FirstName, HostLastName: *host.LastName, Grade: grade.Grade, DateOfGrade: grade.DateOfGrade}
+		gradeDTOs = append(gradeDTOs, gradeDTO)
+	}
+	gradesDetails := []*pb.UserGradeDetails{}
+	for _, r := range gradeDTOs {
+		gradesPb := mapUserGradeDetails(&r)
+		gradesDetails = append(gradesDetails, gradesPb)
+	}
+	response := &pb.GetAllGuestGradesResponse{
+		UserGradeDetails: gradesDetails,
+	}
+	return response, nil
 }
-*/
 
-/*
 func (handler *UserHandler) GetAllHosts(ctx context.Context, request *pb.GetAllHostsRequest) (*pb.GetAllHostsResponse, error) {
-	//TODO pomocna metoda za dobavljanje svih hostova, ne salje se nista
+	//TODO pomocna metoda za dobavljanje svih hostova koje ulogovani user moze da oceni, ne salje se nista
 	//a vraca se lista dtova koji sam napravio
+	ClientToken, _ := grpc_auth.AuthFromMD(ctx, "Bearer")
+	claims, _ := token.ValidateToken(ClientToken)
+	_, err := primitive.ObjectIDFromHex(claims.Uid)
+	if err != nil {
+		err := status.Errorf(codes.InvalidArgument, "the provided id is not a valid ObjectID")
+		return nil, err
+	}
+	reservations, err := handler.reservation_client.GetAllReservations(createContextForAuthorization(ctx), &reservation_service.GetAllReservationsRequest{Id: claims.Id})
+	if err != nil {
+		return nil, err
+	}
+	hostsDetails := []models.HostDetails{}
+	for _, res := range reservations.Reservations {
+		if res.IsCanceled || res.IsDeleted {
+			continue
+		}
+		availabilitiy, err := handler.accommodation_client.GetAvailabilityById(createContextForAuthorization(ctx), &accommodation_service.GetAvailabilityByIdRequest{Id: res.AvailabilityID})
+		accommodation, err := handler.accommodation_client.GetAccommodationById(createContextForAuthorization(ctx), &accommodation_service.GetAccommodationByIdRequest{Id: availabilitiy.Availability.AccommodationID})
+		hostId, err := primitive.ObjectIDFromHex(accommodation.Accommodation.HostId)
+		if err != nil {
+			err := status.Errorf(codes.InvalidArgument, "the provided hostId is not a valid ObjectID")
+			return nil, err
+		}
+		host, err := handler.service.GetUserById(hostId)
+		hostDetails := models.HostDetails{Id: hostId, FirstName: *host.FirstName, LastName: *host.LastName}
+		hostsDetails = append(hostsDetails, hostDetails)
+	}
+	if hostsDetails == nil {
+		err := status.Errorf(codes.InvalidArgument, "There is no hosts to be graded!")
+		return nil, err
+	}
+
+	hosts := []*pb.HostDetails{}
+	for _, h := range hostsDetails {
+		hostDetailsPb := mapHost(&h)
+		hosts = append(hosts, hostDetailsPb)
+	}
+	response := &pb.GetAllHostsResponse{
+		Hosts: hosts,
+	}
+	return response, nil
 }
-*/
 
 func (handler *UserHandler) CreateUserGrade(ctx context.Context, request *pb.CreateUserGradeRequest) (*pb.CreateUserGradeResponse, error) {
 	//TODO zahtjev 1.11 kreiranje ocijene
@@ -231,8 +299,40 @@ func (handler *UserHandler) CreateUserGrade(ctx context.Context, request *pb.Cre
 		err := status.Errorf(codes.InvalidArgument, "the provided id is not a valid ObjectID")
 		return nil, err
 	}
-	grade, err := strconv.Atoi(request.Grade)
-	userGrade := models.UserGrade{GuestID: guestId, HostID: hostId, Grade: grade, DateOfGrade: time.Now()}
+	//provera da li sme da oceni
+	reservations, err := handler.reservation_client.GetAllReservations(createContextForAuthorization(ctx), &reservation_service.GetAllReservationsRequest{Id: claims.Id})
+	if err != nil {
+		return nil, err
+	}
+	if len(reservations.Reservations) == 0 {
+		err := status.Errorf(codes.InvalidArgument, "You cannot grade host if you have no reservations!")
+		return nil, err
+	}
+	numOfGuestReservations := 0
+	for _, res := range reservations.Reservations {
+		if res.IsCanceled || res.IsDeleted {
+			continue
+		}
+		_, err := primitive.ObjectIDFromHex(res.AvailabilityID)
+		if err != nil {
+			err := status.Errorf(codes.InvalidArgument, "the provided availabilityID is not a valid ObjectID")
+			return nil, err
+		}
+		availabilitiy, err := handler.accommodation_client.GetAvailabilityById(createContextForAuthorization(ctx), &accommodation_service.GetAvailabilityByIdRequest{Id: res.AvailabilityID})
+		accommodation, err := handler.accommodation_client.GetAccommodationById(createContextForAuthorization(ctx), &accommodation_service.GetAccommodationByIdRequest{Id: availabilitiy.Availability.AccommodationID})
+		if accommodation.Accommodation.HostId == request.HostID {
+			numOfGuestReservations = numOfGuestReservations + 1
+		}
+		if numOfGuestReservations >= 1 {
+			break
+		}
+	}
+	if numOfGuestReservations < 1 {
+		err := status.Errorf(codes.InvalidArgument, "You cannot grade host if you never stayed in theirs accommodation!")
+		return nil, err
+	}
+
+	userGrade := models.UserGrade{GuestID: guestId, HostID: hostId, Grade: int(request.Grade), DateOfGrade: time.Now()}
 	mess, err := handler.grade_service.CreateUserGrade(userGrade)
 	if err != nil {
 		err := status.Errorf(codes.Internal, mess)
@@ -246,7 +346,14 @@ func (handler *UserHandler) CreateUserGrade(ctx context.Context, request *pb.Cre
 
 func (handler *UserHandler) UpdateUserGrade(ctx context.Context, request *pb.UpdateUserGradeRequest) (*pb.UpdateUserGradeResponse, error) {
 	//TODO zahtjev 1.11 azuriranje ocijene, provjeriti da li je njegova ocijena da li smije da je promijeni
-	mess, err := handler.grade_service.UpdateUserGrade( /*request.Grade*/ 5, request.Id) //izmeniti proto pa otkomentarisati
+	ClientToken, _ := grpc_auth.AuthFromMD(ctx, "Bearer")
+	claims, _ := token.ValidateToken(ClientToken)
+	_, err := primitive.ObjectIDFromHex(claims.Uid)
+	if err != nil {
+		err := status.Errorf(codes.InvalidArgument, "the provided logged user id is not a valid ObjectID")
+		return nil, err
+	}
+	mess, err := handler.grade_service.UpdateUserGrade(int(request.Grade), request.Id, claims.Id) //izmeniti proto pa otkomentarisati
 	if err != nil {
 		err := status.Errorf(codes.InvalidArgument, mess)
 		return nil, err
@@ -261,8 +368,6 @@ func (handler *UserHandler) DeleteUserGrade(ctx context.Context, request *pb.Del
 	//TODO zahtjev 1.11 brisanje ocijene, provjeriti da li je njegova ocijena da li smije da je obrise
 	ClientToken, _ := grpc_auth.AuthFromMD(ctx, "Bearer")
 	claims, _ := token.ValidateToken(ClientToken)
-	//ovako se izvlaci id osobe koja salje zahtjev, id se nalazi u claims.Uid
-	//provjeriti uslov da li moze da ga ocijeni
 	_, err := primitive.ObjectIDFromHex(claims.Uid)
 	if err != nil {
 		err := status.Errorf(codes.InvalidArgument, "the provided logged user id is not a valid ObjectID")
@@ -279,19 +384,92 @@ func (handler *UserHandler) DeleteUserGrade(ctx context.Context, request *pb.Del
 	return response, nil
 }
 
-/*
 func (handler *UserHandler) GetAllUserGrade(ctx context.Context, request *pb.GetAllUserGradeRequest) (*pb.GetAllUserGradeResponse, error) {
 	//TODO zahtjev 1.11 dobavljanje svih ocijena koje je host dobio salje se id hosta
 	//treba da se vrati lista svih ocijena tog hosta, napravio sam dto kako treba da izgleda
 	// i treba da se izracuna prosijecna ocijena, vjerovatno cete morati mapper praviti neki da to vratite
-}*/
+	id := request.Id
+	guestId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		err := status.Errorf(codes.InvalidArgument, "the provided guestId is not a valid ObjectID")
+		return nil, err
+	}
+	hostGrades, err := handler.grade_service.GetAllUserGrade(request.Id)
+	if err != nil {
+		return nil, err
+	}
+	user, err := handler.service.GetUserById(guestId)
+	if err != nil {
+		return nil, err
+	}
+	var sum int
+	var gradeDTOs []models.UserGradeDetails
+	for _, grade := range hostGrades {
+		host, err := handler.service.GetUserById(grade.HostID)
+		if err != nil {
+			return nil, err
+		}
+		gradeDTO := models.UserGradeDetails{GuestFirstName: *user.FirstName, GuestLastName: *user.LastName, HostFirstName: *host.FirstName, HostLastName: *host.LastName, Grade: grade.Grade, DateOfGrade: grade.DateOfGrade}
+		gradeDTOs = append(gradeDTOs, gradeDTO)
+		sum = sum + grade.Grade
+	}
+	avergeGrade := float64(sum / len(hostGrades))
+	gradesDetails := []*pb.UserGradeDetails{}
+	for _, r := range gradeDTOs {
+		gradesPb := mapUserGradeDetails(&r)
+		gradesDetails = append(gradesDetails, gradesPb)
+	}
+	response := &pb.GetAllUserGradeResponse{
+		UserGradeDetails: gradesDetails,
+		AverageGrade:     avergeGrade,
+	}
+	return response, nil
+}
 
 func (handler *UserHandler) HostProminent(ctx context.Context, request *pb.HostProminentRequest) (*pb.HostProminentResponse, error) {
 	//TODO zahtjev 1.13, salje se id hosta ili ga izvucite kao gore sto sam naveo i vraca se bool koje je true ako je istaknut i false ako nije
 	//na frontu mozete staviti na ono profile kad se otvori dodatno dugme koje ovo provjerava ili samo da napravite jos jedno polje koje kaze da li je istaknut ili ne
 	//samo pazite da je ovo samo za hosta, a na frontu stranica profila je ista za guesta i hosta pa morate to nekako da razdvojite
+	id := request.Id
+	_, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		err := status.Errorf(codes.InvalidArgument, "the provided hostId is not a valid ObjectID")
+		return nil, err
+	}
+
+	hostGrades, err := handler.grade_service.GetAllUserGrade(request.Id)
+	if err != nil {
+		return nil, err
+	}
+	sum := 0
+	for _, grade := range hostGrades {
+		sum = sum + grade.Grade
+	}
+	numberOfCancelation := 0
+	var sumReservationDurations float64
+	averageGrade := float64(sum / len(hostGrades))
+	reservations, err := handler.reservation_client.GetAllReservationsHost(createContextForAuthorization(ctx), &reservation_service.GetAllReservationsHostRequest{Id: request.Id})
+	for _, res := range reservations.Reservation {
+		if res.IsCanceled == true {
+			numberOfCancelation = numberOfCancelation + 1
+		}
+		year, month, day := res.StartDate.AsTime().Date()
+		yearE, monthE, dayE := res.EndDate.AsTime().Date()
+		startDate := time.Date(year, month, day, int(0), int(0), int(0), int(0), time.UTC)
+		endDate := time.Date(yearE, monthE, dayE, int(0), int(0), int(0), int(0), time.UTC)
+		duration := (endDate.Sub(startDate)).Hours()
+		sumReservationDurations = sumReservationDurations + duration
+	}
+	sumReservationDurations = sumReservationDurations / 24
+	cancelationPercent := (numberOfCancelation / len(reservations.Reservation)) * 100
+
+	var prominent bool = false
+	if averageGrade > 4.7 && cancelationPercent < 5 && len(reservations.Reservation) >= 5 && sumReservationDurations > 50 {
+		prominent = true
+	}
+
 	response := &pb.HostProminentResponse{
-		Prominent: true,
+		Prominent: prominent,
 	}
 	return response, nil
 }
