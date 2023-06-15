@@ -17,8 +17,14 @@ import CloseIcon from "@mui/icons-material/Close";
 import Alert from "@mui/material/Alert";
 import Collapse from "@mui/material/Collapse";
 
-//proslediti nekako id accomodationa
-const RenderCreateButton = (params) => {
+function refreshPage(){
+    window.location.reload();
+}
+
+
+
+
+const RenderRateHost = (params) => {
     let navigate = useNavigate();
     return (
         <strong>
@@ -28,167 +34,126 @@ const RenderCreateButton = (params) => {
                 size="small"
                 style={{ marginLeft: 16 }}
                 onClick={() => {
-                    return navigate('/availability/create', {state: params.row.Id});
+                    console.log(params.row)
+                    navigate('/host/rate', {state: params.row});
                 }}
             >
-                Create availability
+                Rate
             </Button>
         </strong>
     )
 };
 
-const RenderAvailabilitiesButton = (params) => {
+const RenderGetAllHostGrades = (params) => {
     let navigate = useNavigate();
     return (
         <strong>
             <Button
                 variant="contained"
-                align="left"
                 color="primary"
                 size="small"
                 style={{ marginLeft: 16 }}
                 onClick={() => {
-                    return navigate('/availabilities', {state: params.row.Id});
+                    console.log(params.row)
+                    navigate('/host/all-grades', {state: params.row});
                 }}
             >
-                All availabilities
+                All grades
             </Button>
         </strong>
     )
 };
 
-
-const RenderAllGradesButton = (params) => {
-    let navigate = useNavigate();
-    return (
-        <strong>
-            <Button
-                variant="contained"
-                align="left"
-                color="primary"
-                size="small"
-                style={{ marginLeft: 16 }}
-                onClick={() => {
-                    return navigate('/host/accommodation-grades', {state: params.row.Id});
-                }}
-            >
-                All Grades
-            </Button>
-        </strong>
-    )
-};
 
 
 const columns = [
     {
-        field: "Name",
-        headerName: "Name",
+        field: "FirstName",
+        headerName: "Host first name",
         type: "string",
-        width: 350,
+        width: 250,
         sortable: false,
         filterable: false,
-        editable: false
+        editable: false,
+    },
+    {
+        field: "LastName",
+        headerName: "Host last name",
+        type: "string",
+        width: 250,
+        sortable: false,
+        filterable: false,
+        editable: false,
+    },
+    {
+        field: "Name",
+        headerName: "Accommodation name",
+        type: "string",
+        width: 250,
+        sortable: false,
+        filterable: false,
+        editable: false,  
     },
     {
         field: "Location",
-        headerName: "Location",
+        headerName: "Accommodation location",
         type: "string",
-        width: 350,
+        width: 250,
         sortable: false,
         filterable: false,
-        editable: false
+        editable: false,
     },
     {
-        field: "Create",
-        align: "left",
-        headerName: "Create Availability",
-        width: 350,
-        renderCell: RenderCreateButton,
+        field: "rate",
+        headerName: "Rate host",
+        width: 250,
+        renderCell: RenderRateHost,
         disableClickEventBubbling: true   
     },
     {
-        field: "Get",
-        align: "left",
-        headerName: "All Availabilities",
-        width: 350,
-        renderCell: RenderAvailabilitiesButton,
-        disableClickEventBubbling: true   
-    },
-    {
-        field: "Grades",
-        align: "left",
-        headerName: "All Grades",
-        width: 350,
-        renderCell: RenderAllGradesButton,
+        field: "allGrades",
+        headerName: "All grades",
+        width: 250,
+        renderCell: RenderGetAllHostGrades,
         disableClickEventBubbling: true   
     }
 ];
 
 
-function rowAction(navigate, buttonName, buttonUrl) {
-    return {
-        field: "Details",
-        headerName: buttonName,
-        align: "left",
-        headerAlign: "left",
-        sortable: false,
-        renderCell: (params) => {
-            const onClick = (e) => {
-                e.stopPropagation(); // don't select this row after clicking
-
-                const api = params.api;
-                const thisRow = params.row;
-
-                
-
-
-                return navigate("/accommodation-details", { state: thisRow });
-            };
-            return (
-                <Button
-                    variant="contained"
-                    color="secondary"
-                    size="small"
-                    onClick={onClick}
-                >
-                    {" "}
-                    <ReadMoreIcon />{" "}
-                </Button>
-            );
-        },
-    };
-}
-
-function AvailabilityList(props) {
+function HostsList(props) {
     const { handleSubmit, control } = useForm();
-    const [accommodations, setAccomodations ] = useState([]);
+    const [hosts, setHosts ] = useState([]);
     const [ error, setError ] = React.useState(false);
     const [er, setEr] = React.useState("");
     const navigate = useNavigate();
     useEffect(() => {
         getData();
       //  onSubmit();
-    }, []);
+    }, [setHosts]);
     const date = new Date().toISOString();
 
         let getData = async () => {
         try{
-        const res = await axiosApi.get('/user/logged');
-        console.log('Id',res.data.user.Id);
-
+            //console.log()
+            //const res = await axiosApi.get('/user/logged');
+            //console.log("ID", res.data.user.Id);
         axiosApi
-            .get(`/accommodation/all/`+res.data.user.Id)
+            //proslediti koji treba (proveriti jel ovaj)
+            //.get(`/user/host/all`)
             .then((response) => {
-                console.log(response.data)
-                setAccomodations(response.data);
+                setHosts(response.data);
+                console.log('Data', response.data)
+                console.log('RES', hosts)
             }).catch(er => {
                 console.log(er.response);
-                setAccomodations([]);
+                setHosts([]);
             });
         }catch (err) {
                 console.log(err)
-                setAccomodations([]);
+                setHosts([]);
             }
+            console.log('RESS',hosts)
+
         };
 
     return (
@@ -201,7 +166,7 @@ function AvailabilityList(props) {
                     marginBottom={3}
                     marginTop={1}
                 >
-                    Accommodations
+                    Hosts
                 </Typography>
             </Stack>
             <Paper>
@@ -216,7 +181,7 @@ function AvailabilityList(props) {
                                     size="small"
                                     onClick={() => {
                                         setError(false);
-                                        setAccomodations([])
+                                        setHosts([])
                                     }}
                                 >
                                     <CloseIcon fontSize="inherit" />
@@ -230,10 +195,10 @@ function AvailabilityList(props) {
                 </Box>
                 <Box sx={{ height: 700, width: "100%", marginTop: "20px", marginBottom: "20px"}}>
                     <DataGrid
-                        rows={accommodations}
-                        getRowId={(row) => row.Id}
+                        rows={hosts}
+                        //getRowId={(row) => row.ReservationId}
                         disableColumnFilter
-                        columns={[...columns, rowAction(navigate, props.buttonName, props.buttonUrl)]}
+                        columns={columns}
                         autoHeight
                         density="comfortable"
                         disableSelectionOnClick
@@ -249,4 +214,4 @@ function AvailabilityList(props) {
     );
 }
 
-export default AvailabilityList;
+export default HostsList;
