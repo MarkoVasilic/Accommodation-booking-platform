@@ -1,8 +1,6 @@
 package api
 
 import (
-	"strconv"
-
 	"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/user_service/models"
 	pb "github.com/MarkoVasilic/Accommodation-booking-platform/common/proto/user_service"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -23,7 +21,7 @@ func mapUser(user *models.User) *pb.User {
 	return userPb
 }
 
-func mapGrade(userGrade *models.UserGrade) *pb.UserGrade {
+/*func mapGrade(userGrade *models.UserGrade) *pb.UserGrade {
 	dateOfGrade := timestamppb.New(userGrade.DateOfGrade)
 	grade := strconv.Itoa(userGrade.Grade)
 	userGradePb := &pb.UserGrade{
@@ -34,7 +32,7 @@ func mapGrade(userGrade *models.UserGrade) *pb.UserGrade {
 		DateOfGrade: dateOfGrade,
 	}
 	return userGradePb
-}
+}*/
 
 func mapNotification(notification *models.Notification) *pb.Notification {
 	dateOfNotification := timestamppb.New(notification.DateOfNotification)
@@ -45,6 +43,16 @@ func mapNotification(notification *models.Notification) *pb.Notification {
 		Message:            *notification.Message,
 		DateOfNotification: dateOfNotification,
 		Seen:               notification.Seen,
+	}
+	return notificationPb
+}
+
+func mapNotificationOn(notification *models.NotificationOn) *pb.NotificationOn {
+	notificationPb := &pb.NotificationOn{
+		Id:     notification.ID.Hex(),
+		UserId: notification.UserID.Hex(),
+		Type:   string(*notification.Type),
+		On:     notification.On,
 	}
 	return notificationPb
 }

@@ -16,11 +16,12 @@ const (
 type NotificationType string
 
 const (
-	CreateAcc NotificationType = "CREATE_ACC"
-	CancelAcc NotificationType = "CANCEL_ACC"
-	GradedUsr NotificationType = "GRADED_USR"
-	GradedAcc NotificationType = "GRADED_ACC"
-	Prominent NotificationType = "PROMINENT"
+	CreateAcc        NotificationType = "CREATE_ACC"
+	CancelAcc        NotificationType = "CANCEL_ACC"
+	GradedUsr        NotificationType = "GRADED_USR"
+	GradedAcc        NotificationType = "GRADED_ACC"
+	Prominent        NotificationType = "PROMINENT"
+	ReservationReact NotificationType = "RESERVATION_REACT"
 )
 
 type User struct {

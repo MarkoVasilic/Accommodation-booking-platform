@@ -3,7 +3,6 @@ package api
 import (
 	"context"
 	"fmt"
-	"strconv"
 	"time"
 
 	"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/user_service/models"
@@ -73,7 +72,7 @@ func (handler *UserHandler) CreateUser(ctx context.Context, request *pb.CreateUs
 		err := status.Errorf(codes.Internal, mess)
 		return nil, err
 	}
-	err = handler.notification_on_service.InitializeNotificationsOn(user_id)
+	err = handler.notification_on_service.InitializeNotificationsOn(user)
 	if err != nil {
 		handler.service.DeleteUser(user_id, true, "")
 		err := status.Errorf(codes.Internal, mess)
@@ -231,8 +230,11 @@ func (handler *UserHandler) CreateUserGrade(ctx context.Context, request *pb.Cre
 		err := status.Errorf(codes.InvalidArgument, "the provided id is not a valid ObjectID")
 		return nil, err
 	}
-	grade, err := strconv.Atoi(request.Grade)
-	userGrade := models.UserGrade{GuestID: guestId, HostID: hostId, Grade: grade, DateOfGrade: time.Now()}
+
+	//odkomentarisi kad pusuju ovde i u maperu
+
+	//grade, err := strconv.Atoi(request.Grade)
+	userGrade := models.UserGrade{GuestID: guestId, HostID: hostId, Grade: 5, DateOfGrade: time.Now()}
 	mess, err := handler.grade_service.CreateUserGrade(userGrade)
 	if err != nil {
 		err := status.Errorf(codes.Internal, mess)
@@ -358,15 +360,56 @@ func (handler *UserHandler) GetAllNotifications(ctx context.Context, request *pb
 		return nil, err
 	}
 
-	//sortiraj
+	notificationsOn, err := handler.notification_on_service.GetNotificationOnByUser(userId)
+	if err != nil {
+		return nil, err
+	} else if notifications == nil {
+		err := status.Errorf(codes.InvalidArgument, "There is no notifications!")
+		return nil, err
+	}
 
 	user_notifications := []*pb.Notification{}
 	for _, n := range notifications {
-		notificationPb := mapNotification(&n)
+		for _, notificationOn := range notificationsOn {
+			if *notificationOn.Type == *n.Type && notificationOn.On {
+				notificationPb := mapNotification(&n)
+				user_notifications = append(user_notifications, notificationPb)
+			}
+		}
+
+	}
+
+	//sortiraj
+
+	response := &pb.GetAllNotificationsResponse{
+		Notifications: user_notifications,
+	}
+
+	return response, nil
+}
+
+func (handler *UserHandler) GetUserNotificationsOn(ctx context.Context, request *pb.GetUserNotificationsOnRequest) (*pb.GetUserNotificationsOnResponse, error) {
+	userId, err := primitive.ObjectIDFromHex(request.Id)
+	if err != nil {
+		err := status.Errorf(codes.Internal, "Id conversion failed")
+		return nil, err
+	}
+
+	notifications, err := handler.notification_on_service.GetNotificationOnByUser(userId)
+	if err != nil {
+		return nil, err
+	} else if notifications == nil {
+		err := status.Errorf(codes.InvalidArgument, "There is no notifications!")
+		return nil, err
+	}
+
+	user_notifications := []*pb.NotificationOn{}
+	for _, n := range notifications {
+		notificationPb := mapNotificationOn(&n)
 		user_notifications = append(user_notifications, notificationPb)
 	}
 
-	response := &pb.GetAllNotificationsResponse{
+	response := &pb.GetUserNotificationsOnResponse{
 		Notifications: user_notifications,
 	}
 

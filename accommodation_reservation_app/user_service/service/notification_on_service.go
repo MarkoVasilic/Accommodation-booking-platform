@@ -25,16 +25,25 @@ func createNotification(userID primitive.ObjectID, notificationType models.Notif
 	}
 }
 
-func (service *NotificationOnService) InitializeNotificationsOn(userID primitive.ObjectID) error {
-	notificationTypes := []models.NotificationType{models.CreateAcc, models.CancelAcc, models.GradedUsr, models.GradedAcc, models.Prominent}
+func (service *NotificationOnService) InitializeNotificationsOn(user models.User) error {
+	if *user.Role == "HOST" {
+		notificationTypes := []models.NotificationType{models.CreateAcc, models.CancelAcc, models.GradedUsr, models.GradedAcc, models.Prominent}
 
-	for _, notificationType := range notificationTypes {
-		err := service.NotificationOnRepository.CreateNotificationOn(createNotification(userID, notificationType))
+		for _, notificationType := range notificationTypes {
+			err := service.NotificationOnRepository.CreateNotificationOn(createNotification(user.Id, notificationType))
+			if err != nil {
+				err := status.Errorf(codes.Internal, "something went wrong")
+				return err
+			}
+		}
+	} else {
+		err := service.NotificationOnRepository.CreateNotificationOn(createNotification(user.Id, models.ReservationReact))
 		if err != nil {
 			err := status.Errorf(codes.Internal, "something went wrong")
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -64,4 +73,17 @@ func (service *NotificationOnService) UpdateNotificationOn(notification_on model
 	}
 	return "Succesffully updated notification on", nil
 
+}
+
+func (service *NotificationOnService) GetNotificationOnByUser(userID primitive.ObjectID) ([]models.NotificationOn, error) {
+	var _, cancel = context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	var userNotificationsOn []models.NotificationOn
+	userNotificationsOn, err := service.NotificationOnRepository.GetNotificationOnByUser(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	return userNotificationsOn, nil
 }

@@ -32,6 +32,24 @@ func (repo *NotificationOnRepository) GetNotificationByUserAndType(userId primit
 	return foundnotification, err
 }
 
+func (repo *NotificationOnRepository) GetNotificationOnByUser(userId primitive.ObjectID) ([]models.NotificationOn, error) {
+	var ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{"user_id": userId}
+	cursor, err := repo.NotificationOnCollection.Find(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+
+	var userNotifications []models.NotificationOn
+	if err = cursor.All(ctx, &userNotifications); err != nil {
+		return nil, err
+	}
+
+	return userNotifications, nil
+}
+
 func (repo *NotificationOnRepository) UpdateNotificationOn(notification_on *models.NotificationOn) error {
 	var ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
