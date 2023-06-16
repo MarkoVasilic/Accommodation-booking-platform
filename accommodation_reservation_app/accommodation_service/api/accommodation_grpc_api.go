@@ -396,6 +396,7 @@ func (handler *AccommodationHandler) GetAllAccommodationGrade(ctx context.Contex
 		gradesPb := mapAccommodationGradeDetails(&r)
 		gradesDetails = append(gradesDetails, gradesPb)
 	}
+
 	response := &pb.GetAllAccommodationGradeResponse{
 		AccommodationGradeDetails: gradesDetails,
 		AverageGrade:              avergeGrade,

@@ -99,3 +99,12 @@ func mapAccommodationGradeDetails(accommodationGrade *models.AccommodationGradeD
 
 	return accommodationGradeDetailsPb
 }
+
+/*func mapAccommodationGradeDetailsDTO(accommodationGradeDTO *models.AccommodationGradeDetailsDTO) *pb.AccommodationGradeDetailsDTO {
+	accommodationGradeDetailsDTOPb := &pb.AccommodationGradeDetailsDTO{
+		AccommodationGradeDetails: accommodationGradeDTO.AccommodationGradeDetails,
+		AverageGrade:              accommodationGradeDTO.AverageGrade,
+	}
+
+	return accommodationGradeDetailsDTOPb
+}*/

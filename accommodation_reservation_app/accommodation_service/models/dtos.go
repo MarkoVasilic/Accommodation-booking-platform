@@ -45,3 +45,8 @@ type FilterAvailability struct {
 	ParkingLot    bool      `bson:"parking_lot" json:"parking_lot" validate:"required"`
 	ProminentHost bool      `bson:"prominent_host" json:"prominent_host" validate:"required"`
 }
+
+type AccommodationGradeDetailsDTO struct {
+	AccommodationGradeDetails []*AccommodationGradeDetails
+	AverageGrade              float64
+}
