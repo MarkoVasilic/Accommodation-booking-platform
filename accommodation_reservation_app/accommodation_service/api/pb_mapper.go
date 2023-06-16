@@ -100,11 +100,11 @@ func mapAccommodationGradeDetails(accommodationGrade *models.AccommodationGradeD
 	return accommodationGradeDetailsPb
 }
 
-/*func mapAccommodationGradeDetailsDTO(accommodationGradeDTO *models.AccommodationGradeDetailsDTO) *pb.AccommodationGradeDetailsDTO {
+func mapAccommodationGradeDetailsDTO(accommodationGradeDTO []*pb.AccommodationGradeDetails, averageGrade float64) *pb.AccommodationGradeDetailsDTO {
 	accommodationGradeDetailsDTOPb := &pb.AccommodationGradeDetailsDTO{
-		AccommodationGradeDetails: accommodationGradeDTO.AccommodationGradeDetails,
-		AverageGrade:              accommodationGradeDTO.AverageGrade,
+		AccommodationGradeDetails: accommodationGradeDTO,
+		AverageGrade:              averageGrade,
 	}
 
 	return accommodationGradeDetailsDTOPb
-}*/
+}
