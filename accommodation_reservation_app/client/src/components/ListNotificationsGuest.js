@@ -1,32 +1,62 @@
-import PersonalInformationCard from "../components/PersonalInformationCard";
 import { green } from '@mui/material/colors';
 import { Typography, Paper, Button } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
 import { Stack } from '@mui/system';
 import axiosApi from "../api/axios";
 import AllowedUsers from "../components/AllowedUsers";
 import Box from "@mui/material/Box";
-import Alert from "@mui/material/Alert";
-import IconButton from "@mui/material/IconButton";
-import Collapse from "@mui/material/Collapse";
-import CloseIcon from "@mui/icons-material/Close";
 import Grid from '@mui/material/Grid';
 import React, {  useEffect, useState } from "react";
+import { DataGrid } from "@mui/x-data-grid";
 
 export default function ListNotificationsGuest() {
     const listOfAllowedUsers = ["GUEST"];
     const [profile, setProfile] = useState({});
-    const [not, setReservationReact] = useState();
+    const [not, setReservationReact] = useState(false);
+    const [notificationsOn, setnotificationsOn ] = useState([]);
+    const [notifications, setNotifications ] = useState([]);
 
     let updateNotifications = async (event) => {
         try {
             setReservationReact(event)
             console.log(event)
-            
+            let id = "ttt"
+            let type = "RESERVATION_REACT"
+            let on = event
+            const updateNotigivationOn = {
+                id,
+                type,
+                on,
+            };
+
+            axiosApi.put('/user/notificationon/'+profile.Id, updateNotigivationOn)
+                .then((response) => {
+                    if(on){
+                        axiosApi
+                        .get('/user/notification/'+profile.Id)
+                        .then((response1) => {
+                            setNotifications(response1.data);
+                            console.log('Notification2',response1.data) 
+                            console.log('Notification',notifications)
+                        }).catch(er => {
+                            console.log('greska u notification') 
+                            setNotifications([])
+                        });
+                    }else{
+                        setNotifications([])
+                    }
+                    
+                })
+
+
           } catch (err) {
             
           }
     };
+
+    useEffect(() => {
+        getData();
+    }, [setNotifications]);
+
 
     let getData = async () => {
         try {
@@ -35,18 +65,79 @@ export default function ListNotificationsGuest() {
             .then((response) => {
                 setProfile(response.data.user);
 
+                axiosApi
+                .get('/user/notificationsOn/'+response.data.user.Id)
+                .then((response2) => {
+
+                   setnotificationsOn(response2.data)
+                    if(response2.data[0].on){
+                        setReservationReact(true)
+                        axiosApi
+                        .get('/user/notification/'+response.data.user.Id)
+                        .then((response1) => {
+                            setNotifications(response1.data); 
+                            console.log('Notification2',response1.data) 
+                            console.log('Notification',notifications)
+                        }).catch(er => {
+                            console.log('greska u notification') 
+                            setNotifications([])
+                        });
+                    }else{
+                        setReservationReact(false)
+                        setNotifications([])  
+                    }
+
+                }).catch(er => {
+                    console.log('greska u notificationOn') 
+                });
+
             }).catch(er => {
-                  
-                  
+                setNotifications([])
+                console.log('greska ') 
             });
           } catch (err) {
-            
+            setNotifications([])
+            console.log('greska') 
           }
     };
 
-    useEffect(() => {
-        getData();
-    }, []);
+    
+    function formatSecondsToDate(seconds) {
+        return new Date(seconds * 1000 - 7200*1000);;
+    }
+    
+    const columns = [
+        {
+            field: "Message",
+            headerName: "Message",
+            type: "string",
+            width: 880,
+            sortable: false,
+            filterable: false,
+            editable: false,
+        },
+        {
+            field: "Type",
+            headerName: "Type",
+            type: "string",
+            width: 380,
+            sortable: false,
+            filterable: false,
+            editable: false,
+        },
+        {
+            field: "DateOfNotification",
+            headerName: "Date",
+            type: "date",
+            width: 300,
+            sortable: false,
+            filterable: false,
+            editable: false,
+            format:"DD/MM/YYYY",
+            valueGetter: params => formatSecondsToDate(params.row.DateOfNotification.seconds) 
+             
+        }
+    ];
 
     return (
         <div>
@@ -75,6 +166,26 @@ export default function ListNotificationsGuest() {
         </Grid>
             </Paper>
         </Stack>
+
+
+        <Paper>
+            <Box sx={{ height: 700, width: "100%", marginTop: "20px", marginBottom: "20px"}}>
+                <DataGrid
+                    rows={notifications}
+                    getRowId={(row) => row.id}
+                    disableColumnFilter
+                    columns={columns}
+                    autoHeight
+                    density="comfortable"
+                    disableSelectionOnClick
+                    rowHeight={50}
+                    pageSize={5}
+                    headerHeight={35}
+                    headerAlign= "left"
+                    align="left"
+                />
+            </Box>
+        </Paper>
         
         </div>
     );
