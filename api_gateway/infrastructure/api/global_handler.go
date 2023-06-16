@@ -732,7 +732,7 @@ func (handler *GlobalHandler) GetAllUserGrade(w http.ResponseWriter, r *http.Req
 		return
 	}
 	//fmt.Fprintf(w, "%s", resp)
-	response, err := json.Marshal(resp.AverageGrade) //fali resp.UserGradeDetails
+	response, err := json.Marshal(resp.UserGradeDetailsDTO) //
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -865,7 +865,7 @@ func (handler *GlobalHandler) GetAllAccommodationGrade(w http.ResponseWriter, r 
 		return
 	}
 	//fmt.Fprintf(w, "%s", resp)
-	response, err := json.Marshal(resp.AverageGrade)
+	response, err := json.Marshal(resp.AccommodationGradeDetailsDTO)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return

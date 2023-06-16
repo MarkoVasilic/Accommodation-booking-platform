@@ -77,3 +77,12 @@ func mapHost(hostDetails *models.HostDetails) *pb.HostDetails {
 	}
 	return hostDetailsPb
 }
+
+func mapUserGradeDetailsDTO(userGradeDetailsDTO []*pb.UserGradeDetails, averageGrade float64) *pb.UserGradeDetailsDTO {
+	userGradeDetailsDTOPb := &pb.UserGradeDetailsDTO{
+		UserGradeDetails: userGradeDetailsDTO,
+		AverageGrade:     averageGrade,
+	}
+
+	return userGradeDetailsDTOPb
+}

@@ -32,3 +32,8 @@ type HostDetails struct {
 	FirstName string             `bson:"first_name" json:"first_name"`
 	LastName  string             `bson:"last_name" json:"last_name"`
 }
+
+type UserGradeDetailsDTO struct {
+	UserGradeDetails []*UserGradeDetails
+	AverageGrade     float64
+}

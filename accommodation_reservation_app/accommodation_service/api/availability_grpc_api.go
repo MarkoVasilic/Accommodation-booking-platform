@@ -314,7 +314,7 @@ func (handler *AvailabilityHandler) FilterAvailability(ctx context.Context, requ
 		if err != nil {
 			return nil, err
 		}
-		if fa.Kitchen == request.Kitchen && fa.Wifi == request.Wifi && fa.AC == request.AC && fa.ParkingLot == request.ParkingLot && grades.AverageGrade >= float64(request.GradeMin) && grades.AverageGrade <= float64(request.GradeMax) && hostProminent.Prominent == true {
+		if fa.Kitchen == request.Kitchen && fa.Wifi == request.Wifi && fa.AC == request.AC && fa.ParkingLot == request.ParkingLot && grades.AccommodationGradeDetailsDTO.AverageGrade >= float64(request.GradeMin) && grades.AccommodationGradeDetailsDTO.AverageGrade <= float64(request.GradeMax) && hostProminent.Prominent == true {
 			filteredAvailability := models.FindAvailability{AccommodationId: fa.AccommodationId, AvailabilityID: fa.AvailabilityID, HostID: fa.HostID, Name: fa.Name, Location: fa.Location, Wifi: fa.Wifi, Kitchen: fa.Kitchen, AC: fa.AC, ParkingLot: fa.ParkingLot, Images: fa.Images, StartDate: fa.StartDate, EndDate: fa.EndDate, TotalPrice: fa.TotalPrice, SinglePrice: fa.SinglePrice, IsPricePerGuest: fa.IsPricePerGuest}
 			filteredAvailabilities = append(filteredAvailabilities, filteredAvailability)
 		}

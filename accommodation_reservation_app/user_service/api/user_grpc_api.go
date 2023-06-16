@@ -419,9 +419,9 @@ func (handler *UserHandler) GetAllUserGrade(ctx context.Context, request *pb.Get
 		gradesPb := mapUserGradeDetails(&r)
 		gradesDetails = append(gradesDetails, gradesPb)
 	}
+	finalResp := mapUserGradeDetailsDTO(gradesDetails, avergeGrade)
 	response := &pb.GetAllUserGradeResponse{
-		UserGradeDetails: gradesDetails,
-		AverageGrade:     avergeGrade,
+		UserGradeDetailsDTO: finalResp,
 	}
 	return response, nil
 }
