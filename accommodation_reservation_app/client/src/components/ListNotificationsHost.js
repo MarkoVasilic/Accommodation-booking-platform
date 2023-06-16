@@ -1,32 +1,61 @@
-import PersonalInformationCard from "../components/PersonalInformationCard";
 import { green } from '@mui/material/colors';
 import { Typography, Paper, Button } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
 import { Stack } from '@mui/system';
 import axiosApi from "../api/axios";
 import AllowedUsers from "../components/AllowedUsers";
 import Box from "@mui/material/Box";
-import Alert from "@mui/material/Alert";
-import IconButton from "@mui/material/IconButton";
-import Collapse from "@mui/material/Collapse";
-import CloseIcon from "@mui/icons-material/Close";
 import Grid from '@mui/material/Grid';
 import React, {  useEffect, useState } from "react";
+import { DataGrid } from "@mui/x-data-grid";    
 
 export default function ListNotificationsHost() {
     const listOfAllowedUsers = ["HOST"];
     const [profile, setProfile] = useState({});
-    const [create_res, setCreateRes] = useState();
-    const [cancel_res, setCancelRes] = useState();
-    const [graded_usr, setGradedUsr] = useState();
-    const [graded_acc, setGradedAcc] = useState();
-    const [prominent, setProminent] = useState();
+    const [create_res, setCreateRes] = useState(false);
+    const [cancel_res, setCancelRes] = useState(false);
+    const [graded_usr, setGradedUsr] = useState(false);
+    const [graded_acc, setGradedAcc] = useState(false);
+    const [prominent, setProminent] = useState(false);
+    const [notificationsOn, setnotificationsOn ] = useState([]);
+    const [notifications, setNotifications ] = useState([]);
 
     let updateCreateRes = async (event) => {
         try {
             setCreateRes(event)
             console.log(event)
-            
+            let id = "ttt"
+            let type = "CREATE_ACC"
+            let on = event
+            const updateNotigivationOn = {
+                id,
+                type,
+                on,
+            };
+
+            axiosApi.put('/user/notificationon/'+profile.Id, updateNotigivationOn)
+                .then((response) => {
+                    if(on){
+                        axiosApi
+                        .get('/user/notification/'+profile.Id)
+                        .then((response1) => {
+                            setNotifications(response1.data);
+                        }).catch(er => {
+                            console.log('greska u notification') 
+                            if(!cancel_res && !graded_acc && !graded_usr && !prominent){
+                                setNotifications([])
+                            }
+                        });
+                    }else{
+                        if(!cancel_res && !graded_acc && !graded_usr && !prominent){
+                            setNotifications([])
+                        } 
+                    }
+                    
+                }).catch(er => {
+                    console.log('greska u update') 
+                });
+
+
           } catch (err) {
             
           }
@@ -36,6 +65,39 @@ export default function ListNotificationsHost() {
         try {
             setCancelRes(event)
             console.log(event)
+
+            let id = "ttt"
+            let type = "CANCEL_ACC"
+            let on = event
+            const updateNotigivationOn = {
+                id,
+                type,
+                on,
+            };
+
+            axiosApi.put('/user/notificationon/'+profile.Id, updateNotigivationOn)
+                .then((response) => {
+                    if(on){
+                        axiosApi
+                        .get('/user/notification/'+profile.Id)
+                        .then((response1) => {
+                            setNotifications(response1.data);
+                        }).catch(er => {
+                            console.log('greska u notification') 
+                            if(!create_res && !graded_acc && !graded_usr && !prominent){
+                                setNotifications([])
+                            }
+                        });
+                    }else{
+                        if(!create_res && !graded_acc && !graded_usr && !prominent){
+                            setNotifications([])
+                        } 
+                    }
+                    
+                }).catch(er => {
+                    console.log('greska u update') 
+                });
+
             
           } catch (err) {
             
@@ -46,6 +108,38 @@ export default function ListNotificationsHost() {
         try {
             setGradedUsr(event)
             console.log(event)
+
+            let id = "ttt"
+            let type = "GRADED_USR"
+            let on = event
+            const updateNotigivationOn = {
+                id,
+                type,
+                on,
+            };
+
+            axiosApi.put('/user/notificationon/'+profile.Id, updateNotigivationOn)
+                .then((response) => {
+                    if(on){
+                        axiosApi
+                        .get('/user/notification/'+profile.Id)
+                        .then((response1) => {
+                            setNotifications(response1.data);
+                        }).catch(er => {
+                            console.log('greska u notification') 
+                            if(!create_res && !graded_acc && !cancel_res && !prominent){
+                                setNotifications([])
+                            }
+                        });
+                    }else{
+                        if(!create_res && !graded_acc && !cancel_res && !prominent){
+                            setNotifications([])
+                        } 
+                    }
+                    
+                }).catch(er => {
+                    console.log('greska u update') 
+                });
             
           } catch (err) {
             
@@ -56,6 +150,38 @@ export default function ListNotificationsHost() {
         try {
             setGradedAcc(event)
             console.log(event)
+
+            let id = "ttt"
+            let type = "GRADED_ACC"
+            let on = event
+            const updateNotigivationOn = {
+                id,
+                type,
+                on,
+            };
+
+            axiosApi.put('/user/notificationon/'+profile.Id, updateNotigivationOn)
+                .then((response) => {
+                    if(on){
+                        axiosApi
+                        .get('/user/notification/'+profile.Id)
+                        .then((response1) => {
+                            setNotifications(response1.data);
+                        }).catch(er => {
+                            console.log('greska u notification') 
+                            if(!create_res && !graded_usr && !cancel_res && !prominent){
+                                setNotifications([])
+                            }
+                        });
+                    }else{
+                        if(!create_res && !graded_usr && !cancel_res && !prominent){
+                            setNotifications([])
+                        } 
+                    }
+                    
+                }).catch(er => {
+                    console.log('greska u update') 
+                });
             
           } catch (err) {
             
@@ -66,6 +192,38 @@ export default function ListNotificationsHost() {
         try {
             setProminent(event)
             console.log(event)
+
+            let id = "ttt"
+            let type = "PROMINENT"
+            let on = event
+            const updateNotigivationOn = {
+                id,
+                type,
+                on,
+            };
+
+            axiosApi.put('/user/notificationon/'+profile.Id, updateNotigivationOn)
+                .then((response) => {
+                    if(on){
+                        axiosApi
+                        .get('/user/notification/'+profile.Id)
+                        .then((response1) => {
+                            setNotifications(response1.data);
+                        }).catch(er => {
+                            console.log('greska u notification') 
+                            if(!create_res && !graded_acc && !graded_usr && !cancel_res){
+                                setNotifications([])
+                            }
+                        });
+                    }else{
+                        if(!create_res && !graded_acc && !graded_usr && !cancel_res){
+                            setNotifications([])
+                        } 
+                    }
+                    
+                }).catch(er => {
+                    console.log('greska u update') 
+                });
             
           } catch (err) {
             
@@ -79,6 +237,49 @@ export default function ListNotificationsHost() {
             .then((response) => {
                 setProfile(response.data.user);
 
+                axiosApi
+                .get('/user/notificationsOn/'+response.data.user.Id)
+                .then((response2) => {
+                   setnotificationsOn(response2.data)
+
+                   response2.data.forEach(notificationOn => {
+              
+                    switch (notificationOn.Type) {
+                      case "CREATE_ACC":
+                        setCreateRes(notificationOn.on);
+                        break;
+                      case "CANCEL_ACC":
+                        setCancelRes(notificationOn.on);
+                        break;
+                      case "GRADED_USR":
+                        setGradedUsr(notificationOn.on);
+                        break;
+                      case "GRADED_ACC":
+                        setGradedAcc(notificationOn.on);
+                        break;
+                      case "PROMINENT":
+                        setProminent(notificationOn.on);
+                        break;
+                      default:
+                        break;
+                    }
+                  });
+
+                }).catch(er => {
+                    console.log('greska u notificationOn') 
+                });
+
+                axiosApi
+                        .get('/user/notification/'+response.data.user.Id)
+                        .then((response1) => {
+                            setNotifications(response1.data); 
+                            console.log('Notification2',response1.data) 
+                            console.log('Notification',notifications)
+                        }).catch(er => {
+                            console.log('greska u notification') 
+                            setNotifications([])
+                        });
+
             }).catch(er => {
                   
                   
@@ -90,7 +291,44 @@ export default function ListNotificationsHost() {
 
     useEffect(() => {
         getData();
-    }, []);
+    }, [setNotifications]);
+
+    function formatSecondsToDate(seconds) {
+        return new Date(seconds * 1000 - 7200*1000);;
+    }
+    
+    const columns = [
+        {
+            field: "Message",
+            headerName: "Message",
+            type: "string",
+            width: 880,
+            sortable: false,
+            filterable: false,
+            editable: false,
+        },
+        {
+            field: "Type",
+            headerName: "Type",
+            type: "string",
+            width: 380,
+            sortable: false,
+            filterable: false,
+            editable: false,
+        },
+        {
+            field: "DateOfNotification",
+            headerName: "Date",
+            type: "date",
+            width: 300,
+            sortable: false,
+            filterable: false,
+            editable: false,
+            format:"DD/MM/YYYY",
+            valueGetter: params => formatSecondsToDate(params.row.DateOfNotification.seconds) 
+             
+        }
+    ];
 
     return (
         <div>
@@ -155,6 +393,25 @@ export default function ListNotificationsHost() {
         </Grid>
             </Paper>
         </Stack>
+
+        <Paper>
+            <Box sx={{ height: 700, width: "100%", marginTop: "20px", marginBottom: "20px"}}>
+                <DataGrid
+                    rows={notifications}
+                    getRowId={(row) => row.id}
+                    disableColumnFilter
+                    columns={columns}
+                    autoHeight
+                    density="comfortable"
+                    disableSelectionOnClick
+                    rowHeight={50}
+                    pageSize={5}
+                    headerHeight={35}
+                    headerAlign= "left"
+                    align="left"
+                />
+            </Box>
+        </Paper>
         
         </div>
     );

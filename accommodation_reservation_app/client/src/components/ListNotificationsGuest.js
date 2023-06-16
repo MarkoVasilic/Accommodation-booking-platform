@@ -45,7 +45,7 @@ export default function ListNotificationsGuest() {
                         setNotifications([])
                     }
                     
-                })
+                });
 
 
           } catch (err) {
