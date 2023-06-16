@@ -244,13 +244,17 @@ message UserGradeDetails {
         google.protobuf.Timestamp DateOfGrade = 7;
 }
 
+message UserGradeDetailsDTO {
+        repeated UserGradeDetails UserGradeDetails = 1;
+        double AverageGrade = 2;
+}
+
 message GetAllUserGradeRequest {
         string id = 1;
 }
 
 message GetAllUserGradeResponse {
-        repeated UserGradeDetails UserGradeDetails = 1;
-        double AverageGrade = 2;
+        UserGradeDetailsDTO UserGradeDetailsDTO = 1;
 }
 
 message HostProminentRequest {

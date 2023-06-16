@@ -310,13 +310,17 @@ message DeleteAccommodationGradeRequest {
 message GetAllAccommodationGradeRequest {
         string id = 1;
  }
- 
- message GetAllAccommodationGradeResponse {
+
+message AccommodationGradeDetailsDTO {
         repeated AccommodationGradeDetails AccommodationGradeDetails = 1;
         double AverageGrade = 2;
- }
+}
+ 
+message GetAllAccommodationGradeResponse {
+        AccommodationGradeDetailsDTO AccommodationGradeDetailsDTO = 1;
+}
 
- message FilterAvailabilityRequest {
+message FilterAvailabilityRequest {
         string Location = 1;
         int32 GuestsNum = 2;
         google.protobuf.Timestamp StartDate = 3;
