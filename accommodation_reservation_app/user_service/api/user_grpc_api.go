@@ -248,7 +248,10 @@ func (handler *UserHandler) GetAllHosts(ctx context.Context, request *pb.GetAllH
 		return nil, err
 	}
 	reservations, err := handler.reservation_client.GetAllReservations(createContextForAuthorization(ctx), &reservation_service.GetAllReservationsRequest{Id: claims.Id})
-	if err != nil {
+	if reservations == nil {
+		err := status.Errorf(codes.InvalidArgument, "There is no reservations!")
+		return nil, err
+	} else if err != nil {
 		return nil, err
 	}
 	hostsDetails := []models.HostDetails{}
@@ -257,7 +260,15 @@ func (handler *UserHandler) GetAllHosts(ctx context.Context, request *pb.GetAllH
 			continue
 		}
 		availabilitiy, err := handler.accommodation_client.GetAvailabilityById(createContextForAuthorization(ctx), &accommodation_service.GetAvailabilityByIdRequest{Id: res.AvailabilityID})
+		if err != nil {
+			err := status.Errorf(codes.InvalidArgument, "the no availability")
+			return nil, err
+		}
 		accommodation, err := handler.accommodation_client.GetAccommodationById(createContextForAuthorization(ctx), &accommodation_service.GetAccommodationByIdRequest{Id: availabilitiy.Availability.AccommodationID})
+		if err != nil {
+			err := status.Errorf(codes.InvalidArgument, "the no accommodation")
+			return nil, err
+		}
 		hostId, err := primitive.ObjectIDFromHex(accommodation.Accommodation.HostId)
 		if err != nil {
 			err := status.Errorf(codes.InvalidArgument, "the provided hostId is not a valid ObjectID")
