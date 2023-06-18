@@ -226,7 +226,7 @@ func (handler *AccommodationHandler) GetEveryAccommodation(ctx context.Context, 
 	//a vraca se lista smjestaja
 	ClientToken, _ := grpc_auth.AuthFromMD(ctx, "Bearer")
 	claims, _ := token.ValidateToken(ClientToken)
-	reservations, err := handler.reservation_client.GetAllReservations(createContextForAuthorization(ctx), &reservation_service.GetAllReservationsRequest{Id: claims.Uid})
+	reservations, err := handler.reservation_client.GetAllReservationsByGuestId(createContextForAuthorization(ctx), &reservation_service.GetAllReservationsByGuestIdRequest{Id: claims.Uid})
 	if err != nil {
 		return nil, err
 	}
@@ -276,7 +276,7 @@ func (handler *AccommodationHandler) CreateAccommodationGrade(ctx context.Contex
 		err := status.Errorf(codes.InvalidArgument, "the provided accommodationId is not a valid ObjectID")
 		return nil, err
 	}
-	reservations, err := handler.reservation_client.GetAllReservations(createContextForAuthorization(ctx), &reservation_service.GetAllReservationsRequest{Id: request.AccommodationGrade.GuestID})
+	reservations, err := handler.reservation_client.GetAllReservationsByGuestId(createContextForAuthorization(ctx), &reservation_service.GetAllReservationsByGuestIdRequest{Id: request.AccommodationGrade.GuestID})
 	if err != nil {
 		return nil, err
 	}

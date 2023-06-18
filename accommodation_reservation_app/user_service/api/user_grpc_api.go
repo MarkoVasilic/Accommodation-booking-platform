@@ -247,14 +247,17 @@ func (handler *UserHandler) GetAllHosts(ctx context.Context, request *pb.GetAllH
 		err := status.Errorf(codes.InvalidArgument, "the provided id is not a valid ObjectID")
 		return nil, err
 	}
-	reservations, err := handler.reservation_client.GetFindReservationAcceptedGuest(createContextForAuthorization(ctx), &reservation_service.GetFindReservationAcceptedGuestRequest{Id: "645e72247925d720c809785b"})
+	reservations, err := handler.reservation_client.GetAllReservationsByGuestId(createContextForAuthorization(ctx), &reservation_service.GetAllReservationsByGuestIdRequest{Id: "645e72247925d720c809785b"})
 	if err != nil {
 		return nil, err
 	}
 	hostsDetails := []models.HostDetails{}
-	for _, res := range reservations.FindReservation {
-		availabilitiy, err := handler.accommodation_client.GetAvailabilityById(createContextForAuthorization(ctx), &accommodation_service.GetAvailabilityByIdRequest{Id: ""})
+	for _, res := range reservations.Reservations {
+		fmt.Println(res)
+		availabilitiy, err := handler.accommodation_client.GetAvailabilityById(createContextForAuthorization(ctx), &accommodation_service.GetAvailabilityByIdRequest{Id: res.AvailabilityID})
+		fmt.Println(err)
 		accommodation, err := handler.accommodation_client.GetAccommodationById(createContextForAuthorization(ctx), &accommodation_service.GetAccommodationByIdRequest{Id: availabilitiy.Availability.AccommodationID})
+		fmt.Println(err)
 		hostId, err := primitive.ObjectIDFromHex(accommodation.Accommodation.HostId)
 		if err != nil {
 			err := status.Errorf(codes.InvalidArgument, "the provided hostId is not a valid ObjectID")
@@ -262,13 +265,22 @@ func (handler *UserHandler) GetAllHosts(ctx context.Context, request *pb.GetAllH
 		}
 		host, err := handler.service.GetUserById(hostId)
 		hostDetails := models.HostDetails{Id: hostId, FirstName: *host.FirstName, LastName: *host.LastName}
-		hostsDetails = append(hostsDetails, hostDetails)
+		alreadyExists := false
+		for _, detail := range hostsDetails {
+			if detail.Id == hostId {
+				alreadyExists = true
+			}
+		}
+		if alreadyExists == false {
+			hostsDetails = append(hostsDetails, hostDetails)
+		}
 	}
 	if hostsDetails == nil {
 		err := status.Errorf(codes.InvalidArgument, "There is no hosts to be graded!")
 		return nil, err
 	}
 
+	fmt.Println("2")
 	hosts := []*pb.HostDetails{}
 	for _, h := range hostsDetails {
 		hostDetailsPb := mapHost(&h)
@@ -297,7 +309,7 @@ func (handler *UserHandler) CreateUserGrade(ctx context.Context, request *pb.Cre
 		return nil, err
 	}
 	//provera da li sme da oceni
-	reservations, err := handler.reservation_client.GetAllReservations(createContextForAuthorization(ctx), &reservation_service.GetAllReservationsRequest{Id: claims.Id})
+	reservations, err := handler.reservation_client.GetAllReservationsByGuestId(createContextForAuthorization(ctx), &reservation_service.GetAllReservationsByGuestIdRequest{Id: claims.Id})
 	if err != nil {
 		return nil, err
 	}
@@ -307,9 +319,9 @@ func (handler *UserHandler) CreateUserGrade(ctx context.Context, request *pb.Cre
 	}
 	numOfGuestReservations := 0
 	for _, res := range reservations.Reservations {
-		if res.IsCanceled || res.IsDeleted {
+		/*if res.IsCanceled || res.IsDeleted {
 			continue
-		}
+		}*/
 		_, err := primitive.ObjectIDFromHex(res.AvailabilityID)
 		if err != nil {
 			err := status.Errorf(codes.InvalidArgument, "the provided availabilityID is not a valid ObjectID")

@@ -169,6 +169,7 @@ func checkIsRoleGuest(fullMethod string, ClientToken string) bool {
 			"GetFindReservationAcceptedGuest",
 			"CancelReservation",
 			"DeleteLogicallyReservation",
+			"GetAllReservationsByGuestId",
 		}
 		return checkRoles(fullMethod, skipMethods)
 	}

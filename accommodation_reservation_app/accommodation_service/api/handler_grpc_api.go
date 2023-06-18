@@ -50,3 +50,11 @@ func (handler *GlobalHandler) SearchAvailability(ctx context.Context, request *p
 func (handler *GlobalHandler) DeleteAccommodationsByHost(ctx context.Context, request *pb.DeleteAccommodationsByHostRequest) (*pb.DeleteAccommodationsByHostResponse, error) {
 	return handler.accommodationHandler.DeleteAccommodationsByHost(ctx, request)
 }
+
+func (handler *GlobalHandler) GetAvailabilityById(ctx context.Context, request *pb.GetAvailabilityByIdRequest) (*pb.GetAvailabilityByIdResponse, error) {
+	return handler.availabilityHandler.GetAvailabilityById(ctx, request)
+}
+
+func (handler *GlobalHandler) GetAccommodationById(ctx context.Context, request *pb.GetAccommodationByIdRequest) (*pb.GetAccommodationByIdResponse, error) {
+	return handler.accommodationHandler.GetAccommodationById(ctx, request)
+}

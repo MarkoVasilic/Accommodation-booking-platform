@@ -65,7 +65,7 @@ func (handler *ReservationHandler) GetAllReservations(ctx context.Context, reque
 }
 
 // NOVA
-func (handler *ReservationHandler) GetAllReservationsByGuestId(ctx context.Context, request *pb.GetAllReservationsRequest) (*pb.GetAllReservationsResponse, error) {
+func (handler *ReservationHandler) GetAllReservationsByGuestId(ctx context.Context, request *pb.GetAllReservationsByGuestIdRequest) (*pb.GetAllReservationsByGuestIdResponse, error) {
 	//TODO pomocna metoda za dobavljanje svih rezervacija koje mozete koristiti u drugim mikroservisima
 	id := request.Id
 	guestId, err := primitive.ObjectIDFromHex(id)
@@ -83,7 +83,7 @@ func (handler *ReservationHandler) GetAllReservationsByGuestId(ctx context.Conte
 		reservations = append(reservations, reservationsPb)
 	}
 
-	response := &pb.GetAllReservationsResponse{
+	response := &pb.GetAllReservationsByGuestIdResponse{
 		Reservations: reservations,
 	}
 	return response, nil

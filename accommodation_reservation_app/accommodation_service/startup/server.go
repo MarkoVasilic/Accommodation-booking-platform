@@ -183,6 +183,8 @@ func checkIsRoleGuest(fullMethod string, ClientToken string) bool {
 		skipMethods := []string{
 			"GetAccommodationByAvailability",
 			"SearchAvailability",
+			"GetAvailabilityById",
+			"GetAccommodationById",
 		}
 		return checkRoles(fullMethod, skipMethods)
 	}
