@@ -549,22 +549,25 @@ func (handler *UserHandler) GetAllNotifications(ctx context.Context, request *pb
 		return nil, err
 	}
 
-	notificationsOn, err := handler.notification_on_service.GetNotificationOnByUser(userId)
+	/*notificationsOn, err := handler.notification_on_service.GetNotificationOnByUser(userId)
 	if err != nil {
 		return nil, err
 	} else if notifications == nil {
 		err := status.Errorf(codes.InvalidArgument, "There is no notifications!")
 		return nil, err
-	}
+	}*/
 
 	user_notifications := []*pb.Notification{}
 	for _, n := range notifications {
-		for _, notificationOn := range notificationsOn {
+		/*for _, notificationOn := range notificationsOn {
 			if *notificationOn.Type == *n.Type && notificationOn.On {
 				notificationPb := mapNotification(&n)
 				user_notifications = append(user_notifications, notificationPb)
 			}
-		}
+		}*/
+
+		notificationPb := mapNotification(&n)
+		user_notifications = append(user_notifications, notificationPb)
 
 	}
 
