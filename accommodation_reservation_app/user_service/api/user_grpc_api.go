@@ -248,7 +248,7 @@ func (handler *UserHandler) GetAllHosts(ctx context.Context, request *pb.GetAllH
 		err := status.Errorf(codes.InvalidArgument, "the provided id is not a valid ObjectID")
 		return nil, err
 	}
-	reservations, err := handler.reservation_client.GetAllReservationsByGuestId(createContextForAuthorization(ctx), &reservation_service.GetAllReservationsByGuestIdRequest{Id: "645e72247925d720c809785b"})
+	reservations, err := handler.reservation_client.GetAllReservationsByGuestId(createContextForAuthorization(ctx), &reservation_service.GetAllReservationsByGuestIdRequest{Id: claims.Uid})
 	if err != nil {
 		return nil, err
 	}
@@ -296,6 +296,7 @@ func (handler *UserHandler) GetAllHosts(ctx context.Context, request *pb.GetAllH
 
 func (handler *UserHandler) CreateUserGrade(ctx context.Context, request *pb.CreateUserGradeRequest) (*pb.CreateUserGradeResponse, error) {
 	//TODO zahtjev 1.11 kreiranje ocijene
+	fmt.Println("Create User Grade")
 	ClientToken, _ := grpc_auth.AuthFromMD(ctx, "Bearer")
 	claims, _ := token.ValidateToken(ClientToken)
 	//ovako se izvlaci id osobe koja salje zahtjev, id se nalazi u claims.Uid
@@ -311,7 +312,7 @@ func (handler *UserHandler) CreateUserGrade(ctx context.Context, request *pb.Cre
 		return nil, err
 	}
 	//provera da li sme da oceni
-	reservations, err := handler.reservation_client.GetAllReservationsByGuestId(createContextForAuthorization(ctx), &reservation_service.GetAllReservationsByGuestIdRequest{Id: claims.Id})
+	reservations, err := handler.reservation_client.GetAllReservationsByGuestId(createContextForAuthorization(ctx), &reservation_service.GetAllReservationsByGuestIdRequest{Id: claims.Uid})
 	if err != nil {
 		return nil, err
 	}
@@ -364,7 +365,7 @@ func (handler *UserHandler) UpdateUserGrade(ctx context.Context, request *pb.Upd
 		err := status.Errorf(codes.InvalidArgument, "the provided logged user id is not a valid ObjectID")
 		return nil, err
 	}
-	mess, err := handler.grade_service.UpdateUserGrade(int(request.Grade), request.Id, claims.Id) //izmeniti proto pa otkomentarisati
+	mess, err := handler.grade_service.UpdateUserGrade(int(request.Grade), request.Id, claims.Uid) //izmeniti proto pa otkomentarisati
 	if err != nil {
 		err := status.Errorf(codes.InvalidArgument, mess)
 		return nil, err
@@ -460,6 +461,7 @@ func (handler *UserHandler) HostProminent(ctx context.Context, request *pb.HostP
 	var sumReservationDurations float64
 	averageGrade := float64(sum / len(hostGrades))
 	reservations, err := handler.reservation_client.GetAllReservationsHost(createContextForAuthorization(ctx), &reservation_service.GetAllReservationsHostRequest{Id: request.Id})
+	fmt.Println("Err", err)
 	for _, res := range reservations.Reservation {
 		if res.IsCanceled == true {
 			numberOfCancelation = numberOfCancelation + 1

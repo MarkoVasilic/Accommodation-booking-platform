@@ -172,6 +172,7 @@ func shouldSkipInterceptor(fullMethod string) bool {
 		"CreateNotification",
 		"GetAllNotifications",
 		"GetUserNotificationsOn",
+		"HostProminent",
 	}
 	return checkRoles(fullMethod, skipMethods)
 }
@@ -189,6 +190,7 @@ func checkIsRoleHost(fullMethod string, ClientToken string) bool {
 			"DeleteLogicallyReservation",
 			"AcceptReservation",
 			"HostProminent",
+			"GetAllUserGrade",
 		}
 		return checkRoles(fullMethod, skipMethods)
 	}
@@ -211,6 +213,8 @@ func checkIsRoleGuest(fullMethod string, ClientToken string) bool {
 			"DeleteUserGrade",
 			"GetAllUserGrade",
 			"GetAllHosts",
+			"GetAllGuestGrades",
+			"HostProminent",
 		}
 		return checkRoles(fullMethod, skipMethods)
 	}
