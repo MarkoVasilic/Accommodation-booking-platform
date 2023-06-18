@@ -64,6 +64,31 @@ func (handler *ReservationHandler) GetAllReservations(ctx context.Context, reque
 	return response, nil
 }
 
+// NOVA
+func (handler *ReservationHandler) GetAllReservationsByGuestId(ctx context.Context, request *pb.GetAllReservationsRequest) (*pb.GetAllReservationsResponse, error) {
+	//TODO pomocna metoda za dobavljanje svih rezervacija koje mozete koristiti u drugim mikroservisima
+	id := request.Id
+	guestId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		err := status.Errorf(codes.InvalidArgument, "the provided guestId is not a valid ObjectID")
+		return nil, err
+	}
+	res, err := handler.reservation_service.GetFindReservationAcceptedGuest(guestId)
+	if err != nil {
+		return nil, err
+	}
+	reservations := []*pb.Reservation{}
+	for _, r := range res {
+		reservationsPb := mapReservation(&r)
+		reservations = append(reservations, reservationsPb)
+	}
+
+	response := &pb.GetAllReservationsResponse{
+		Reservations: reservations,
+	}
+	return response, nil
+}
+
 func (handler *ReservationHandler) CreateReservation(ctx context.Context, request *pb.CreateReservationRequest) (*pb.CreateReservationResponse, error) {
 	year, month, day := request.StartDate.AsTime().Date()
 	yearE, monthE, dayE := request.EndDate.AsTime().Date()

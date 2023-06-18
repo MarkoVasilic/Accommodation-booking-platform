@@ -247,28 +247,14 @@ func (handler *UserHandler) GetAllHosts(ctx context.Context, request *pb.GetAllH
 		err := status.Errorf(codes.InvalidArgument, "the provided id is not a valid ObjectID")
 		return nil, err
 	}
-	reservations, err := handler.reservation_client.GetAllReservations(createContextForAuthorization(ctx), &reservation_service.GetAllReservationsRequest{Id: claims.Id})
-	if reservations == nil {
-		err := status.Errorf(codes.InvalidArgument, "There is no reservations!")
-		return nil, err
-	} else if err != nil {
+	reservations, err := handler.reservation_client.GetFindReservationAcceptedGuest(createContextForAuthorization(ctx), &reservation_service.GetFindReservationAcceptedGuestRequest{Id: "645e72247925d720c809785b"})
+	if err != nil {
 		return nil, err
 	}
 	hostsDetails := []models.HostDetails{}
-	for _, res := range reservations.Reservations {
-		if res.IsCanceled || res.IsDeleted {
-			continue
-		}
-		availabilitiy, err := handler.accommodation_client.GetAvailabilityById(createContextForAuthorization(ctx), &accommodation_service.GetAvailabilityByIdRequest{Id: res.AvailabilityID})
-		if err != nil {
-			err := status.Errorf(codes.InvalidArgument, "the no availability")
-			return nil, err
-		}
+	for _, res := range reservations.FindReservation {
+		availabilitiy, err := handler.accommodation_client.GetAvailabilityById(createContextForAuthorization(ctx), &accommodation_service.GetAvailabilityByIdRequest{Id: ""})
 		accommodation, err := handler.accommodation_client.GetAccommodationById(createContextForAuthorization(ctx), &accommodation_service.GetAccommodationByIdRequest{Id: availabilitiy.Availability.AccommodationID})
-		if err != nil {
-			err := status.Errorf(codes.InvalidArgument, "the no accommodation")
-			return nil, err
-		}
 		hostId, err := primitive.ObjectIDFromHex(accommodation.Accommodation.HostId)
 		if err != nil {
 			err := status.Errorf(codes.InvalidArgument, "the provided hostId is not a valid ObjectID")
