@@ -459,7 +459,13 @@ func (handler *UserHandler) HostProminent(ctx context.Context, request *pb.HostP
 	}
 	numberOfCancelation := 0
 	var sumReservationDurations float64
-	averageGrade := float64(sum / len(hostGrades))
+
+	averageGrade := 0.0
+	if len(hostGrades) > 0 {
+		averageGrade = float64(sum) / float64(len(hostGrades))
+	}
+
+	//averageGrade := float64(sum / len(hostGrades))
 	reservations, err := handler.reservation_client.GetAllReservationsHost(createContextForAuthorization(ctx), &reservation_service.GetAllReservationsHostRequest{Id: request.Id})
 	fmt.Println("Err", err)
 	for _, res := range reservations.Reservation {
@@ -474,7 +480,11 @@ func (handler *UserHandler) HostProminent(ctx context.Context, request *pb.HostP
 		sumReservationDurations = sumReservationDurations + duration
 	}
 	sumReservationDurations = sumReservationDurations / 24
-	cancelationPercent := (numberOfCancelation / len(reservations.Reservation)) * 100
+	cancelationPercent := 0.0
+	if len(reservations.Reservation) > 0 {
+		cancelationPercent = (float64(numberOfCancelation) / float64(len(reservations.Reservation))) * 100
+	}
+	//cancelationPercent := (numberOfCancelation / len(reservations.Reservation)) * 100
 
 	var prominent bool = false
 	if averageGrade > 4.7 && cancelationPercent < 5 && len(reservations.Reservation) >= 5 && sumReservationDurations > 50 {

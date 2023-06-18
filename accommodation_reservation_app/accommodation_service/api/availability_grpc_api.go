@@ -240,12 +240,6 @@ func (handler *AvailabilityHandler) SearchAvailability(ctx context.Context, requ
 }
 
 func (handler *AvailabilityHandler) FilterAvailability(ctx context.Context, request *pb.FilterAvailabilityRequest) (*pb.FilterAvailabilityResponse, error) {
-	//filtriranje smjestaja zahtjev 1.14 mozete iskoristit search metodu ali sa dodanim poljima, prosiren je request mozete vidjeti u proto
-	//na frontu mozete zamjeniti da se ne koristi vise SearchAvailabilty nego ovo ili da imate dvije odvojene metode kako vam je lakse
-	/*response := &pb.FilterAvailabilityResponse{
-		FindAvailability: findAvailabilities,
-	}
-	return response, nil*/
 
 	year, month, day := request.StartDate.AsTime().Date()
 	yearE, monthE, dayE := request.EndDate.AsTime().Date()

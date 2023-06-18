@@ -14,7 +14,7 @@ import Collapse from "@mui/material/Collapse";
 import CloseIcon from "@mui/icons-material/Close";
 
 export default function UserProfile() {
-    const listOfAllowedUsers = ["GUEST", "HOST"];
+    const listOfAllowedUsers = ["GUEST"];
     let navigate = useNavigate();
     const [failedAlert, setFailedAlert] = React.useState(false);
     const routeChange = () =>{ 
