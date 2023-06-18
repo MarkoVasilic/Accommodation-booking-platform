@@ -151,6 +151,7 @@ func (handler *GlobalHandler) Init(mux *runtime.ServeMux) {
 		panic(err)
 	}
 
+	//sve ocene za prosledjenog hosta
 	err = mux.HandlePath("GET", "/user/grade/{id}", handler.GetAllUserGrade)
 	if err != nil {
 		panic(err)
@@ -161,6 +162,7 @@ func (handler *GlobalHandler) Init(mux *runtime.ServeMux) {
 		panic(err)
 	}
 
+	//
 	err = mux.HandlePath("GET", "/accommodations", handler.GetEveryAccommodation)
 	if err != nil {
 		panic(err)

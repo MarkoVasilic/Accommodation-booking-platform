@@ -42,7 +42,7 @@ type UserGrade struct {
 	ID          primitive.ObjectID `bson:"_id" json:"_id"`
 	GuestID     primitive.ObjectID `bson:"guest_id" json:"guest_id" validate:"required"`
 	HostID      primitive.ObjectID `bson:"host_id" json:"host_id" validate:"required"`
-	Grade       int                `bson:"grade" json:"grade" validate:"required,min=1, max=5"`
+	Grade       int                `bson:"grade" json:"grade" validate:"required,min=1,max=5"`
 	DateOfGrade time.Time          `bson:"date_of_grade" json:"date_of_grade" validate:"required"`
 }
 
