@@ -138,6 +138,52 @@ function MakeReservation(navigate, startDate, endDate, guestsNum, setError, setE
                 .then((response) => {
                     console.log("AAA")
                     console.log(response.data)
+
+                    axiosApi
+                        .get('/accommodation/all/64580a2e9f857372a34602c2')
+                        .then((response2) => {
+                            console.log("dobavio sve acc")
+                                response2.data.forEach(accommodation =>{
+                                    if(accommodation.Name == params.row.Name){
+                                        axiosApi
+                                        .get('/user/notificationsOn/'+accommodation.HostId)
+                                        .then((response3) => {
+                                            console.log("upao u dobavljanje notOn za hosta", response3.data)
+
+                                            response3.data.forEach(nottificationON =>{
+                                                console.log(nottificationON.Type,nottificationON.on)
+                                                if(nottificationON.Type == "CREATE_ACC" && nottificationON.on){
+                                                    console.log("pravi not")
+                                                    let userId = accommodation.HostId
+                                                    let type = "CREATE_ACC"
+                                                    let message = "Reservation in "+params.row.Name+" has been created."
+                                                    const d={
+                                                        userId,
+                                                        type,
+                                                        message
+                                                    }
+                                                    axiosApi
+                                                    .post(`/user/notification`,d)
+                                                    .then((response) => {
+                                                        
+                                                    }).catch(er => {
+                                                        console.log(er.response);
+                                                    });
+                                                }
+                                            })
+
+
+
+                                            }).catch(er => {
+                                                console.log('greska u notificationOn') 
+                                            });
+                                    }
+                                });
+
+                            }).catch(er => {
+                                console.log('greska u notificationOn') 
+                            });
+
                     navigate('/pending-reservations')
                 }).catch(er => {
                     setError(true)
