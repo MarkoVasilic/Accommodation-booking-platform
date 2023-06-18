@@ -36,6 +36,35 @@ const RenderDeleteReservation = (params) => {
                     //proslediti koji treba
                     .put(`/accommodation/reservation/ldelete/`+params.row.ReservationId)
                     .then((response) => {
+
+                        axiosApi
+                        .get('/user/notificationsOn/'+params.row.GuestId)
+                        .then((response2) => {
+                            console.log("upao u dobavljanje not za usera")
+                            if(response2.data[0].on){
+                                console.log("pravi not")
+                                let userId = params.row.GuestId
+                                let type = "RESERVATION_REACT"
+                                let message = "Your reservation for "+formatSecondsToDate(params.row.StartDate.seconds)+" has been reject."
+                                const d={
+                                    userId,
+                                    type,
+                                    message
+                                }
+                                axiosApi
+                                .post(`/user/notification`,d)
+                                .then((response) => {
+                                    
+                                }).catch(er => {
+                                    console.log(er.response);
+                                });
+                            }
+
+                            }).catch(er => {
+                                console.log('greska u notificationOn') 
+                            });
+
+
                         refreshPage();
                     }).catch(er => {
                         console.log(er.response);
@@ -63,6 +92,37 @@ const RenderAcceptReservation = (params) => {
                     //proslediti koji treba
                     .put(`/accommodation/reservation/accept/`+params.row.ReservationId)
                     .then((response) => {
+
+                        axiosApi
+                        .get('/user/notificationsOn/'+params.row.GuestId)
+                        .then((response2) => {
+                            console.log("upao u dobavljanje not za usera")
+                            if(response2.data[0].on){
+                                console.log("pravi not")
+                                let userId = params.row.GuestId
+                                let type = "RESERVATION_REACT"
+                                let message = "Your reservation for "+formatSecondsToDate(params.row.StartDate.seconds)+" has been accepted."
+                                const d={
+                                    userId,
+                                    type,
+                                    message
+                                }
+                                axiosApi
+                                .post(`/user/notification`,d)
+                                .then((response) => {
+                                    
+                                }).catch(er => {
+                                    console.log(er.response);
+                                });
+                            }
+
+                            }).catch(er => {
+                                console.log('greska u notificationOn') 
+                            });
+
+
+
+                        
                         refreshPage();
                     }).catch(er => {
                         console.log(er.response);

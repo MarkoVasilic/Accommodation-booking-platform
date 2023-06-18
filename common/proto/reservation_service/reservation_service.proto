@@ -62,6 +62,11 @@ service ReservationService{
                 delete: "/accommodation/reservation/host/{id}"
         };
     }
+    rpc GetAllReservationsByGuestId(GetAllReservationsByGuestIdRequest) returns(GetAllReservationsByGuestIdResponse) {
+        option (google.api.http) = {
+        get: "/accommodation/reservation/guest/{id}"
+    };
+}
 }
 
 message Reservation {
@@ -171,4 +176,12 @@ message DeleteReservationsHostRequest {
 
 message DeleteReservationsHostResponse {
         string message = 1;
+}
+
+message GetAllReservationsByGuestIdRequest {
+        string id = 1;
+}
+
+message GetAllReservationsByGuestIdResponse {
+        repeated Reservation reservations = 1;
 }
