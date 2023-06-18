@@ -22,8 +22,6 @@ function refreshPage(){
 }
 
 
-
-
 const RenderRateHost = (params) => {
     let navigate = useNavigate();
     return (
@@ -134,12 +132,8 @@ function HostsList(props) {
 
         let getData = async () => {
         try{
-            //console.log()
-            //const res = await axiosApi.get('/user/logged');
-            //console.log("ID", res.data.user.Id);
         axiosApi
-            //proslediti koji treba (proveriti jel ovaj)
-            //.get(`/user/host/all`)
+            .get(`/user/host/all`)
             .then((response) => {
                 setHosts(response.data);
                 console.log('Data', response.data)
@@ -196,7 +190,7 @@ function HostsList(props) {
                 <Box sx={{ height: 700, width: "100%", marginTop: "20px", marginBottom: "20px"}}>
                     <DataGrid
                         rows={hosts}
-                        //getRowId={(row) => row.ReservationId}
+                        getRowId={(row) => row.Id}
                         disableColumnFilter
                         columns={columns}
                         autoHeight
