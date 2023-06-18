@@ -179,7 +179,9 @@ const chooseButton1 = (Role) => {
 
 const chooseButton2 = (Role) => {
     if (!Role) return { name: "SignUp", url: "/signup" };
-    else {
+    else if (Role == 'GUEST') {
         return {  name: "Profile", url: "/user-profile"};
+    }else if (Role == 'HOST') {
+        return { name: "Profile", url: "/user-profile-host"}
     }
 };
