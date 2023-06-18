@@ -210,6 +210,7 @@ func checkIsRoleGuest(fullMethod string, ClientToken string) bool {
 			"UpdateUserGrade",
 			"DeleteUserGrade",
 			"GetAllUserGrade",
+			"GetAllHosts",
 		}
 		return checkRoles(fullMethod, skipMethods)
 	}

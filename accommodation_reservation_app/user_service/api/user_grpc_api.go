@@ -240,6 +240,7 @@ func (handler *UserHandler) GetAllGuestGrades(ctx context.Context, request *pb.G
 func (handler *UserHandler) GetAllHosts(ctx context.Context, request *pb.GetAllHostsRequest) (*pb.GetAllHostsResponse, error) {
 	//TODO pomocna metoda za dobavljanje svih hostova koje ulogovani user moze da oceni, ne salje se nista
 	//a vraca se lista dtova koji sam napravio
+
 	ClientToken, _ := grpc_auth.AuthFromMD(ctx, "Bearer")
 	claims, _ := token.ValidateToken(ClientToken)
 	_, err := primitive.ObjectIDFromHex(claims.Uid)
@@ -247,10 +248,12 @@ func (handler *UserHandler) GetAllHosts(ctx context.Context, request *pb.GetAllH
 		err := status.Errorf(codes.InvalidArgument, "the provided id is not a valid ObjectID")
 		return nil, err
 	}
+
 	reservations, err := handler.reservation_client.GetAllReservations(createContextForAuthorization(ctx), &reservation_service.GetAllReservationsRequest{Id: claims.Id})
 	if err != nil {
 		return nil, err
 	}
+
 	hostsDetails := []models.HostDetails{}
 	for _, res := range reservations.Reservations {
 		if res.IsCanceled || res.IsDeleted {
