@@ -6,14 +6,23 @@ import Grid from '@mui/material/Grid';
 
 function PersonalInformationCardHostComponent() {
     const [profile, setProfile] = useState({});
+    const [prominent, setProminent] = useState(false);
 
     let getData = async () => {
         axiosApi
             .get('/user/logged')
             .then((response) => {
+                console.log(response.data.user)
                 setProfile(response.data.user);
-                });
+        axiosApi
+                .get('/user/prominent/'+response.data.user.Id)
+                .then((response1) => {
+                    //console.log("RESP AFTER PROMINENT",response1)
+                    setProminent(response1.data);
+                    //console.log('PROMINENT', prominent)
+                });})
     };
+
 
     useEffect(() => {
         getData();
@@ -60,6 +69,12 @@ function PersonalInformationCardHostComponent() {
             <Grid item xs={3}>
             <Typography variant="h5" align='left' marginLeft={"100px"}>Prominent: </Typography>
             </Grid>
+            <Grid item xs={9}>
+            <Typography variant="h5" color="text.secondary" align='left' marginLeft={"80px"}>
+                 {prominent ? 'True' : 'False'}
+            </Typography>
+            </Grid>
+
         </Grid>
     );
 }
