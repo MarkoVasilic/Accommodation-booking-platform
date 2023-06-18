@@ -58,3 +58,11 @@ func (handler *GlobalHandler) GetAvailabilityById(ctx context.Context, request *
 func (handler *GlobalHandler) GetAccommodationById(ctx context.Context, request *pb.GetAccommodationByIdRequest) (*pb.GetAccommodationByIdResponse, error) {
 	return handler.accommodationHandler.GetAccommodationById(ctx, request)
 }
+
+func (handler *GlobalHandler) GetEveryAccommodation(ctx context.Context, request *pb.GetEveryAccommodationRequest) (*pb.GetEveryAccommodationResponse, error) {
+	return handler.accommodationHandler.GetEveryAccommodation(ctx, request)
+}
+
+func (handler *GlobalHandler) GetAllAccommodationGrade(ctx context.Context, request *pb.GetAllAccommodationGradeRequest) (*pb.GetAllAccommodationGradeResponse, error) {
+	return handler.accommodationHandler.GetAllAccommodationGrade(ctx, request)
+}

@@ -84,24 +84,6 @@ const columns = [
         editable: false,
     },
     {
-        field: "Name",
-        headerName: "Accommodation name",
-        type: "string",
-        width: 250,
-        sortable: false,
-        filterable: false,
-        editable: false,  
-    },
-    {
-        field: "Location",
-        headerName: "Accommodation location",
-        type: "string",
-        width: 250,
-        sortable: false,
-        filterable: false,
-        editable: false,
-    },
-    {
         field: "rate",
         headerName: "Rate host",
         width: 250,
@@ -190,7 +172,7 @@ function HostsList(props) {
                 <Box sx={{ height: 700, width: "100%", marginTop: "20px", marginBottom: "20px"}}>
                     <DataGrid
                         rows={hosts}
-                        getRowId={(row) => row.Id}
+                        getRowId={(row) => row.id}
                         disableColumnFilter
                         columns={columns}
                         autoHeight

@@ -375,10 +375,6 @@ func (handler *AccommodationHandler) GetAllAccommodationGrade(ctx context.Contex
 	if err != nil {
 		return nil, err
 	}
-	user, err := handler.user_client.GetUser(createContextForAuthorization(ctx), &user_service.GetUserRequest{Id: "UserId"})
-	if err != nil {
-		return nil, err
-	}
 	var sum int
 	var gradeDTOs []models.AccommodationGradeDetails
 	for _, grade := range accommodationGrades {
@@ -386,9 +382,19 @@ func (handler *AccommodationHandler) GetAllAccommodationGrade(ctx context.Contex
 		if err != nil {
 			return nil, err
 		}
+		user, err := handler.user_client.GetUser(createContextForAuthorization(ctx), &user_service.GetUserRequest{Id: string(accomodation.HostID.Hex())})
+		if err != nil {
+			return nil, err
+		}
 		gradeDTO := models.AccommodationGradeDetails{GuestFirstName: *&user.User.FirstName, GuestLastName: *&user.User.LastName, AccommodationName: accomodation.Name, Grade: grade.Grade, DateOfGrade: grade.DateOfGrade}
 		gradeDTOs = append(gradeDTOs, gradeDTO)
 		sum = sum + grade.Grade
+	}
+	if accommodationGrades == nil {
+		response := &pb.GetAllAccommodationGradeResponse{
+			AccommodationGradeDetailsDTO: nil,
+		}
+		return response, err
 	}
 	avergeGrade := float64(sum / len(accommodationGrades))
 	gradesDetails := []*pb.AccommodationGradeDetails{}
