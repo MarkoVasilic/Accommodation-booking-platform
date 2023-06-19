@@ -176,6 +176,7 @@ func checkIsRoleHost(fullMethod string, ClientToken string) bool {
 			"GetEveryAccommodation",
 			"GetAllAccommodationGrade",
 			"FilterAvailability",
+			"GetAllAccommodationGuestGrades",
 		}
 		return checkRoles(fullMethod, skipMethods)
 	}
@@ -196,6 +197,7 @@ func checkIsRoleGuest(fullMethod string, ClientToken string) bool {
 			"UpdateAccommodationGrade",
 			"DeleteAccommodationGrade",
 			"FilterAvailability",
+			"GetAllAccommodationGuestGrades",
 		}
 		return checkRoles(fullMethod, skipMethods)
 	}

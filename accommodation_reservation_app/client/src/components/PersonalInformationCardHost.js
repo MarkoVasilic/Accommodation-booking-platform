@@ -71,7 +71,7 @@ function PersonalInformationCardHostComponent() {
             </Grid>
             <Grid item xs={9}>
             <Typography variant="h5" color="text.secondary" align='left' marginLeft={"80px"}>
-                 {prominent ? 'True' : 'False'}
+                 {prominent ? 'Yes' : 'No'}
             </Typography>
             </Grid>
 

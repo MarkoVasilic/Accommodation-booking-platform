@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/accommodation_service/models"
@@ -187,6 +188,7 @@ func (handler *AccommodationHandler) DeleteAccommodationsByHost(ctx context.Cont
 func (handler *AccommodationHandler) GetAllAccommodationGuestGrades(ctx context.Context, request *pb.GetAllAccommodationGuestGradesRequest) (*pb.GetAllAccommodationGuestGradesResponse, error) {
 	//TODO pomocna metoda za dobavljanje svih ocijena guesta za poslani id guesta
 	//a vraca se lista dtova koji sam napravio
+	fmt.Println("Ocecene smestaja po korisniku")
 	id := request.Id
 	_, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
@@ -207,7 +209,7 @@ func (handler *AccommodationHandler) GetAllAccommodationGuestGrades(ctx context.
 		if err != nil {
 			return nil, err
 		}
-		gradeDTO := models.AccommodationGradeDetails{GuestFirstName: *&user.User.FirstName, GuestLastName: *&user.User.LastName, AccommodationName: accomodation.Name, Grade: grade.Grade, DateOfGrade: grade.DateOfGrade}
+		gradeDTO := models.AccommodationGradeDetails{ID: grade.ID, GuestFirstName: *&user.User.FirstName, GuestLastName: *&user.User.LastName, AccommodationName: accomodation.Name, Grade: grade.Grade, DateOfGrade: grade.DateOfGrade}
 		gradeDTOs = append(gradeDTOs, gradeDTO)
 	}
 	gradesDetails := []*pb.AccommodationGradeDetails{}
@@ -382,7 +384,7 @@ func (handler *AccommodationHandler) GetAllAccommodationGrade(ctx context.Contex
 		if err != nil {
 			return nil, err
 		}
-		user, err := handler.user_client.GetUser(createContextForAuthorization(ctx), &user_service.GetUserRequest{Id: string(accomodation.HostID.Hex())})
+		user, err := handler.user_client.GetUser(createContextForAuthorization(ctx), &user_service.GetUserRequest{Id: string(grade.GuestID.Hex())})
 		if err != nil {
 			return nil, err
 		}
@@ -396,7 +398,7 @@ func (handler *AccommodationHandler) GetAllAccommodationGrade(ctx context.Contex
 		}
 		return response, err
 	}
-	avergeGrade := float64(sum / len(accommodationGrades))
+	avergeGrade := float64(float64(sum) / float64(len(accommodationGrades)))
 	gradesDetails := []*pb.AccommodationGradeDetails{}
 	for _, r := range gradeDTOs {
 		gradesPb := mapAccommodationGradeDetails(&r)

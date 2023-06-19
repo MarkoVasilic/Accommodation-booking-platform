@@ -17,7 +17,7 @@ function UpdateAccommodationGradeForm(props) {
     const [errorAlert, setErrorAlert] = React.useState("hidden");
     const [alert, setAlert] = React.useState("");
     let navigate = useNavigate();
-    
+    //
 
     const onSubmit = async (data) => {
        
@@ -26,7 +26,7 @@ function UpdateAccommodationGradeForm(props) {
         console.log(data)
         try {
             //URL, id i podaci
-            const resp = await axiosApi.put('/accommodation/grade', data);
+            const resp = await axiosApi.put(`/accommodation/guest/grades/${state.ID}`, data);
             setSuccessAlert("visible");
             setErrorAlert("hidden");
             setAlert("success");

@@ -188,6 +188,11 @@ func (handler *GlobalHandler) Init(mux *runtime.ServeMux) {
 		panic(err)
 	}
 
+	err = mux.HandlePath("GET", "/accommodation/user/grades/{id}", handler.GetAllAccommodationGuestGrades)
+	if err != nil {
+		panic(err)
+	}
+
 	err = mux.HandlePath("POST", "/availability/filter", handler.FilterAvailability)
 	if err != nil {
 		panic(err)
@@ -868,6 +873,30 @@ func (handler *GlobalHandler) GetAllAccommodationGrade(w http.ResponseWriter, r 
 	}
 	//fmt.Fprintf(w, "%s", resp)
 	response, err := json.Marshal(resp.AccommodationGradeDetailsDTO)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write(response)
+
+}
+
+func (handler *GlobalHandler) GetAllAccommodationGuestGrades(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+	//TODO
+	id := pathParams["id"]
+	if id == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	resp, err := handler.accommodationService.GetAllAccommodationGuestGrades(createContextForAuthorization(r.Header["Authorization"]), &accommodation_service.GetAllAccommodationGuestGradesRequest{Id: id})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "Failed to call GetAllAccommodationGuestGrades method: %v", err)
+		return
+	}
+	//fmt.Fprintf(w, "%s", resp)
+	response, err := json.Marshal(resp.AccommodationGradeDetails)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return

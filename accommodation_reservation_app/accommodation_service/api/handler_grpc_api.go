@@ -67,6 +67,10 @@ func (handler *GlobalHandler) GetAllAccommodationGrade(ctx context.Context, requ
 	return handler.accommodationHandler.GetAllAccommodationGrade(ctx, request)
 }
 
+func (handler *GlobalHandler) GetAllAccommodationGuestGrades(ctx context.Context, request *pb.GetAllAccommodationGuestGradesRequest) (*pb.GetAllAccommodationGuestGradesResponse, error) {
+	return handler.accommodationHandler.GetAllAccommodationGuestGrades(ctx, request)
+}
+
 func (handler *GlobalHandler) CreateAccommodationGrade(ctx context.Context, request *pb.CreateAccommodationGradeRequest) (*pb.CreateAccommodationGradeResponse, error) {
 	return handler.accommodationHandler.CreateAccommodationGrade(ctx, request)
 }

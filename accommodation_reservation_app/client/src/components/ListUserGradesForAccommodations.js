@@ -21,6 +21,14 @@ function refreshPage(){
     window.location.reload();
 }
 
+
+function formatSecondsToDate(seconds) {
+    const date = new Date(seconds * 1000 - 7200*1000);
+    //console.log('Sec', seconds)
+    //console.log('date', date)
+    return date;
+  }
+
 const RenderUpdateAccommodationGrade = (params) => {
     let navigate = useNavigate();
     return (
@@ -52,10 +60,11 @@ const RenderDeleteAccommodationGrade = (params) => {
                 style={{ marginLeft: 16 }}
                 onClick={() => {
                     //proveriti url
+                    console.log("params", params.row)
                     axiosApi
                     //proslediti koji treba
                     //ne reservationId nego accommodation vrv
-                    .delete(`/accommodation/grade/`+params.row.Id)
+                    .delete(`/accommodation/grade/`+params.row.ID)
                     .then((response) => {
                         refreshPage();
                     }).catch(er => {
@@ -72,17 +81,8 @@ const RenderDeleteAccommodationGrade = (params) => {
 
 const columns = [
     {
-        field: "Name",
+        field: "AccommodationName",
         headerName: "Accommodation Name",
-        type: "string",
-        width: 250,
-        sortable: false,
-        filterable: false,
-        editable: false,
-    },
-    {
-        field: "Location",
-        headerName: "Accommodation Location",
         type: "string",
         width: 250,
         sortable: false,
@@ -108,7 +108,7 @@ const columns = [
         filterable: false,
         editable: false,
         format: "DD/MM/YYYY",
-        //valueGetter: params => formatSecondsToDate(params.row.StartDate.seconds)
+        valueGetter: params => formatSecondsToDate(params.row.DateOfGrade.seconds)
     },
     {
         field: "update",
@@ -148,7 +148,7 @@ function AccommodationsGradesUser(props) {
             //proslediti koji treba (proveriti jel ovaj)
             //znam da {id} ne treba ovako ali cisto url
             //dodati metodu za dobavljanje ocena smestaja po guestId
-            .get(`/user/grade/${res.data.user.Id}`)
+            .get(`/accommodation/user/grades/${res.data.user.Id}`)
             .then((response) => {
                 setGrades(response.data);
                 console.log('Data', response.data)
@@ -205,7 +205,7 @@ function AccommodationsGradesUser(props) {
                 <Box sx={{ height: 700, width: "100%", marginTop: "20px", marginBottom: "20px"}}>
                     <DataGrid
                         rows={grades}
-                        //getRowId={(row) => row.ReservationId}
+                        getRowId={(row) => row.ID}
                         disableColumnFilter
                         columns={columns}
                         autoHeight

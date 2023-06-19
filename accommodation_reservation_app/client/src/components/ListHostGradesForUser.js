@@ -26,8 +26,8 @@ function formatSecondsToDate(seconds) {
 
 const columns = [
     {
-        field: "HostFirstName",
-        headerName: "Host First Name",
+        field: "GuestFirstName",
+        headerName: "Guest First Name",
         type: "string",
         width: 300,
         sortable: false,
@@ -35,8 +35,8 @@ const columns = [
         editable: false,
     },
     {
-        field: "HostLastName",
-        headerName: "Host Last Name",
+        field: "GuestLastName",
+        headerName: "Guest Last Name",
         type: "string",
         width: 300,
         sortable: false,

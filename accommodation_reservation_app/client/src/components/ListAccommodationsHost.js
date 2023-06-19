@@ -68,7 +68,7 @@ const RenderAllGradesButton = (params) => {
                 color="primary"
                 size="small"
                 style={{ marginLeft: 16 }}
-                onClick={() => {
+                onClick={() => {//
                     return navigate('/host/accommodation-grades', {state: params.row.Id});
                 }}
             >

@@ -405,7 +405,7 @@ func (handler *UserHandler) GetAllUserGrade(ctx context.Context, request *pb.Get
 	//treba da se vrati lista svih ocijena tog hosta, napravio sam dto kako treba da izgleda
 	// i treba da se izracuna prosijecna ocijena, vjerovatno cete morati mapper praviti neki da to vratite
 	id := request.Id
-	guestId, err := primitive.ObjectIDFromHex(id)
+	hostId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		err := status.Errorf(codes.InvalidArgument, "the provided guestId is not a valid ObjectID")
 		return nil, err
@@ -414,14 +414,14 @@ func (handler *UserHandler) GetAllUserGrade(ctx context.Context, request *pb.Get
 	if err != nil {
 		return nil, err
 	}
-	user, err := handler.service.GetUserById(guestId)
+	host, err := handler.service.GetUserById(hostId)
 	if err != nil {
 		return nil, err
 	}
 	var sum int
 	var gradeDTOs []models.UserGradeDetails
 	for _, grade := range hostGrades {
-		host, err := handler.service.GetUserById(grade.HostID)
+		user, err := handler.service.GetUserById(grade.GuestID)
 		if err != nil {
 			return nil, err
 		}
