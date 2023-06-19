@@ -59,6 +59,7 @@ func mapNotificationOn(notification *models.NotificationOn) *pb.NotificationOn {
 func mapUserGradeDetails(gradeDetails *models.UserGradeDetails) *pb.UserGradeDetails {
 	dateOfGrade := timestamppb.New(gradeDetails.DateOfGrade)
 	userGradeDetailsPb := &pb.UserGradeDetails{
+		ID:             gradeDetails.ID.Hex(),
 		GuestFirstName: gradeDetails.GuestFirstName,
 		GuestLastName:  gradeDetails.GuestLastName,
 		HostFirstName:  gradeDetails.HostFirstName,

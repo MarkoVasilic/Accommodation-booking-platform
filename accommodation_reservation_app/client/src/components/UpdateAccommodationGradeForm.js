@@ -9,7 +9,6 @@ import { useForm } from "react-hook-form";
 import { Checkbox, FormControlLabel } from "@mui/material";
 
 
-const url = "/user/grade";
 
 function UpdateAccommodationGradeForm(props) {
     const {state} = useLocation()
@@ -23,10 +22,11 @@ function UpdateAccommodationGradeForm(props) {
     const onSubmit = async (data) => {
        
         data.Grade = parseInt(data.Grade);
-        console.log(data.Price)
+        data.id = state.ID
+        console.log(data)
         try {
             //URL, id i podaci
-            //const resp = await axiosApi.put(url, data);
+            const resp = await axiosApi.put('/accommodation/grade', data);
             setSuccessAlert("visible");
             setErrorAlert("hidden");
             setAlert("success");

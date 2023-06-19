@@ -121,7 +121,7 @@ function HostsList(props) {
             //console.log("ID", res.data.user.Id);
         axiosApi
             //proslediti koji treba (proveriti jel ovaj)
-            //.get(`/accommodations`)
+            .get(`/accommodations`)
             .then((response) => {
                 setAccommodations(response.data);
                 console.log('Data', response.data)
@@ -178,7 +178,7 @@ function HostsList(props) {
                 <Box sx={{ height: 700, width: "100%", marginTop: "20px", marginBottom: "20px"}}>
                     <DataGrid
                         rows={accommodations}
-                        //getRowId={(row) => row.ReservationId}
+                        getRowId={(row) => row.Id}
                         disableColumnFilter
                         columns={columns}
                         autoHeight

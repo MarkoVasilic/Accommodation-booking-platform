@@ -22,11 +22,12 @@ function RateHostForm(props) {
 
     const onSubmit = async (data) => {
        
+        data.id = state.ID
+        console.log('State', state)
         data.Grade = parseInt(data.Grade);
-        console.log(data.Price)
+        console.log(data)
         try {
-            //URL, id i podaci
-            //const resp = await axiosApi.put(url, data);
+            const resp = await axiosApi.put(`/user/grade/${state.ID}`, data);
             setSuccessAlert("visible");
             setErrorAlert("hidden");
             setAlert("success");

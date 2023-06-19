@@ -8,7 +8,7 @@ import Stack from "@mui/material/Stack";
 import { blue } from "@mui/material/colors";
 import axiosApi from "../api/axios";
 import ReadMoreIcon from "@mui/icons-material/ReadMore";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import InputTextField from "./InputTextField";
 import Grid from "@mui/material/Grid";
 import { useForm } from "react-hook-form";
@@ -17,11 +17,17 @@ import CloseIcon from "@mui/icons-material/Close";
 import Alert from "@mui/material/Alert";
 import Collapse from "@mui/material/Collapse";
 
+function formatSecondsToDate(seconds) {
+    const date = new Date(seconds * 1000 - 7200*1000);
+    //console.log('Sec', seconds)
+    //console.log('date', date)
+    return date;
+  }
 
 const columns = [
     {
-        field: "FirstName",
-        headerName: "User first name",
+        field: "HostFirstName",
+        headerName: "Host First Name",
         type: "string",
         width: 300,
         sortable: false,
@@ -29,8 +35,8 @@ const columns = [
         editable: false,
     },
     {
-        field: "LastName",
-        headerName: "User last name",
+        field: "HostLastName",
+        headerName: "Host Last Name",
         type: "string",
         width: 300,
         sortable: false,
@@ -56,7 +62,7 @@ const columns = [
         filterable: false,
         editable: false,
         format: "DD/MM/YYYY",
-        //valueGetter: params => formatSecondsToDate(params.row.StartDate.seconds)
+        valueGetter: params => formatSecondsToDate(params.row.DateOfGrade.seconds)
     },
     {
         field: "AverageGrade",
@@ -76,6 +82,7 @@ function HostGradesUser(props) {
     const [ error, setError ] = React.useState(false);
     const [er, setEr] = React.useState("");
     const navigate = useNavigate();
+    const {state} = useLocation();
     useEffect(() => {
         getData();
       //  onSubmit();
@@ -87,14 +94,25 @@ function HostGradesUser(props) {
             //console.log()
             //const res = await axiosApi.get('/user/logged');
             //console.log("ID", res.data.user.Id);
+            console.log('State',state.id)
+
         axiosApi
-            //proslediti koji treba (proveriti jel ovaj)
-            //znam da {id} ne treba ovako ali cisto url
-            //.get(`/user/grade/{id}`)
+            .get(`/user/grade/${state.id}`)
             .then((response) => {
-                setGrades(response.data);
-                console.log('Data', response.data)
-                console.log('RES', grades)
+                let temp = []
+                console.log('Data', response.data.UserGradeDetails)
+
+                for (let i=0; i < response.data.UserGradeDetails.length; i++){
+                    temp.push({
+                        id:i, 
+                        AverageGrade:response.data.AverageGrade,
+                        ...response.data.UserGradeDetails[i]
+                    })
+                }
+                setGrades(temp);
+
+                console.log('Temp', temp)
+                //console.log('RES', grades)
             }).catch(er => {
                 console.log(er.response);
                 setGrades([]);
@@ -147,7 +165,7 @@ function HostGradesUser(props) {
                 <Box sx={{ height: 700, width: "100%", marginTop: "20px", marginBottom: "20px"}}>
                     <DataGrid
                         rows={grades}
-                        //getRowId={(row) => row.ReservationId}
+                        getRowId={(row) => row.id}
                         disableColumnFilter
                         columns={columns}
                         autoHeight
