@@ -69,7 +69,7 @@ const columns = [
         field: "FirstName",
         headerName: "Host first name",
         type: "string",
-        width: 250,
+        width: 380,
         sortable: false,
         filterable: false,
         editable: false,
@@ -78,7 +78,7 @@ const columns = [
         field: "LastName",
         headerName: "Host last name",
         type: "string",
-        width: 250,
+        width: 380,
         sortable: false,
         filterable: false,
         editable: false,
@@ -86,14 +86,14 @@ const columns = [
     {
         field: "rate",
         headerName: "Rate host",
-        width: 250,
+        width: 380,
         renderCell: RenderRateHost,
         disableClickEventBubbling: true   
     },
     {
         field: "allGrades",
         headerName: "All grades",
-        width: 250,
+        width: 370,
         renderCell: RenderGetAllHostGrades,
         disableClickEventBubbling: true   
     }

@@ -55,7 +55,7 @@ const RenderDeleteAccommodationGrade = (params) => {
                     axiosApi
                     //proslediti koji treba
                     //ne reservationId nego accommodation vrv
-                    //.delete(`/accommodation/grade/`+params.row.ReservationId)
+                    .delete(`/accommodation/grade/`+params.row.Id)
                     .then((response) => {
                         refreshPage();
                     }).catch(er => {
@@ -142,12 +142,13 @@ function AccommodationsGradesUser(props) {
         let getData = async () => {
         try{
             //console.log()
-            //const res = await axiosApi.get('/user/logged');
+            const res = await axiosApi.get('/user/logged');
             //console.log("ID", res.data.user.Id);
         axiosApi
             //proslediti koji treba (proveriti jel ovaj)
             //znam da {id} ne treba ovako ali cisto url
-            //.get(`/user/grade/{id}`)
+            //dodati metodu za dobavljanje ocena smestaja po guestId
+            .get(`/user/grade/${res.data.user.Id}`)
             .then((response) => {
                 setGrades(response.data);
                 console.log('Data', response.data)

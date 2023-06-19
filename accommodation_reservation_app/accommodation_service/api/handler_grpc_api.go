@@ -66,3 +66,19 @@ func (handler *GlobalHandler) GetEveryAccommodation(ctx context.Context, request
 func (handler *GlobalHandler) GetAllAccommodationGrade(ctx context.Context, request *pb.GetAllAccommodationGradeRequest) (*pb.GetAllAccommodationGradeResponse, error) {
 	return handler.accommodationHandler.GetAllAccommodationGrade(ctx, request)
 }
+
+func (handler *GlobalHandler) CreateAccommodationGrade(ctx context.Context, request *pb.CreateAccommodationGradeRequest) (*pb.CreateAccommodationGradeResponse, error) {
+	return handler.accommodationHandler.CreateAccommodationGrade(ctx, request)
+}
+
+func (handler *GlobalHandler) UpdateAccommodationGrade(ctx context.Context, request *pb.UpdateAccommodationGradeRequest) (*pb.UpdateAccommodationGradeResponse, error) {
+	return handler.accommodationHandler.UpdateAccommodationGrade(ctx, request)
+}
+
+func (handler *GlobalHandler) DeleteAccommodationGrade(ctx context.Context, request *pb.DeleteAccommodationGradeRequest) (*pb.DeleteAccommodationGradeResponse, error) {
+	return handler.accommodationHandler.DeleteAccommodationGrade(ctx, request)
+}
+
+func (handler *GlobalHandler) FilterAvailability(ctx context.Context, request *pb.FilterAvailabilityRequest) (*pb.FilterAvailabilityResponse, error) {
+	return handler.accommodationHandler.FilterAvailability(ctx, request)
+}

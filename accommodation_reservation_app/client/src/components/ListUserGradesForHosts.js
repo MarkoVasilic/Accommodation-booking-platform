@@ -21,6 +21,13 @@ function refreshPage(){
     window.location.reload();
 }
 
+function formatSecondsToDate(seconds) {
+    const date = new Date(seconds * 1000 - 7200*1000);
+    //console.log('Sec', seconds)
+    //console.log('date', date)
+    return date;
+  }
+
 const RenderUpdateHostGrade = (params) => {
     let navigate = useNavigate();
     return (
@@ -53,9 +60,7 @@ const RenderDeleteHostGrade = (params) => {
                 onClick={() => {
                     //proveriti url
                     axiosApi
-                    //proslediti koji treba
-                    //ne reservationId
-                    //.delete(`/user/grade/`+params.row.ReservationId)
+                    .delete(`/user/grade/`+params.row.ID)
                     .then((response) => {
                         refreshPage();
                     }).catch(er => {
@@ -72,7 +77,7 @@ const RenderDeleteHostGrade = (params) => {
 
 const columns = [
     {
-        field: "FirstName",
+        field: "GuestFirstName",
         headerName: "Host first name",
         type: "string",
         width: 230,
@@ -81,17 +86,8 @@ const columns = [
         editable: false,
     },
     {
-        field: "LastName",
+        field: "HostLastName",
         headerName: "Host last name",
-        type: "string",
-        width: 230,
-        sortable: false,
-        filterable: false,
-        editable: false,
-    },
-    {
-        field: "Name",
-        headerName: "Accommodation Name",
         type: "string",
         width: 230,
         sortable: false,
@@ -108,7 +104,6 @@ const columns = [
         editable: false,  
     },
     {
-        //proveriti za tip i to ostalo
         field: "DateOfGrade",
         headerName: "Date of grade",
         type: "date",
@@ -117,7 +112,7 @@ const columns = [
         filterable: false,
         editable: false,
         format: "DD/MM/YYYY",
-        //valueGetter: params => formatSecondsToDate(params.row.StartDate.seconds)
+        valueGetter: params => formatSecondsToDate(params.row.DateOfGrade.seconds)
     },
     {
         field: "update",
@@ -151,16 +146,21 @@ function HostGradesUser(props) {
         let getData = async () => {
         try{
             //console.log()
-            //const res = await axiosApi.get('/user/logged');
-            //console.log("ID", res.data.user.Id);
+            const res = await axiosApi.get('/user/logged');
+            console.log("ID", res.data.user.Id);
         axiosApi
-            //proslediti koji treba (proveriti jel ovaj)
-            //znam da {id} ne treba ovako ali cisto url
-            //.get(`/user/grade/{id}`)
+            .get(`/user/guest/grades/${res.data.user.Id}`)
             .then((response) => {
-                setGrades(response.data);
+                let temp = []
+                for (let i=0; i < response.data.length; i++){
+                    temp.push({
+                        id:i, 
+                        ...response.data[i]
+                    })
+                }
+                setGrades(temp);
                 console.log('Data', response.data)
-                console.log('RES', grades)
+                console.log('Temp', temp)
             }).catch(er => {
                 console.log(er.response);
                 setGrades([]);
@@ -169,9 +169,9 @@ function HostGradesUser(props) {
                 console.log(err)
                 setGrades([]);
             }
-            console.log('RESS',grades)
-
         };
+        console.log('RESS',grades)
+
 
     return (
         <div>
@@ -213,7 +213,7 @@ function HostGradesUser(props) {
                 <Box sx={{ height: 700, width: "100%", marginTop: "20px", marginBottom: "20px"}}>
                     <DataGrid
                         rows={grades}
-                        //getRowId={(row) => row.ReservationId}
+                        getRowId={(row) => row.id}
                         disableColumnFilter
                         columns={columns}
                         autoHeight

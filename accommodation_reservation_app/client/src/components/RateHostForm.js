@@ -22,10 +22,13 @@ function RateHostForm(props) {
 
     const onSubmit = async (data) => {
        
+        data.GuestID = ""
         data.Grade = parseInt(data.Grade);
-        console.log(data.Price)
+        data.HostID = state.id
+        data.DateOfGrade = "2020-11-30T14:20:28.000+07:00"
+        console.log('data',data)
         try {
-            const resp = await axiosApi.post(url, data);
+            const resp = await axiosApi.post('/user/grade', data);
             setSuccessAlert("visible");
             setErrorAlert("hidden");
             setAlert("success");

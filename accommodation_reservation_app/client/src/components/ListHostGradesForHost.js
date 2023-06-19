@@ -18,10 +18,17 @@ import Alert from "@mui/material/Alert";
 import Collapse from "@mui/material/Collapse";
 
 
+function formatSecondsToDate(seconds) {
+    const date = new Date(seconds * 1000 - 7200*1000);
+    //console.log('Sec', seconds)
+    //console.log('date', date)
+    return date;
+  }
+
 const columns = [
     {
-        field: "FirstName",
-        headerName: "User first name",
+        field: "HostFirstName",
+        headerName: "Host First Name",
         type: "string",
         width: 300,
         sortable: false,
@@ -29,8 +36,8 @@ const columns = [
         editable: false,
     },
     {
-        field: "LastName",
-        headerName: "User last name",
+        field: "HostLastName",
+        headerName: "Host Last Name",
         type: "string",
         width: 300,
         sortable: false,
@@ -39,7 +46,7 @@ const columns = [
     },
     {
         field: "Grade",
-        headerName: "Grade",
+        headerName: "Host grade",
         type: "number",
         width: 300,
         sortable: false,
@@ -56,7 +63,7 @@ const columns = [
         filterable: false,
         editable: false,
         format: "DD/MM/YYYY",
-        //valueGetter: params => formatSecondsToDate(params.row.StartDate.seconds)
+        valueGetter: params => formatSecondsToDate(params.row.DateOfGrade.seconds)
     },
     {
         field: "AverageGrade",
@@ -85,16 +92,26 @@ function HostGradesHost(props) {
         let getData = async () => {
         try{
             //console.log()
-            //const res = await axiosApi.get('/user/logged');
-            //console.log("ID", res.data.user.Id);
+            const res = await axiosApi.get('/user/logged');
+            console.log("ID", res.data.user.ID);
         axiosApi
             //proslediti koji treba (proveriti jel ovaj)
             //znam da {id} ne treba ovako ali cisto url
-            //.get(`/user/grade/{id}`)
+            .get(`/user/grade/${res.data.user.Id}`)
             .then((response) => {
-                setGrades(response.data);
+                let temp = []
+                console.log('Data', response.data.UserGradeDetails)
+
+                for (let i=0; i < response.data.UserGradeDetails.length; i++){
+                    temp.push({
+                        id:i, 
+                        AverageGrade:response.data.AverageGrade,
+                        ...response.data.UserGradeDetails[i]
+                    })
+                }
+                setGrades(temp);
                 console.log('Data', response.data)
-                console.log('RES', grades)
+                console.log('RES', temp)
             }).catch(er => {
                 console.log(er.response);
                 setGrades([]);

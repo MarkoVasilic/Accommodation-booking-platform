@@ -203,6 +203,7 @@ func (handler *UserHandler) Login(ctx context.Context, request *pb.LoginRequest)
 func (handler *UserHandler) GetAllGuestGrades(ctx context.Context, request *pb.GetAllGuestGradesRequest) (*pb.GetAllGuestGradesResponse, error) {
 	//TODO pomocna metoda za dobavljanje svih ocijena guesta za poslani id guesta
 	//a vraca se lista dtova koji sam napravio
+
 	id := request.Id
 	guestId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
@@ -223,7 +224,7 @@ func (handler *UserHandler) GetAllGuestGrades(ctx context.Context, request *pb.G
 		if err != nil {
 			return nil, err
 		}
-		gradeDTO := models.UserGradeDetails{GuestFirstName: *user.FirstName, GuestLastName: *user.LastName, HostFirstName: *host.FirstName, HostLastName: *host.LastName, Grade: grade.Grade, DateOfGrade: grade.DateOfGrade}
+		gradeDTO := models.UserGradeDetails{ID: grade.ID, GuestFirstName: *user.FirstName, GuestLastName: *user.LastName, HostFirstName: *host.FirstName, HostLastName: *host.LastName, Grade: grade.Grade, DateOfGrade: grade.DateOfGrade}
 		gradeDTOs = append(gradeDTOs, gradeDTO)
 	}
 	gradesDetails := []*pb.UserGradeDetails{}
@@ -358,6 +359,8 @@ func (handler *UserHandler) CreateUserGrade(ctx context.Context, request *pb.Cre
 
 func (handler *UserHandler) UpdateUserGrade(ctx context.Context, request *pb.UpdateUserGradeRequest) (*pb.UpdateUserGradeResponse, error) {
 	//TODO zahtjev 1.11 azuriranje ocijene, provjeriti da li je njegova ocijena da li smije da je promijeni
+	fmt.Println(request)
+
 	ClientToken, _ := grpc_auth.AuthFromMD(ctx, "Bearer")
 	claims, _ := token.ValidateToken(ClientToken)
 	_, err := primitive.ObjectIDFromHex(claims.Uid)
@@ -365,6 +368,7 @@ func (handler *UserHandler) UpdateUserGrade(ctx context.Context, request *pb.Upd
 		err := status.Errorf(codes.InvalidArgument, "the provided logged user id is not a valid ObjectID")
 		return nil, err
 	}
+
 	mess, err := handler.grade_service.UpdateUserGrade(int(request.Grade), request.Id, claims.Uid) //izmeniti proto pa otkomentarisati
 	if err != nil {
 		err := status.Errorf(codes.InvalidArgument, mess)
@@ -425,7 +429,9 @@ func (handler *UserHandler) GetAllUserGrade(ctx context.Context, request *pb.Get
 		gradeDTOs = append(gradeDTOs, gradeDTO)
 		sum = sum + grade.Grade
 	}
-	avergeGrade := float64(sum / len(hostGrades))
+
+	avergeGrade := float64(float64(sum) / float64(len(hostGrades)))
+	fmt.Println(avergeGrade)
 	gradesDetails := []*pb.UserGradeDetails{}
 	for _, r := range gradeDTOs {
 		gradesPb := mapUserGradeDetails(&r)

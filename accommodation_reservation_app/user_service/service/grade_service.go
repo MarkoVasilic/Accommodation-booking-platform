@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/user_service/models"
@@ -35,6 +36,7 @@ func (service *GradeService) CreateUserGrade(userGrade models.UserGrade) (string
 }
 
 func (service *GradeService) UpdateUserGrade(grade int, id string, loggedUserId string) (string, error) {
+	fmt.Println(id)
 	objectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		err := status.Errorf(codes.InvalidArgument, "Invalid ID format")
