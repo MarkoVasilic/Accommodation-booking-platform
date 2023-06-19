@@ -20,7 +20,7 @@ import ReservationRequestsHost from './pages/ReservationRequestsHost';
 import AccommodationDetailsCard from './components/AccommodationDetailsCard';
 import NotificationsGuest from './pages/NotificationsGuest';
 import NotificationsHost from './pages/NotificationsHost';
-import HostsList from './components/ListHosts';
+import HostsList from './pages/HostsList';
 import RateHost from './pages/RateHost';
 import HostGradesUser from './pages/HostGradesForUserList';
 import UserGradesForHosts from './pages/UserGradesForHostList';
