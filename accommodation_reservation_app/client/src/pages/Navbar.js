@@ -155,14 +155,22 @@ const chooseSideMenu = (Role) => {
             "Create accommodation": "/accomodations/create",
             "Reservation requests": "/reservation-requests",
             "Search accommodations": "/accommodations/all",
-            "Notifications":"/notifications-host"
+            "Notifications":"/notifications-host",
+            "My grades": "/host/my-grades"
+            
         };
     } else if (Role === "GUEST") {
         return {
             "Search accommodations": "/accommodations/all/guest",
             "Pending reservations": "/pending-reservations",
             "Accepted reservations": "/accepted-reservations",
-            "Notifications":"/notifications-guest"
+            "Notifications":"/notifications-guest",
+            "My hosts": "/user/hosts-list",
+            "My grades - HOSTS": "/user/hosts-grades",
+            "My accommodations": "/user/accommodations-list",
+            "My grades - ACCOMMODATIONS": "/user/accommodations-grades"
+
+
         };
     } else {
         return {
