@@ -84,7 +84,7 @@ const columns = [
         field: "Name",
         headerName: "Name",
         type: "string",
-        width: 350,
+        width: 300,
         sortable: false,
         filterable: false,
         editable: false
@@ -93,7 +93,7 @@ const columns = [
         field: "Location",
         headerName: "Location",
         type: "string",
-        width: 350,
+        width: 300,
         sortable: false,
         filterable: false,
         editable: false
@@ -102,7 +102,7 @@ const columns = [
         field: "Create",
         align: "left",
         headerName: "Create Availability",
-        width: 350,
+        width: 250,
         renderCell: RenderCreateButton,
         disableClickEventBubbling: true   
     },
@@ -110,7 +110,7 @@ const columns = [
         field: "Get",
         align: "left",
         headerName: "All Availabilities",
-        width: 350,
+        width: 250,
         renderCell: RenderAvailabilitiesButton,
         disableClickEventBubbling: true   
     },
@@ -118,7 +118,7 @@ const columns = [
         field: "Grades",
         align: "left",
         headerName: "All Grades",
-        width: 350,
+        width: 250,
         renderCell: RenderAllGradesButton,
         disableClickEventBubbling: true   
     }

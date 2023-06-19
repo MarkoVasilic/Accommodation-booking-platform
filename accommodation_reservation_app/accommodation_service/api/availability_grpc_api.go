@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"fmt"
 	"strings"
 	"time"
 
@@ -25,15 +26,17 @@ type AvailabilityHandler struct {
 	grade_service         *service.GradeService
 	user_client           user_service.UserServiceClient
 	reservation_client    reservation_service.ReservationServiceClient
+	accommodation_handler *AccommodationHandler
 }
 
-func NewAvailabilityHandler(accommodation_service *service.AccommodationService, availability_service *service.AvailabilityService, grade_service *service.GradeService, user_client user_service.UserServiceClient, reservation_client reservation_service.ReservationServiceClient) *AvailabilityHandler {
+func NewAvailabilityHandler(accommodation_service *service.AccommodationService, availability_service *service.AvailabilityService, grade_service *service.GradeService, user_client user_service.UserServiceClient, reservation_client reservation_service.ReservationServiceClient, accommodation_handler *AccommodationHandler) *AvailabilityHandler {
 	return &AvailabilityHandler{
 		accommodation_service: accommodation_service,
 		availability_service:  availability_service,
 		grade_service:         grade_service,
 		user_client:           user_client,
 		reservation_client:    reservation_client,
+		accommodation_handler: accommodation_handler,
 	}
 }
 
@@ -240,6 +243,12 @@ func (handler *AvailabilityHandler) SearchAvailability(ctx context.Context, requ
 }
 
 func (handler *AvailabilityHandler) FilterAvailability(ctx context.Context, request *pb.FilterAvailabilityRequest) (*pb.FilterAvailabilityResponse, error) {
+	//filtriranje smjestaja zahtjev 1.14 mozete iskoristit search metodu ali sa dodanim poljima, prosiren je request mozete vidjeti u proto
+	//na frontu mozete zamjeniti da se ne koristi vise SearchAvailabilty nego ovo ili da imate dvije odvojene metode kako vam je lakse
+	/*response := &pb.FilterAvailabilityResponse{
+		FindAvailability: findAvailabilities,
+	}
+	return response, nil*/
 
 	year, month, day := request.StartDate.AsTime().Date()
 	yearE, monthE, dayE := request.EndDate.AsTime().Date()
@@ -296,25 +305,26 @@ func (handler *AvailabilityHandler) FilterAvailability(ctx context.Context, requ
 		return nil, status.Errorf(codes.NotFound, "No accommodations!")
 	}
 
+	fmt.Println(len(favailabilities))
 	filteredAvailabilities := []models.FindAvailability{}
 	for _, fa := range favailabilities {
 
-		grades, err := handler.GetAllAccommodationGrade(createContextForAuthorization(ctx), &accommodation_service.GetAllAccommodationGradeRequest{Id: string(fa.AccommodationId.Hex())})
+		grades, err := handler.accommodation_handler.GetAllAccommodationGrade(createContextForAuthorization(ctx), &accommodation_service.GetAllAccommodationGradeRequest{Id: string(fa.AccommodationId.Hex())})
 		if err != nil {
 			return nil, err
 		}
-
 		hostProminent, err := handler.user_client.HostProminent(createContextForAuthorization(ctx), &user_service.HostProminentRequest{Id: string(fa.HostID.Hex())})
 		if err != nil {
 			return nil, err
 		}
-		if fa.Kitchen == request.Kitchen && fa.Wifi == request.Wifi && fa.AC == request.AC && fa.ParkingLot == request.ParkingLot && grades.AccommodationGradeDetailsDTO.AverageGrade >= float64(request.GradeMin) && grades.AccommodationGradeDetailsDTO.AverageGrade <= float64(request.GradeMax) && hostProminent.Prominent == true {
+		//fmt.Println(fa.Kitchen == request.Kitchen, fa.Wifi == request.Wifi, fa.AC == request.AC, fa.ParkingLot == request.ParkingLot, grades.AccommodationGradeDetailsDTO.AverageGrade >= float64(request.GradeMin), grades.AccommodationGradeDetailsDTO.AverageGrade <= float64(request.GradeMax), hostProminent.Prominent == request.ProminentHost)
+		if fa.Kitchen == request.Kitchen && fa.Wifi == request.Wifi && fa.AC == request.AC && fa.ParkingLot == request.ParkingLot && grades.AccommodationGradeDetailsDTO.AverageGrade >= float64(request.GradeMin) && grades.AccommodationGradeDetailsDTO.AverageGrade <= float64(request.GradeMax) && hostProminent.Prominent == request.ProminentHost {
 			filteredAvailability := models.FindAvailability{AccommodationId: fa.AccommodationId, AvailabilityID: fa.AvailabilityID, HostID: fa.HostID, Name: fa.Name, Location: fa.Location, Wifi: fa.Wifi, Kitchen: fa.Kitchen, AC: fa.AC, ParkingLot: fa.ParkingLot, Images: fa.Images, StartDate: fa.StartDate, EndDate: fa.EndDate, TotalPrice: fa.TotalPrice, SinglePrice: fa.SinglePrice, IsPricePerGuest: fa.IsPricePerGuest}
 			filteredAvailabilities = append(filteredAvailabilities, filteredAvailability)
 		}
 
 	}
-
+	fmt.Println(len(filteredAvailabilities))
 	findAvailabilities := []*pb.FindAvailability{}
 	for _, a := range filteredAvailabilities {
 		findAvailabilitiyPb := mapFindAvailability(&a)

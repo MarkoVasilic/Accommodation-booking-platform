@@ -457,6 +457,7 @@ func (handler *UserHandler) HostProminent(ctx context.Context, request *pb.HostP
 
 	hostGrades, err := handler.grade_service.GetAllUserGrade(request.Id)
 	if err != nil {
+		fmt.Println(err)
 		return nil, err
 	}
 	sum := 0
@@ -497,6 +498,7 @@ func (handler *UserHandler) HostProminent(ctx context.Context, request *pb.HostP
 		prominent = true
 	}
 
+	fmt.Println(prominent)
 	response := &pb.HostProminentResponse{
 		Prominent: prominent,
 	}
