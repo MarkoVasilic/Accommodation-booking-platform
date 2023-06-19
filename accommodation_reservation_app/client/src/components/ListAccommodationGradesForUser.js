@@ -174,7 +174,7 @@ function AccommodationGradesUser(props) {
                 <Box sx={{ height: 700, width: "100%", marginTop: "20px", marginBottom: "20px"}}>
                     <DataGrid
                         rows={grades}
-                        //getRowId={(row) => row.ReservationId}
+                        getRowId={(row) => row.id}
                         disableColumnFilter
                         columns={columns}
                         autoHeight

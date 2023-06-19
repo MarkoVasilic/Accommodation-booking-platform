@@ -64,8 +64,7 @@ const RenderDeleteReservation = (params) => {
                                 console.log('greska u notificationOn') 
                             });
 
-
-                        refreshPage();
+                        navigate("/")
                     }).catch(er => {
                         console.log(er.response);
                     });
@@ -123,7 +122,7 @@ const RenderAcceptReservation = (params) => {
 
 
                         
-                        refreshPage();
+                        navigate("/")
                     }).catch(er => {
                         console.log(er.response);
                     });

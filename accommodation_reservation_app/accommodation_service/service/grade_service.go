@@ -41,7 +41,6 @@ func (service *GradeService) DeleteAccommodationGrade(loggedUserId string, id st
 		return "Invalid ID format", err
 	}
 
-	// da li postoji ocena
 	userGrade, err := service.GradeRepository.GetGradeById(objectID)
 	if err != nil {
 		err := status.Errorf(codes.NotFound, "There is no grade with that ID")
@@ -54,12 +53,10 @@ func (service *GradeService) DeleteAccommodationGrade(loggedUserId string, id st
 		return "Invalid ID format", err
 	}
 
-	// da li je to ocena ulogovanog usera
 	if logged != userGrade.GuestID {
 		return "You cannot delete grade that is not yours!", status.Errorf(codes.InvalidArgument, "Invalid ID format")
 	}
 
-	// brisanje ocene
 	_, err = service.GradeRepository.DeleteAccommodationGrade(objectID)
 	if err != nil {
 		err := status.Errorf(codes.Internal, "Failed to delete grade")
@@ -108,21 +105,18 @@ func (service *GradeService) UpdateAccommodationGrade(grade int, id string, logg
 		return "Invalid ID format", err
 	}
 
-	//provera da li postoji ocena
 	accommodationGrade, err := service.GradeRepository.GetGradeById(objectID)
 	if err != nil {
 		err := status.Errorf(codes.NotFound, "There is no grade with that ID")
 		return "There is no grade with that ID", err
 	}
 
-	//provera da li je ocena ulogovanog
 	logged, err := primitive.ObjectIDFromHex(loggedUserId)
 	if err != nil {
 		err := status.Errorf(codes.InvalidArgument, "Invalid ID format")
 		return "Invalid ID format", err
 	}
 
-	// da li je to ocena ulogovanog usera
 	if logged != accommodationGrade.GuestID {
 		return "You cannot update grade that is not yours!", status.Errorf(codes.InvalidArgument, "Invalid ID format")
 	}

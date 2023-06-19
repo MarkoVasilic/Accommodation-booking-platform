@@ -51,7 +51,6 @@ func (repo *AvailabilityRepository) UpdateAvailability(avail *models.Availabilit
 			"is_price_per_guest": avail.IsPricePerGuest,
 		},
 	}
-	//da se ne kreira nova, vec azurira postojeca dostupnost
 	options := options.Update().SetUpsert(false)
 	_, updateErr := repo.AvailabilityCollection.UpdateOne(ctx, filter, update, options)
 	return updateErr

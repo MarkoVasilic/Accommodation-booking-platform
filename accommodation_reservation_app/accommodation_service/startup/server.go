@@ -126,7 +126,6 @@ func Authentication(ctx context.Context, req interface{}, info *grpc.UnaryServer
 		return nil, err
 	}
 	_, err := token.ValidateToken(ClientToken)
-	fmt.Println(err)
 	if err != "" {
 		err := status.Errorf(codes.InvalidArgument, "Bad Authorization Token")
 		return nil, err

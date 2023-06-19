@@ -68,6 +68,7 @@ func (handler *UserHandler) GetUser(ctx context.Context, request *pb.GetUserRequ
 func (handler *UserHandler) CreateUser(ctx context.Context, request *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
 	user := models.User{Username: &request.Username, FirstName: &request.FirstName, LastName: &request.LastName, Password: &request.Password, Email: &request.Email, Address: &request.Address, Role: (*models.Role)(&request.Role)}
 	mess, err, user_id := handler.service.CreateUser(user)
+	user.Id = user_id
 	if err != nil {
 		err := status.Errorf(codes.Internal, mess)
 		return nil, err
@@ -201,8 +202,6 @@ func (handler *UserHandler) Login(ctx context.Context, request *pb.LoginRequest)
 }
 
 func (handler *UserHandler) GetAllGuestGrades(ctx context.Context, request *pb.GetAllGuestGradesRequest) (*pb.GetAllGuestGradesResponse, error) {
-	//TODO pomocna metoda za dobavljanje svih ocijena guesta za poslani id guesta
-	//a vraca se lista dtova koji sam napravio
 
 	id := request.Id
 	guestId, err := primitive.ObjectIDFromHex(id)
@@ -239,8 +238,6 @@ func (handler *UserHandler) GetAllGuestGrades(ctx context.Context, request *pb.G
 }
 
 func (handler *UserHandler) GetAllHosts(ctx context.Context, request *pb.GetAllHostsRequest) (*pb.GetAllHostsResponse, error) {
-	//TODO pomocna metoda za dobavljanje svih hostova koje ulogovani user moze da oceni, ne salje se nista
-	//a vraca se lista dtova koji sam napravio
 
 	ClientToken, _ := grpc_auth.AuthFromMD(ctx, "Bearer")
 	claims, _ := token.ValidateToken(ClientToken)
@@ -256,11 +253,8 @@ func (handler *UserHandler) GetAllHosts(ctx context.Context, request *pb.GetAllH
 
 	hostsDetails := []models.HostDetails{}
 	for _, res := range reservations.Reservations {
-		fmt.Println(res)
 		availabilitiy, err := handler.accommodation_client.GetAvailabilityById(createContextForAuthorization(ctx), &accommodation_service.GetAvailabilityByIdRequest{Id: res.AvailabilityID})
-		fmt.Println(err)
 		accommodation, err := handler.accommodation_client.GetAccommodationById(createContextForAuthorization(ctx), &accommodation_service.GetAccommodationByIdRequest{Id: availabilitiy.Availability.AccommodationID})
-		fmt.Println(err)
 		hostId, err := primitive.ObjectIDFromHex(accommodation.Accommodation.HostId)
 		if err != nil {
 			err := status.Errorf(codes.InvalidArgument, "the provided hostId is not a valid ObjectID")
@@ -283,7 +277,6 @@ func (handler *UserHandler) GetAllHosts(ctx context.Context, request *pb.GetAllH
 		return nil, err
 	}
 
-	fmt.Println("2")
 	hosts := []*pb.HostDetails{}
 	for _, h := range hostsDetails {
 		hostDetailsPb := mapHost(&h)
@@ -296,12 +289,8 @@ func (handler *UserHandler) GetAllHosts(ctx context.Context, request *pb.GetAllH
 }
 
 func (handler *UserHandler) CreateUserGrade(ctx context.Context, request *pb.CreateUserGradeRequest) (*pb.CreateUserGradeResponse, error) {
-	//TODO zahtjev 1.11 kreiranje ocijene
-	fmt.Println("Create User Grade")
 	ClientToken, _ := grpc_auth.AuthFromMD(ctx, "Bearer")
 	claims, _ := token.ValidateToken(ClientToken)
-	//ovako se izvlaci id osobe koja salje zahtjev, id se nalazi u claims.Uid
-	//provjeriti uslov da li moze da ga ocijeni
 	guestId, err := primitive.ObjectIDFromHex(claims.Uid)
 	if err != nil {
 		err := status.Errorf(codes.InvalidArgument, "the provided id is not a valid ObjectID")
@@ -312,7 +301,6 @@ func (handler *UserHandler) CreateUserGrade(ctx context.Context, request *pb.Cre
 		err := status.Errorf(codes.InvalidArgument, "the provided id is not a valid ObjectID")
 		return nil, err
 	}
-	//provera da li sme da oceni
 	reservations, err := handler.reservation_client.GetAllReservationsByGuestId(createContextForAuthorization(ctx), &reservation_service.GetAllReservationsByGuestIdRequest{Id: claims.Uid})
 	if err != nil {
 		return nil, err
@@ -358,8 +346,6 @@ func (handler *UserHandler) CreateUserGrade(ctx context.Context, request *pb.Cre
 }
 
 func (handler *UserHandler) UpdateUserGrade(ctx context.Context, request *pb.UpdateUserGradeRequest) (*pb.UpdateUserGradeResponse, error) {
-	//TODO zahtjev 1.11 azuriranje ocijene, provjeriti da li je njegova ocijena da li smije da je promijeni
-	fmt.Println(request)
 
 	ClientToken, _ := grpc_auth.AuthFromMD(ctx, "Bearer")
 	claims, _ := token.ValidateToken(ClientToken)
@@ -369,7 +355,7 @@ func (handler *UserHandler) UpdateUserGrade(ctx context.Context, request *pb.Upd
 		return nil, err
 	}
 
-	mess, err := handler.grade_service.UpdateUserGrade(int(request.Grade), request.Id, claims.Uid) //izmeniti proto pa otkomentarisati
+	mess, err := handler.grade_service.UpdateUserGrade(int(request.Grade), request.Id, claims.Uid)
 	if err != nil {
 		err := status.Errorf(codes.InvalidArgument, mess)
 		return nil, err
@@ -381,7 +367,6 @@ func (handler *UserHandler) UpdateUserGrade(ctx context.Context, request *pb.Upd
 }
 
 func (handler *UserHandler) DeleteUserGrade(ctx context.Context, request *pb.DeleteUserGradeRequest) (*pb.DeleteUserGradeResponse, error) {
-	//TODO zahtjev 1.11 brisanje ocijene, provjeriti da li je njegova ocijena da li smije da je obrise
 	ClientToken, _ := grpc_auth.AuthFromMD(ctx, "Bearer")
 	claims, _ := token.ValidateToken(ClientToken)
 	_, err := primitive.ObjectIDFromHex(claims.Uid)
@@ -401,9 +386,7 @@ func (handler *UserHandler) DeleteUserGrade(ctx context.Context, request *pb.Del
 }
 
 func (handler *UserHandler) GetAllUserGrade(ctx context.Context, request *pb.GetAllUserGradeRequest) (*pb.GetAllUserGradeResponse, error) {
-	//TODO zahtjev 1.11 dobavljanje svih ocijena koje je host dobio salje se id hosta
-	//treba da se vrati lista svih ocijena tog hosta, napravio sam dto kako treba da izgleda
-	// i treba da se izracuna prosijecna ocijena, vjerovatno cete morati mapper praviti neki da to vratite
+
 	id := request.Id
 	hostId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
@@ -431,7 +414,6 @@ func (handler *UserHandler) GetAllUserGrade(ctx context.Context, request *pb.Get
 	}
 
 	avergeGrade := float64(float64(sum) / float64(len(hostGrades)))
-	fmt.Println(avergeGrade)
 	gradesDetails := []*pb.UserGradeDetails{}
 	for _, r := range gradeDTOs {
 		gradesPb := mapUserGradeDetails(&r)
@@ -445,9 +427,7 @@ func (handler *UserHandler) GetAllUserGrade(ctx context.Context, request *pb.Get
 }
 
 func (handler *UserHandler) HostProminent(ctx context.Context, request *pb.HostProminentRequest) (*pb.HostProminentResponse, error) {
-	//TODO zahtjev 1.13, salje se id hosta ili ga izvucite kao gore sto sam naveo i vraca se bool koje je true ako je istaknut i false ako nije
-	//na frontu mozete staviti na ono profile kad se otvori dodatno dugme koje ovo provjerava ili samo da napravite jos jedno polje koje kaze da li je istaknut ili ne
-	//samo pazite da je ovo samo za hosta, a na frontu stranica profila je ista za guesta i hosta pa morate to nekako da razdvojite
+
 	id := request.Id
 	_, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
@@ -457,7 +437,6 @@ func (handler *UserHandler) HostProminent(ctx context.Context, request *pb.HostP
 
 	hostGrades, err := handler.grade_service.GetAllUserGrade(request.Id)
 	if err != nil {
-		fmt.Println(err)
 		return nil, err
 	}
 	sum := 0
@@ -473,8 +452,7 @@ func (handler *UserHandler) HostProminent(ctx context.Context, request *pb.HostP
 	}
 
 	//averageGrade := float64(sum / len(hostGrades))
-	reservations, err := handler.reservation_client.GetAllReservationsHost(createContextForAuthorization(ctx), &reservation_service.GetAllReservationsHostRequest{Id: request.Id})
-	fmt.Println("Err", err)
+	reservations, err := handler.reservation_client.GetAllReservationsHostProminent(createContextForAuthorization(ctx), &reservation_service.GetAllReservationsHostProminentRequest{Id: request.Id})
 	for _, res := range reservations.Reservation {
 		if res.IsCanceled == true {
 			numberOfCancelation = numberOfCancelation + 1
@@ -491,14 +469,12 @@ func (handler *UserHandler) HostProminent(ctx context.Context, request *pb.HostP
 	if len(reservations.Reservation) > 0 {
 		cancelationPercent = (float64(numberOfCancelation) / float64(len(reservations.Reservation))) * 100
 	}
-	//cancelationPercent := (numberOfCancelation / len(reservations.Reservation)) * 100
 
 	var prominent bool = false
-	if averageGrade > 4.7 && cancelationPercent < 5 && len(reservations.Reservation) >= 5 && sumReservationDurations > 50 {
+	if averageGrade > 4.7 && cancelationPercent < 5 && len(reservations.Reservation) >= 1 && sumReservationDurations > 50 {
 		prominent = true
 	}
 
-	fmt.Println(prominent)
 	response := &pb.HostProminentResponse{
 		Prominent: prominent,
 	}
@@ -506,7 +482,6 @@ func (handler *UserHandler) HostProminent(ctx context.Context, request *pb.HostP
 }
 
 func (handler *UserHandler) UpdateNotificationOn(ctx context.Context, request *pb.UpdateNotificationOnRequest) (*pb.UpdateNotificationOnResponse, error) {
-	//TODO zahtjev 1.15, azuriranje odgovarajuceg tipa notifikacije da li je ukljuceno ili ne
 	user_id := request.Id
 	notificationOn := models.NotificationOn{Type: (*models.NotificationType)(&request.Type), On: request.On}
 
@@ -523,7 +498,6 @@ func (handler *UserHandler) UpdateNotificationOn(ctx context.Context, request *p
 }
 
 func (handler *UserHandler) CreateNotification(ctx context.Context, request *pb.CreateNotificationRequest) (*pb.CreateNotificationResponse, error) {
-	//TODO zahtjev 1.15, kreiranje notifikacije
 	userId, err := primitive.ObjectIDFromHex(request.UserId)
 	if err != nil {
 		err := status.Errorf(codes.Internal, "Id conversion failed")
@@ -550,9 +524,6 @@ func (handler *UserHandler) CreateNotification(ctx context.Context, request *pb.
 }
 
 func (handler *UserHandler) GetAllNotifications(ctx context.Context, request *pb.GetAllNotificationsRequest) (*pb.GetAllNotificationsResponse, error) {
-	//TODO zahtjev 1.15, dobavljanje notifikacija, treba provjeriti koje su ukljucene i te dobaviti za korisnika za kojeg je id poslan
-	//mozes dodatno sortirati po datumu pravljenja da se vide najnovije
-	//postoji i polje seen kojeg mozes ukljuciti a i ne moras, neka stoji samo ako ne zelis
 	userId, err := primitive.ObjectIDFromHex(request.Id)
 	if err != nil {
 		err := status.Errorf(codes.Internal, "Id conversion failed")
@@ -589,8 +560,6 @@ func (handler *UserHandler) GetAllNotifications(ctx context.Context, request *pb
 
 	}
 
-	//sortiraj
-
 	response := &pb.GetAllNotificationsResponse{
 		Notifications: user_notifications,
 	}
@@ -622,6 +591,5 @@ func (handler *UserHandler) GetUserNotificationsOn(ctx context.Context, request 
 	response := &pb.GetUserNotificationsOnResponse{
 		Notifications: user_notifications,
 	}
-
 	return response, nil
 }

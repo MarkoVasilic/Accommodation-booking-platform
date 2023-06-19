@@ -18,7 +18,6 @@ type ReservationService struct {
 
 var Validate = validator.New()
 
-// by availability
 func (svc *ReservationService) GetAllReservations(availibiltyId primitive.ObjectID) ([]models.Reservation, error) {
 	reservations, err := svc.ReservationRepository.GetAllReservationsByAvailability(availibiltyId)
 	if err != nil {

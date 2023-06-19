@@ -28,6 +28,7 @@ const (
 	ReservationService_DeleteLogicallyReservation_FullMethodName      = "/reservation_service.ReservationService/DeleteLogicallyReservation"
 	ReservationService_AcceptReservation_FullMethodName               = "/reservation_service.ReservationService/AcceptReservation"
 	ReservationService_GetAllReservationsHost_FullMethodName          = "/reservation_service.ReservationService/GetAllReservationsHost"
+	ReservationService_GetAllReservationsHostProminent_FullMethodName = "/reservation_service.ReservationService/GetAllReservationsHostProminent"
 	ReservationService_DeleteReservationsHost_FullMethodName          = "/reservation_service.ReservationService/DeleteReservationsHost"
 	ReservationService_GetAllReservationsByGuestId_FullMethodName     = "/reservation_service.ReservationService/GetAllReservationsByGuestId"
 )
@@ -45,6 +46,7 @@ type ReservationServiceClient interface {
 	DeleteLogicallyReservation(ctx context.Context, in *DeleteLogicallyReservationRequest, opts ...grpc.CallOption) (*DeleteLogicallyReservationResponse, error)
 	AcceptReservation(ctx context.Context, in *AcceptReservationRequest, opts ...grpc.CallOption) (*AcceptReservationResponse, error)
 	GetAllReservationsHost(ctx context.Context, in *GetAllReservationsHostRequest, opts ...grpc.CallOption) (*GetAllReservationsHostResponse, error)
+	GetAllReservationsHostProminent(ctx context.Context, in *GetAllReservationsHostProminentRequest, opts ...grpc.CallOption) (*GetAllReservationsHostProminentResponse, error)
 	DeleteReservationsHost(ctx context.Context, in *DeleteReservationsHostRequest, opts ...grpc.CallOption) (*DeleteReservationsHostResponse, error)
 	GetAllReservationsByGuestId(ctx context.Context, in *GetAllReservationsByGuestIdRequest, opts ...grpc.CallOption) (*GetAllReservationsByGuestIdResponse, error)
 }
@@ -138,6 +140,15 @@ func (c *reservationServiceClient) GetAllReservationsHost(ctx context.Context, i
 	return out, nil
 }
 
+func (c *reservationServiceClient) GetAllReservationsHostProminent(ctx context.Context, in *GetAllReservationsHostProminentRequest, opts ...grpc.CallOption) (*GetAllReservationsHostProminentResponse, error) {
+	out := new(GetAllReservationsHostProminentResponse)
+	err := c.cc.Invoke(ctx, ReservationService_GetAllReservationsHostProminent_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *reservationServiceClient) DeleteReservationsHost(ctx context.Context, in *DeleteReservationsHostRequest, opts ...grpc.CallOption) (*DeleteReservationsHostResponse, error) {
 	out := new(DeleteReservationsHostResponse)
 	err := c.cc.Invoke(ctx, ReservationService_DeleteReservationsHost_FullMethodName, in, out, opts...)
@@ -169,6 +180,7 @@ type ReservationServiceServer interface {
 	DeleteLogicallyReservation(context.Context, *DeleteLogicallyReservationRequest) (*DeleteLogicallyReservationResponse, error)
 	AcceptReservation(context.Context, *AcceptReservationRequest) (*AcceptReservationResponse, error)
 	GetAllReservationsHost(context.Context, *GetAllReservationsHostRequest) (*GetAllReservationsHostResponse, error)
+	GetAllReservationsHostProminent(context.Context, *GetAllReservationsHostProminentRequest) (*GetAllReservationsHostProminentResponse, error)
 	DeleteReservationsHost(context.Context, *DeleteReservationsHostRequest) (*DeleteReservationsHostResponse, error)
 	GetAllReservationsByGuestId(context.Context, *GetAllReservationsByGuestIdRequest) (*GetAllReservationsByGuestIdResponse, error)
 	mustEmbedUnimplementedReservationServiceServer()
@@ -204,6 +216,9 @@ func (UnimplementedReservationServiceServer) AcceptReservation(context.Context, 
 }
 func (UnimplementedReservationServiceServer) GetAllReservationsHost(context.Context, *GetAllReservationsHostRequest) (*GetAllReservationsHostResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllReservationsHost not implemented")
+}
+func (UnimplementedReservationServiceServer) GetAllReservationsHostProminent(context.Context, *GetAllReservationsHostProminentRequest) (*GetAllReservationsHostProminentResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAllReservationsHostProminent not implemented")
 }
 func (UnimplementedReservationServiceServer) DeleteReservationsHost(context.Context, *DeleteReservationsHostRequest) (*DeleteReservationsHostResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteReservationsHost not implemented")
@@ -386,6 +401,24 @@ func _ReservationService_GetAllReservationsHost_Handler(srv interface{}, ctx con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ReservationService_GetAllReservationsHostProminent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAllReservationsHostProminentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ReservationServiceServer).GetAllReservationsHostProminent(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ReservationService_GetAllReservationsHostProminent_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ReservationServiceServer).GetAllReservationsHostProminent(ctx, req.(*GetAllReservationsHostProminentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ReservationService_DeleteReservationsHost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DeleteReservationsHostRequest)
 	if err := dec(in); err != nil {
@@ -464,6 +497,10 @@ var ReservationService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAllReservationsHost",
 			Handler:    _ReservationService_GetAllReservationsHost_Handler,
+		},
+		{
+			MethodName: "GetAllReservationsHostProminent",
+			Handler:    _ReservationService_GetAllReservationsHostProminent_Handler,
 		},
 		{
 			MethodName: "DeleteReservationsHost",

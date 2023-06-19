@@ -117,7 +117,13 @@ function HostsList(props) {
         axiosApi
             .get(`/user/host/all`)
             .then((response) => {
-                setHosts(response.data);
+                
+                if(response.data === null){
+                    setHosts([]);
+                }
+                else{
+                    setHosts(response.data);
+                }
                 console.log('Data', response.data)
                 console.log('RES', hosts)
             }).catch(er => {

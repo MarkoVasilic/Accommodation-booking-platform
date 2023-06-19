@@ -39,9 +39,7 @@ func createContextForAuthorization(ctx context.Context) context.Context {
 	return context.TODO()
 }
 
-// by availability
 func (handler *ReservationHandler) GetAllReservations(ctx context.Context, request *pb.GetAllReservationsRequest) (*pb.GetAllReservationsResponse, error) {
-	//TODO pomocna metoda za dobavljanje svih rezervacija koje mozete koristiti u drugim mikroservisima
 	id := request.Id
 	availabilityId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
@@ -64,9 +62,8 @@ func (handler *ReservationHandler) GetAllReservations(ctx context.Context, reque
 	return response, nil
 }
 
-// NOVA
 func (handler *ReservationHandler) GetAllReservationsByGuestId(ctx context.Context, request *pb.GetAllReservationsByGuestIdRequest) (*pb.GetAllReservationsByGuestIdResponse, error) {
-	//TODO pomocna metoda za dobavljanje svih rezervacija koje mozete koristiti u drugim mikroservisima
+
 	id := request.Id
 	guestId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
@@ -112,7 +109,6 @@ func (handler *ReservationHandler) CreateReservation(ctx context.Context, reques
 		return nil, err
 	}
 
-	//automatska potvrda rezervacije
 	accommodation, err1 := handler.accommodation_client.GetAccommodationByAvailability(createContextForAuthorization(ctx), &accommodation_service.GetAccommodationByAvailabilityRequest{Id: request.AvailabilityID})
 	if err1 != nil {
 		err1 := status.Errorf(codes.Internal, mess)
@@ -349,6 +345,64 @@ func (handler *ReservationHandler) AcceptReservation(ctx context.Context, reques
 	return response, nil
 }
 
+func (handler *ReservationHandler) GetAllReservationsHostProminent(ctx context.Context, request *pb.GetAllReservationsHostProminentRequest) (*pb.GetAllReservationsHostProminentResponse, error) {
+
+	allAccommodations, err := handler.accommodation_client.GetAllAccommodations(createContextForAuthorization(ctx), &accommodation_service.GetAllAccommodationsRequest{Id: "64580a2e9f857372a34602c2"})
+	if err != nil {
+		return nil, err
+	}
+
+	var hostAccomodationsIds []string
+	for _, accommodation := range allAccommodations.Accommodations {
+		if accommodation.HostId == request.Id {
+			hostAccomodationsIds = append(hostAccomodationsIds, accommodation.Id)
+		}
+	}
+
+	allAvailabilities, err := handler.accommodation_client.GetAllAvailabilities(createContextForAuthorization(ctx), &accommodation_service.GetAllAvailabilitiesRequest{Id: "64580a2e9f857372a34602c2"})
+	if err != nil {
+		err := status.Errorf(codes.InvalidArgument, "the provided id is not a valid ObjectID")
+		return nil, err
+	}
+	var hostAvailabilitiesIds []primitive.ObjectID
+	for _, availability := range allAvailabilities.Availabilities {
+		for _, accommodationId := range hostAccomodationsIds {
+			if availability.AccommodationID == accommodationId {
+				id, err := primitive.ObjectIDFromHex(availability.Id)
+				if err != nil {
+					err := status.Errorf(codes.InvalidArgument, "the provided id is not a valid ObjectID")
+					return nil, err
+				}
+				hostAvailabilitiesIds = append(hostAvailabilitiesIds, id)
+			}
+		}
+	}
+
+	var hostReservations []models.Reservation
+	for _, availabilityId := range hostAvailabilitiesIds {
+		res, err := handler.reservation_service.GetAll()
+		if err != nil {
+			return nil, err
+		}
+
+		for _, r := range res {
+			if r.IsCanceled == false && r.IsDeleted == false && r.IsAccepted == true && r.AvailabilityID == availabilityId {
+				hostReservations = append(hostReservations, r)
+			}
+		}
+	}
+
+	hostReservationsMap := []*pb.Reservation{}
+	for _, r := range hostReservations {
+		reservationsPb := mapReservation(&r)
+		hostReservationsMap = append(hostReservationsMap, reservationsPb)
+	}
+	response := &pb.GetAllReservationsHostProminentResponse{
+		Reservation: hostReservationsMap,
+	}
+	return response, nil
+}
+
 func (handler *ReservationHandler) GetAllReservationsHost(ctx context.Context, request *pb.GetAllReservationsHostRequest) (*pb.GetAllReservationsHostResponse, error) {
 
 	allAccommodations, err := handler.accommodation_client.GetAllAccommodations(createContextForAuthorization(ctx), &accommodation_service.GetAllAccommodationsRequest{Id: "64580a2e9f857372a34602c2"})
@@ -368,7 +422,6 @@ func (handler *ReservationHandler) GetAllReservationsHost(ctx context.Context, r
 		err := status.Errorf(codes.InvalidArgument, "the provided id is not a valid ObjectID")
 		return nil, err
 	}
-
 	var hostAvailabilitiesIds []primitive.ObjectID
 	for _, availability := range allAvailabilities.Availabilities {
 		for _, accommodationId := range hostAccomodationsIds {

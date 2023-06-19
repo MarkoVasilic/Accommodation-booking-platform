@@ -2,7 +2,6 @@ package api
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/accommodation_service/models"
@@ -186,9 +185,7 @@ func (handler *AccommodationHandler) DeleteAccommodationsByHost(ctx context.Cont
 }
 
 func (handler *AccommodationHandler) GetAllAccommodationGuestGrades(ctx context.Context, request *pb.GetAllAccommodationGuestGradesRequest) (*pb.GetAllAccommodationGuestGradesResponse, error) {
-	//TODO pomocna metoda za dobavljanje svih ocijena guesta za poslani id guesta
-	//a vraca se lista dtova koji sam napravio
-	fmt.Println("Ocecene smestaja po korisniku")
+
 	id := request.Id
 	_, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
@@ -224,8 +221,6 @@ func (handler *AccommodationHandler) GetAllAccommodationGuestGrades(ctx context.
 }
 
 func (handler *AccommodationHandler) GetEveryAccommodation(ctx context.Context, request *pb.GetEveryAccommodationRequest) (*pb.GetEveryAccommodationResponse, error) {
-	//TODO pomocna metoda za dobavljanje svih smjestaja, ne salje se nista
-	//a vraca se lista smjestaja
 	ClientToken, _ := grpc_auth.AuthFromMD(ctx, "Bearer")
 	claims, _ := token.ValidateToken(ClientToken)
 	reservations, err := handler.reservation_client.GetAllReservationsByGuestId(createContextForAuthorization(ctx), &reservation_service.GetAllReservationsByGuestIdRequest{Id: claims.Uid})
@@ -263,11 +258,7 @@ func (handler *AccommodationHandler) GetEveryAccommodation(ctx context.Context, 
 }
 
 func (handler *AccommodationHandler) CreateAccommodationGrade(ctx context.Context, request *pb.CreateAccommodationGradeRequest) (*pb.CreateAccommodationGradeResponse, error) {
-	//TODO zahtjev 1.12 kreiranje ocijene
-	//ClientToken, _ := grpc_auth.AuthFromMD(ctx, "Bearer")
-	//claims, _ := token.ValidateToken(ClientToken)
-	//ovako se izvlaci id osobe koja salje zahtjev, id se nalazi u claims.Uid
-	//provjeriti uslov da li moze da ga ocijeni
+
 	guestId, err := primitive.ObjectIDFromHex(request.AccommodationGrade.GuestID)
 	if err != nil {
 		err := status.Errorf(codes.InvalidArgument, "the provided guestId is not a valid ObjectID")
@@ -289,7 +280,7 @@ func (handler *AccommodationHandler) CreateAccommodationGrade(ctx context.Contex
 	numOfGuestReservations := 0
 	for _, res := range reservations.Reservations {
 		if res.IsCanceled || res.IsDeleted {
-			continue //
+			continue
 		}
 		availabilityId, err := primitive.ObjectIDFromHex(res.AvailabilityID)
 		if err != nil {
@@ -324,7 +315,6 @@ func (handler *AccommodationHandler) CreateAccommodationGrade(ctx context.Contex
 }
 
 func (handler *AccommodationHandler) UpdateAccommodationGrade(ctx context.Context, request *pb.UpdateAccommodationGradeRequest) (*pb.UpdateAccommodationGradeResponse, error) {
-	//TODO zahtjev 1.12 azuriranje ocijene, provjeriti da li je njegova ocijena da li smije da je promijeni
 	ClientToken, _ := grpc_auth.AuthFromMD(ctx, "Bearer")
 	claims, _ := token.ValidateToken(ClientToken)
 	_, err := primitive.ObjectIDFromHex(claims.Uid)
@@ -344,7 +334,7 @@ func (handler *AccommodationHandler) UpdateAccommodationGrade(ctx context.Contex
 }
 
 func (handler *AccommodationHandler) DeleteAccommodationGrade(ctx context.Context, request *pb.DeleteAccommodationGradeRequest) (*pb.DeleteAccommodationGradeResponse, error) {
-	//TODO zahtjev 1.12 brisanje ocijene, provjeriti da li je njegova ocijena da li smije da je obrise
+
 	ClientToken, _ := grpc_auth.AuthFromMD(ctx, "Bearer")
 	claims, _ := token.ValidateToken(ClientToken)
 	_, err := primitive.ObjectIDFromHex(claims.Uid)
@@ -364,9 +354,7 @@ func (handler *AccommodationHandler) DeleteAccommodationGrade(ctx context.Contex
 }
 
 func (handler *AccommodationHandler) GetAllAccommodationGrade(ctx context.Context, request *pb.GetAllAccommodationGradeRequest) (*pb.GetAllAccommodationGradeResponse, error) {
-	//TODO zahtjev 1.12 dobavljanje svih ocijena koje je smjestaj dobio salje se id smjestaja
-	//treba da se vrati lista svih ocijena tog smjestaja, napravio sam dto kako treba da izgleda
-	// i treba da se izracuna prosijecna ocijena, vjerovatno cete morati mapper praviti neki da to vratite
+
 	id := request.Id
 	_, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
@@ -393,8 +381,9 @@ func (handler *AccommodationHandler) GetAllAccommodationGrade(ctx context.Contex
 		sum = sum + grade.Grade
 	}
 	if accommodationGrades == nil {
+		finalResp := mapAccommodationGradeDetailsDTO(nil, 3)
 		response := &pb.GetAllAccommodationGradeResponse{
-			AccommodationGradeDetailsDTO: nil,
+			AccommodationGradeDetailsDTO: finalResp,
 		}
 		return response, err
 	}

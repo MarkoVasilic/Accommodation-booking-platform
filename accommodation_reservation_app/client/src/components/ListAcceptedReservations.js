@@ -124,13 +124,9 @@ const RenderCancelReservation = (params) => {
                             
                                                         }).catch(er => {
                                                             console.log('greska u notificationOn') 
-                                                        });
-                                                           
-                       
-                       
-                                               
-                       
-                                               refreshPage();
+                                                        });     
+                                               //refreshPage();
+                                               navigate("/")
                                            }).catch(er => {
                                                console.log(er.response);
                                            });

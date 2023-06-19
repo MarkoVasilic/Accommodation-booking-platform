@@ -383,7 +383,6 @@ func (handler *GlobalHandler) GetAllAccommodations(w http.ResponseWriter, r *htt
 		fmt.Fprintf(w, "Failed to call GetAllAccommodations method: %v", err)
 		return
 	}
-	//fmt.Fprintf(w, "%s", resp)
 	response, err := json.Marshal(resp.Accommodations)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -620,7 +619,6 @@ func (handler *GlobalHandler) AcceptReservation(w http.ResponseWriter, r *http.R
 }
 
 func (handler *GlobalHandler) GetAllGuestGrades(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
-	//TODO
 	id := pathParams["guestId"]
 	if id == "" {
 		w.WriteHeader(http.StatusBadRequest)
@@ -660,7 +658,6 @@ func (handler *GlobalHandler) GetAllHosts(w http.ResponseWriter, r *http.Request
 }
 
 func (handler *GlobalHandler) CreateUserGrade(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
-	//TODO
 	var userGrade domain.UserGrade
 	err := json.NewDecoder(r.Body).Decode(&userGrade)
 	if err != nil {
@@ -686,7 +683,6 @@ func (handler *GlobalHandler) CreateUserGrade(w http.ResponseWriter, r *http.Req
 }
 
 func (handler *GlobalHandler) UpdateUserGrade(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
-	//TODO
 	id := pathParams["id"]
 	if id == "" {
 		w.WriteHeader(http.StatusBadRequest)
@@ -710,7 +706,6 @@ func (handler *GlobalHandler) UpdateUserGrade(w http.ResponseWriter, r *http.Req
 }
 
 func (handler *GlobalHandler) DeleteUserGrade(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
-	//TODO
 	id := pathParams["id"]
 	if id == "" {
 		w.WriteHeader(http.StatusBadRequest)
@@ -726,7 +721,6 @@ func (handler *GlobalHandler) DeleteUserGrade(w http.ResponseWriter, r *http.Req
 }
 
 func (handler *GlobalHandler) GetAllUserGrade(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
-	//TODO
 	id := pathParams["id"]
 	if id == "" {
 		w.WriteHeader(http.StatusBadRequest)
@@ -739,7 +733,7 @@ func (handler *GlobalHandler) GetAllUserGrade(w http.ResponseWriter, r *http.Req
 		return
 	}
 	//fmt.Fprintf(w, "%s", resp)
-	response, err := json.Marshal(resp.UserGradeDetailsDTO) //
+	response, err := json.Marshal(resp.UserGradeDetailsDTO)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -750,7 +744,6 @@ func (handler *GlobalHandler) GetAllUserGrade(w http.ResponseWriter, r *http.Req
 }
 
 func (handler *GlobalHandler) HostProminent(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
-	//TODO
 	id := pathParams["id"]
 	if id == "" {
 		w.WriteHeader(http.StatusBadRequest)
@@ -774,7 +767,6 @@ func (handler *GlobalHandler) HostProminent(w http.ResponseWriter, r *http.Reque
 }
 
 func (handler *GlobalHandler) GetEveryAccommodation(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
-	//TODO
 	resp, err := handler.accommodationService.GetEveryAccommodation(createContextForAuthorization(r.Header["Authorization"]), &accommodation_service.GetEveryAccommodationRequest{})
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -793,7 +785,6 @@ func (handler *GlobalHandler) GetEveryAccommodation(w http.ResponseWriter, r *ht
 }
 
 func (handler *GlobalHandler) CreateAccommodationGrade(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
-	//TODO
 	var accommodationGrade domain.AccommodationGrade
 	err := json.NewDecoder(r.Body).Decode(&accommodationGrade)
 	if err != nil {
@@ -819,7 +810,6 @@ func (handler *GlobalHandler) CreateAccommodationGrade(w http.ResponseWriter, r 
 }
 
 func (handler *GlobalHandler) UpdateAccommodationGrade(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
-	//TODO
 	id := pathParams["id"]
 	if id == "" {
 		w.WriteHeader(http.StatusBadRequest)
@@ -843,7 +833,6 @@ func (handler *GlobalHandler) UpdateAccommodationGrade(w http.ResponseWriter, r 
 }
 
 func (handler *GlobalHandler) DeleteAccommodationGrade(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
-	//TODO
 	id := pathParams["id"]
 	if id == "" {
 		w.WriteHeader(http.StatusBadRequest)
@@ -859,7 +848,6 @@ func (handler *GlobalHandler) DeleteAccommodationGrade(w http.ResponseWriter, r 
 }
 
 func (handler *GlobalHandler) GetAllAccommodationGrade(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
-	//TODO
 	id := pathParams["id"]
 	if id == "" {
 		w.WriteHeader(http.StatusBadRequest)
@@ -883,7 +871,6 @@ func (handler *GlobalHandler) GetAllAccommodationGrade(w http.ResponseWriter, r 
 }
 
 func (handler *GlobalHandler) GetAllAccommodationGuestGrades(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
-	//TODO
 	id := pathParams["id"]
 	if id == "" {
 		w.WriteHeader(http.StatusBadRequest)
@@ -907,7 +894,6 @@ func (handler *GlobalHandler) GetAllAccommodationGuestGrades(w http.ResponseWrit
 }
 
 func (handler *GlobalHandler) FilterAvailability(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
-	//TODO
 	var filterAvailability domain.FilterAvailability
 	err := json.NewDecoder(r.Body).Decode(&filterAvailability)
 	if err != nil {
@@ -987,7 +973,6 @@ func (handler *GlobalHandler) CreateNotification(w http.ResponseWriter, r *http.
 }
 
 func (handler *GlobalHandler) GetAllNotifications(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
-	//TODO
 	id := pathParams["id"]
 	if id == "" {
 		w.WriteHeader(http.StatusBadRequest)
@@ -1011,7 +996,6 @@ func (handler *GlobalHandler) GetAllNotifications(w http.ResponseWriter, r *http
 }
 
 func (handler *GlobalHandler) GetUserNotificationsOn(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
-	//TODO
 	id := pathParams["id"]
 	if id == "" {
 		w.WriteHeader(http.StatusBadRequest)

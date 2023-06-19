@@ -142,6 +142,7 @@ func shouldSkipInterceptor(fullMethod string) bool {
 	skipMethods := []string{
 		"GetAllReservations",
 		"GetAllReservationsHost",
+		"GetAllReservationsHostProminent",
 	}
 	return checkRoles(fullMethod, skipMethods)
 }
@@ -155,6 +156,7 @@ func checkIsRoleHost(fullMethod string, ClientToken string) bool {
 			"AcceptReservation",
 			"GetAllReservationsHost",
 			"DeleteReservationsHost",
+			"GetAllReservationsHostProminent",
 		}
 		return checkRoles(fullMethod, skipMethods)
 	}
@@ -172,6 +174,7 @@ func checkIsRoleGuest(fullMethod string, ClientToken string) bool {
 			"DeleteLogicallyReservation",
 			"GetAllReservationsByGuestId",
 			"GetAllReservationsHost",
+			"GetAllReservationsHostProminent",
 		}
 		return checkRoles(fullMethod, skipMethods)
 	}

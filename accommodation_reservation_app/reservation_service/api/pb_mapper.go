@@ -35,7 +35,7 @@ func mapFindReservation(findReservation *models.FindReservation) *pb.FindReserva
 		Location:         findReservation.Location,
 		StartDate:        startDate,
 		EndDate:          endDate,
-		NumOfCancelation: int32(findReservation.NumOfCancelation), //da li na 0 ovde ili negde drugo?
+		NumOfCancelation: int32(findReservation.NumOfCancelation),
 		IsAccepted:       findReservation.IsAccepted,
 		IsCanceled:       findReservation.IsCanceled,
 	}

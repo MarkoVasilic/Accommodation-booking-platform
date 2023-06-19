@@ -150,9 +150,15 @@ function AccommodationsGradesUser(props) {
             //dodati metodu za dobavljanje ocena smestaja po guestId
             .get(`/accommodation/user/grades/${res.data.user.Id}`)
             .then((response) => {
-                setGrades(response.data);
+                if(response.data === null) {
+                    setGrades([]);
+                }
+                else {
+                    setGrades(response.data);
                 console.log('Data', response.data)
                 console.log('RES', grades)
+                }
+                
             }).catch(er => {
                 console.log(er.response);
                 setGrades([]);

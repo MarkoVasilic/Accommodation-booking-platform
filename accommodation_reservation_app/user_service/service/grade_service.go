@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/MarkoVasilic/Accommodation-booking-platform/accomodation_reservation_app/user_service/models"
@@ -36,33 +35,28 @@ func (service *GradeService) CreateUserGrade(userGrade models.UserGrade) (string
 }
 
 func (service *GradeService) UpdateUserGrade(grade int, id string, loggedUserId string) (string, error) {
-	fmt.Println(id)
 	objectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		err := status.Errorf(codes.InvalidArgument, "Invalid ID format")
 		return "Invalid ID format", err
 	}
 
-	//provera da li postoji ocena
 	userGrade, err := service.GradeRepository.GetGradeById(objectID)
 	if err != nil {
 		err := status.Errorf(codes.NotFound, "There is no grade with that ID")
 		return "There is no grade with that ID", err
 	}
 
-	//provera da li je ocena ulogovanog
 	logged, err := primitive.ObjectIDFromHex(loggedUserId)
 	if err != nil {
 		err := status.Errorf(codes.InvalidArgument, "Invalid ID format")
 		return "Invalid ID format", err
 	}
 
-	// da li je to ocena ulogovanog usera
 	if logged != userGrade.GuestID {
 		return "You cannot update grade that is not yours!", status.Errorf(codes.InvalidArgument, "Invalid ID format")
 	}
 
-	//izmeni ocenu
 	userGrade.Grade = grade
 
 	err = service.GradeRepository.UpdateUserGrade(&userGrade)
@@ -87,19 +81,16 @@ func (service *GradeService) DeleteUserGrade(id string, loggedUserId string) (st
 		return "Invalid ID format", err
 	}
 
-	// da li postoji ocena
 	grade, err := service.GradeRepository.GetGradeById(objectID)
 	if err != nil {
 		err := status.Errorf(codes.NotFound, "There is no grade with that ID")
 		return "There is no grade with that ID", err
 	}
 
-	// da li je to ocena ulogovanog usera
 	if logged != grade.GuestID {
 		return "You cannot delete grade that is not yours!", status.Errorf(codes.InvalidArgument, "Invalid ID format")
 	}
 
-	// brisanje ocene
 	_, err = service.GradeRepository.DeleteUserGrade(objectID)
 	if err != nil {
 		err := status.Errorf(codes.Internal, "Failed to delete grade")

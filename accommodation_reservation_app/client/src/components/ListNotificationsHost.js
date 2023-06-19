@@ -372,7 +372,7 @@ export default function ListNotificationsHost() {
             </Grid>
 
             <Grid item xs={3}>
-            <Typography variant="h5" align='left' marginLeft={"100px"}>Graded reservation: </Typography>
+            <Typography variant="h5" align='left' marginLeft={"100px"}>Graded accommodation: </Typography>
             </Grid>
             <Grid item xs={9}>
                 <Typography variant="h5" color="text.secondary" align='left' marginLeft={"80px"}>
