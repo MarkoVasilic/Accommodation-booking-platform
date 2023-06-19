@@ -26,7 +26,56 @@ function UpdateAccommodationGradeForm(props) {
         console.log(data)
         try {
             //URL, id i podaci
-            const resp = await axiosApi.put(`/accommodation/guest/grades/${state.ID}`, data);
+            const resp = await axiosApi.put(`/accommodation/guest/grades/${state.ID}`, data)
+            .then((response)=>{
+
+                axiosApi
+                        .get('/accommodation/all/64580a2e9f857372a34602c2')
+                        .then((response2) => {
+                            console.log("dobavio sve acc")
+                                response2.data.forEach(accommodation =>{
+                                    console.log(accommodation.Name, data.AccommodationName)
+                                    if(accommodation.Name == state.AccommodationName){
+                                        
+                                        axiosApi
+                                        .get('/user/notificationsOn/'+accommodation.HostId)
+                                        .then((response3) => {
+                                            console.log("upao u dobavljanje notOn za hosta", response3.data)
+
+                                            response3.data.forEach(nottificationON =>{
+                                                console.log(nottificationON.Type,nottificationON.on)
+                                                if(nottificationON.Type == "GRADED_ACC" && nottificationON.on){
+                                                    console.log("pravi not")
+                                                    let userId = accommodation.HostId
+                                                    let type = "GRADED_ACC"
+                                                    let message = "Guest update grade for "+state.AccommodationName+"."
+                                                    const d={
+                                                        userId,
+                                                        type,
+                                                        message
+                                                    }
+                                                    axiosApi
+                                                    .post(`/user/notification`,d)
+                                                    .then((response) => {
+                                                        
+                                                    }).catch(er => {
+                                                        console.log(er.response);
+                                                    });
+                                                }
+                                            })
+
+
+
+                                            }).catch(er => {
+                                                console.log('greska u notificationOn') 
+                                            });
+                                    }
+                                });
+
+                            }).catch(er => {
+                                console.log('greska u notificationOn') 
+                            });
+            });
             setSuccessAlert("visible");
             setErrorAlert("hidden");
             setAlert("success");
