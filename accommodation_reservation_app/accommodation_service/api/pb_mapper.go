@@ -90,6 +90,7 @@ func mapAccommodationGrade(accommodationGrade *models.AccommodationGrade) *pb.Ac
 func mapAccommodationGradeDetails(accommodationGrade *models.AccommodationGradeDetails) *pb.AccommodationGradeDetails {
 	dateOfGrade := timestamppb.New(accommodationGrade.DateOfGrade)
 	accommodationGradeDetailsPb := &pb.AccommodationGradeDetails{
+		ID:                accommodationGrade.ID.Hex(),
 		GuestFirstName:    accommodationGrade.GuestFirstName,
 		GuestLastName:     accommodationGrade.GuestLastName,
 		AccommodationName: accommodationGrade.AccommodationName,

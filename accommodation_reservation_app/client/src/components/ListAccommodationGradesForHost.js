@@ -16,21 +16,37 @@ import moment from "moment";
 import CloseIcon from "@mui/icons-material/Close";
 import Alert from "@mui/material/Alert";
 import Collapse from "@mui/material/Collapse";
+import { useLocation } from "react-router-dom";
 
+function formatSecondsToDate(seconds) {
+    const date = new Date(seconds * 1000 - 7200*1000);
+    //console.log('Sec', seconds)
+    //console.log('date', date)
+    return date;
+  }
 
 const columns = [
     {
-        field: "FirstName",
-        headerName: "User first name",
+        field: "GuestFirstName",
+        headerName: "Guest First Name",
         type: "string",
-        width: 300,
+        width: 280,
         sortable: false,
         filterable: false,
         editable: false,
     },
     {
-        field: "LastName",
-        headerName: "User last name",
+        field: "GuestLastName",
+        headerName: "Guest Last Name",
+        type: "string",
+        width: 280,
+        sortable: false,
+        filterable: false,
+        editable: false,
+    },
+    {
+        field: "AccommodationName",
+        headerName: "Accommodation Name",
         type: "string",
         width: 300,
         sortable: false,
@@ -41,7 +57,7 @@ const columns = [
         field: "Grade",
         headerName: "Accommodation grade",
         type: "number",
-        width: 300,
+        width: 200,
         sortable: false,
         filterable: false,
         editable: false,  
@@ -51,18 +67,18 @@ const columns = [
         field: "DateOfGrade",
         headerName: "Date of grade",
         type: "date",
-        width: 300,
+        width: 250,
         sortable: false,
         filterable: false,
         editable: false,
         format: "DD/MM/YYYY",
-        //valueGetter: params => formatSecondsToDate(params.row.StartDate.seconds)
+        valueGetter: params => formatSecondsToDate(params.row.DateOfGrade.seconds)
     },
     {
         field: "AverageGrade",
         headerName: "Average grade",
         type: "float",
-        width: 300,
+        width: 200,
         sortable: false,
         filterable: false,
         editable: false,  
@@ -76,6 +92,7 @@ function AccommodationGradesHost(props) {
     const [ error, setError ] = React.useState(false);
     const [er, setEr] = React.useState("");
     const navigate = useNavigate();
+    const {state} = useLocation();
     useEffect(() => {
         getData();
       //  onSubmit();
@@ -86,14 +103,24 @@ function AccommodationGradesHost(props) {
         try{
             //console.log()
             //const res = await axiosApi.get('/user/logged');
-            //console.log("ID", res.data.user.Id);
+            console.log('state', state);
         axiosApi
             //proslediti koji treba (proveriti jel ovaj)
             //znam da {id} ne treba ovako ali cisto url
-            //.get(`/accommodation/grade/{id}`)
+            .get(`/accommodation/grade/${state}`)
             .then((response) => {
-                setGrades(response.data);
+                let temp = []
+                console.log('state', state)
                 console.log('Data', response.data)
+                for (let i=0; i < response.data.AccommodationGradeDetails.length; i++){
+                    temp.push({
+                        id:i, 
+                        AverageGrade:response.data.AverageGrade,
+                        ...response.data.AccommodationGradeDetails[i]
+                    })
+                }
+                console.log('Temp', temp)
+                setGrades(temp);
                 console.log('RES', grades)
             }).catch(er => {
                 console.log(er.response);
@@ -117,7 +144,7 @@ function AccommodationGradesHost(props) {
                     marginBottom={3}
                     marginTop={1}
                 >
-                    Accommodation Grades
+                    Accommodation Grades For Host
                 </Typography>
             </Stack>
             <Paper>
