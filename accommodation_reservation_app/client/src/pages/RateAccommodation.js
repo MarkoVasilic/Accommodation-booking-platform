@@ -3,10 +3,11 @@ import Navbar from "../pages/Navbar";
 import AllowedUsers from "../components/AllowedUsers";
 
 export default function RateAccommodation(){
-    //var allowedUsers = ["GUEST"]
+    var allowedUsers = ["GUEST"]
     return(
         <div>
             <Navbar/>
+            <AllowedUsers userRole = {allowedUsers}></AllowedUsers>
             <RateAccommodationForm />
         </div>
     );

@@ -3,11 +3,12 @@ import UpdateAccommodationGradeForm from "../components/UpdateAccommodationGrade
 import AllowedUsers from "../components/AllowedUsers";
 
 export default function UpdateAccommodationGrade(){
-    //const listOfAllowedUsers = ["GUEST"];
+    var allowedUsers = ["GUEST"];
     
     return(
         <div>
             <Navbar />
+            <AllowedUsers userRole = {allowedUsers}></AllowedUsers>
             <UpdateAccommodationGradeForm></UpdateAccommodationGradeForm>
         </div>
 

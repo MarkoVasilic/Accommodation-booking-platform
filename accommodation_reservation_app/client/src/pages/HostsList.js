@@ -3,10 +3,11 @@ import ListHosts from "../components/ListHosts";
 import AllowedUsers from "../components/AllowedUsers";
 
 export default function AvailabilityList(){
-    //var allowedUsers = ["GUEST"]
+    var allowedUsers = ["GUEST"]
     return(
         <div>
             <Navbar/>
+            <AllowedUsers userRole = {allowedUsers}></AllowedUsers>
             <ListHosts></ListHosts>
         </div>
     );

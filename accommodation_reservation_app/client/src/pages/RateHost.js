@@ -3,10 +3,11 @@ import Navbar from "../pages/Navbar";
 import AllowedUsers from "../components/AllowedUsers";
 
 export default function RateHost(){
-    //var allowedUsers = ["GUEST"]
+    var allowedUsers = ["GUEST"]
     return(
         <div>
             <Navbar/>
+            <AllowedUsers userRole = {allowedUsers}></AllowedUsers>
             <RateHostForm />
         </div>
     );

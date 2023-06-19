@@ -3,10 +3,11 @@ import ListAccommodationGradesForHost from "../components/ListAccommodationGrade
 import AllowedUsers from "../components/AllowedUsers";
 
 export default function AccommodationGradesHost(){
-    //var allowedUsers = ["HOST"]
+    var allowedUsers = ["HOST"]
     return(
         <div>
             <Navbar/>
+            <AllowedUsers userRole = {allowedUsers}></AllowedUsers>
             <ListAccommodationGradesForHost></ListAccommodationGradesForHost>
         </div>
     );
