@@ -6,6 +6,7 @@ import axiosApi from "../api/axios";
 import Alert from "@mui/material/Alert";
 import InputTextField from "./InputTextField";
 import { useForm } from "react-hook-form";
+import { useEffect, useState } from "react";
 import { Checkbox, FormControlLabel } from "@mui/material";
 
 
@@ -18,7 +19,23 @@ function RateHostForm(props) {
     const [errorAlert, setErrorAlert] = React.useState("hidden");
     const [alert, setAlert] = React.useState("");
     let navigate = useNavigate();
+    const [prominent, setProminent] = useState(false);
     
+    let getData = async () => {
+        
+        axiosApi
+                .get('/user/prominent/'+state.id)
+                .then((response1) => {
+                    //console.log("RESP AFTER PROMINENT",response1)
+                    setProminent(response1.data);
+                    console.log('PROMINENT', prominent)
+                });
+    };
+
+
+    useEffect(() => {
+        getData();
+    }, []);
 
     const onSubmit = async (data) => {
        
@@ -33,6 +50,45 @@ function RateHostForm(props) {
 
             const resp = await axiosApi.post('/user/grade', data)
                         .then((response)=> {
+
+                            axiosApi
+                            .get('/user/prominent/'+state.id)
+                            .then((response1) => {
+                                console.log("RESP AFTER PROMINENT",response1.data)
+                                if(prominent !=response1.data){
+                                    axiosApi
+                                    .get('/user/notificationsOn/'+state.id)
+                                    .then((response3) => {
+                                        console.log("upao u dobavljanje notOn za hosta", response3.data)
+    
+                                        response3.data.forEach(nottificationON =>{
+                                            console.log(nottificationON.Type,nottificationON.on)
+                                            if(nottificationON.Type == "PROMINENT" && nottificationON.on){
+                                                console.log("pravi not")
+                                                let userId = state.id
+                                                let type = "PROMINENT"
+                                                let message = "Your prominent host status has been changed."
+                                                const d={
+                                                    userId,
+                                                    type,
+                                                    message
+                                                }
+                                                axiosApi
+                                                .post(`/user/notification`,d)
+                                                .then((response) => {
+                                                    
+                                                }).catch(er => {
+                                                    console.log(er.response);
+                                                });
+                                            }
+                                        })
+                                        }).catch(er => {
+                                            console.log('greska u notificationOn') 
+                                        });
+
+                                }
+                               
+                            });
 
                             axiosApi
                             .get('/user/notificationsOn/'+state.id)

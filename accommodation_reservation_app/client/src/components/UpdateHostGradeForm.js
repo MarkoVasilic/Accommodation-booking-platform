@@ -7,6 +7,7 @@ import Alert from "@mui/material/Alert";
 import InputTextField from "./InputTextField";
 import { useForm } from "react-hook-form";
 import { Checkbox, FormControlLabel } from "@mui/material";
+import { useEffect, useState } from "react";
 
 
 const url = "/user/grade";
@@ -18,6 +19,40 @@ function RateHostForm(props) {
     const [errorAlert, setErrorAlert] = React.useState("hidden");
     const [alert, setAlert] = React.useState("");
     let navigate = useNavigate();
+    const [prominent, setProminent] = useState(false);
+    const [hostId, setHostId] = React.useState("");
+
+    
+    let getData = async () => {
+
+        axiosApi
+        .get('/user/host/all')
+        .then((response2) => {
+            console.log("dobavio sve hostove")
+                response2.data.forEach(host =>{
+                    if(host.FirstName ==state.HostFirstName){
+                        setHostId(host.id)
+                        axiosApi
+                            .get('/user/prominent/'+host.id)
+                            .then((response1) => {
+                                //console.log("RESP AFTER PROMINENT",response1)
+                                setProminent(response1.data);
+                                console.log('PROMINENT', prominent)
+                            });
+                    }
+                });
+
+            }).catch(er => {
+                console.log('greska u dobavljanju hosta') 
+            });
+        
+        
+    };
+
+
+    useEffect(() => {
+        getData();
+    }, []);
     
 
     const onSubmit = async (data) => {
@@ -31,48 +66,74 @@ function RateHostForm(props) {
                     .then((response)=> {
 
                         axiosApi
-                        .get('/user/host/all')
-                        .then((response2) => {
-                            console.log("dobavio sve hostove")
-                                response2.data.forEach(host =>{
-                                    if(host.FirstName ==state.HostFirstName){
-                                        axiosApi
-                                        .get('/user/notificationsOn/'+host.id)
-                                        .then((response3) => {
-                                            console.log("upao u dobavljanje notOn za hosta", response3.data)
+                        .get('/user/notificationsOn/'+hostId)
+                        .then((response3) => {
+                            console.log("upao u dobavljanje notOn za hosta", response3.data)
 
-                                            response3.data.forEach(nottificationON =>{
-                                                console.log(nottificationON.Type,nottificationON.on)
-                                                if(nottificationON.Type == "GRADED_USR" && nottificationON.on){
-                                                    console.log("pravi not")
-                                                    let userId = host.id
-                                                    let type = "GRADED_USR"
-                                                    let message = "Guest updated rate for you."
-                                                    const d={
-                                                        userId,
-                                                        type,
-                                                        message
-                                                    }
-                                                    axiosApi
-                                                    .post(`/user/notification`,d)
-                                                    .then((response) => {
-                                                        
-                                                    }).catch(er => {
-                                                        console.log(er.response);
-                                                    });
-                                                }
-                                            })
-
-
-
-                                            }).catch(er => {
-                                                console.log('greska u notificationOn') 
-                                            });
+                            response3.data.forEach(nottificationON =>{
+                                console.log(nottificationON.Type,nottificationON.on)
+                                if(nottificationON.Type == "GRADED_USR" && nottificationON.on){
+                                    console.log("pravi not")
+                                    let userId = hostId
+                                    let type = "GRADED_USR"
+                                    let message = "Guest updated rate for you."
+                                    const d={
+                                        userId,
+                                        type,
+                                        message
                                     }
-                                });
+                                    axiosApi
+                                    .post(`/user/notification`,d)
+                                    .then((response) => {
+                                        
+                                    }).catch(er => {
+                                        console.log(er.response);
+                                    });
+                                }
+                            })
+
+
 
                             }).catch(er => {
                                 console.log('greska u notificationOn') 
+                            });
+
+                            axiosApi
+                            .get('/user/prominent/'+hostId)
+                            .then((response1) => {
+                                if(response1.data != prominent){
+                                    axiosApi
+                                    .get('/user/notificationsOn/'+hostId)
+                                    .then((response3) => {
+                                        console.log("upao u dobavljanje notOn za hosta", response3.data)
+
+                                        response3.data.forEach(nottificationON =>{
+                                            console.log(nottificationON.Type,nottificationON.on)
+                                            if(nottificationON.Type == "PROMINENT" && nottificationON.on){
+                                                console.log("pravi not")
+                                                let userId = hostId
+                                                let type = "PROMINENT"
+                                                let message = "Your prominent host status has been changed."
+                                                const d={
+                                                    userId,
+                                                    type,
+                                                    message
+                                                }
+                                                axiosApi
+                                                .post(`/user/notification`,d)
+                                                .then((response) => {
+                                                    
+                                                }).catch(er => {
+                                                    console.log(er.response);
+                                                });
+                                            }
+                                        })
+                                        }).catch(er => {
+                                            console.log('greska u notificationOn') 
+                                        });
+                                }  
+                            }).catch(er => {
+                                console.log('greska u prominent host') 
                             });
 
                     });
