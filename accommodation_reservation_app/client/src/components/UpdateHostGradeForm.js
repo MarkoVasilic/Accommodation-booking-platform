@@ -27,7 +27,55 @@ function RateHostForm(props) {
         data.Grade = parseInt(data.Grade);
         console.log(data)
         try {
-            const resp = await axiosApi.put(`/user/grade/${state.ID}`, data);
+            const resp = await axiosApi.put(`/user/grade/${state.ID}`, data)
+                    .then((response)=> {
+
+                        axiosApi
+                        .get('/user/host/all')
+                        .then((response2) => {
+                            console.log("dobavio sve hostove")
+                                response2.data.forEach(host =>{
+                                    if(host.FirstName ==state.HostFirstName){
+                                        axiosApi
+                                        .get('/user/notificationsOn/'+host.id)
+                                        .then((response3) => {
+                                            console.log("upao u dobavljanje notOn za hosta", response3.data)
+
+                                            response3.data.forEach(nottificationON =>{
+                                                console.log(nottificationON.Type,nottificationON.on)
+                                                if(nottificationON.Type == "GRADED_USR" && nottificationON.on){
+                                                    console.log("pravi not")
+                                                    let userId = host.id
+                                                    let type = "GRADED_USR"
+                                                    let message = "Guest updated rate for you."
+                                                    const d={
+                                                        userId,
+                                                        type,
+                                                        message
+                                                    }
+                                                    axiosApi
+                                                    .post(`/user/notification`,d)
+                                                    .then((response) => {
+                                                        
+                                                    }).catch(er => {
+                                                        console.log(er.response);
+                                                    });
+                                                }
+                                            })
+
+
+
+                                            }).catch(er => {
+                                                console.log('greska u notificationOn') 
+                                            });
+                                    }
+                                });
+
+                            }).catch(er => {
+                                console.log('greska u notificationOn') 
+                            });
+
+                    });
             setSuccessAlert("visible");
             setErrorAlert("hidden");
             setAlert("success");

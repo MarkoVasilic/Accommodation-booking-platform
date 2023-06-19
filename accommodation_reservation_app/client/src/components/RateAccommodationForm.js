@@ -30,7 +30,48 @@ function RateHostForm(props) {
             data.GuestID = res.data.user.Id
             data.DateOfGrade = "2020-11-30T14:20:28.000+07:00"
 
-            const resp = await axiosApi.post('/accommodation/grade', data);
+            const resp = await axiosApi.post('/accommodation/grade', data)
+                    .then((response)=>{
+
+                            /////// Notifikacije 
+                            axiosApi
+                            .get('/user/notificationsOn/'+state.HostId)
+                            .then((response3) => {
+                                console.log("upao u dobavljanje notOn za hosta "+state.HostId, response3.data)
+
+                                response3.data.forEach(nottificationON =>{
+                                    console.log(nottificationON.Type,nottificationON.on)
+                                    if(nottificationON.Type == "GRADED_ACC" && nottificationON.on){
+                                        console.log("pravi not")
+                                        let userId = state.HostId
+                                        let type = "GRADED_ACC"
+                                        let message = "Guest rated accommodation."
+                                        const d={
+                                            userId,
+                                            type,
+                                            message
+                                        }
+                                        axiosApi
+                                        .post(`/user/notification`,d)
+                                        .then((response) => {
+                                            
+                                        }).catch(er => {
+                                            console.log(er.response);
+                                        });
+                                    }
+                                })
+
+
+
+                                }).catch(er => {
+                                    console.log('greska u notificationOn') 
+                                });
+
+                            /////// Notifikacije 
+
+                    }).catch(er => {
+                        console.log(er) 
+                    });
             setSuccessAlert("visible");
             setErrorAlert("hidden");
             setAlert("success");

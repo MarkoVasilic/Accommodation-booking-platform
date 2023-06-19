@@ -28,7 +28,46 @@ function RateHostForm(props) {
         data.DateOfGrade = "2020-11-30T14:20:28.000+07:00"
         console.log('data',data)
         try {
-            const resp = await axiosApi.post('/user/grade', data);
+
+            
+
+            const resp = await axiosApi.post('/user/grade', data)
+                        .then((response)=> {
+
+                            axiosApi
+                            .get('/user/notificationsOn/'+state.id)
+                            .then((response3) => {
+                                console.log("upao u dobavljanje notOn za hosta", response3.data)
+
+                                response3.data.forEach(nottificationON =>{
+                                    console.log(nottificationON.Type,nottificationON.on)
+                                    if(nottificationON.Type == "GRADED_USR" && nottificationON.on){
+                                        console.log("pravi not")
+                                        let userId = state.id
+                                        let type = "GRADED_USR"
+                                        let message = "Guest rated you."
+                                        const d={
+                                            userId,
+                                            type,
+                                            message
+                                        }
+                                        axiosApi
+                                        .post(`/user/notification`,d)
+                                        .then((response) => {
+                                            
+                                        }).catch(er => {
+                                            console.log(er.response);
+                                        });
+                                    }
+                                })
+
+
+
+                                }).catch(er => {
+                                    console.log('greska u notificationOn') 
+                                });
+
+                        });
             setSuccessAlert("visible");
             setErrorAlert("hidden");
             setAlert("success");
