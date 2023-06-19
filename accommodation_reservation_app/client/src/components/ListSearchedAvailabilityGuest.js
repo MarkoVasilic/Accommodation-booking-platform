@@ -16,8 +16,7 @@ import moment from "moment";
 import CloseIcon from "@mui/icons-material/Close";
 import Alert from "@mui/material/Alert";
 import Collapse from "@mui/material/Collapse";
-import { CheckBox } from "@mui/icons-material";
-
+import Checkbox from '@mui/material/Checkbox';
 
 /*const RenderMakeReservation = (params) => {
     let navigate = useNavigate();
@@ -247,8 +246,8 @@ function ListSearchedAvailabilityGuest(props) {
     const [ startDate, setStartDate ] = React.useState("");
     const [ endDate, setEndDate ] = React.useState("");
     const [ guestsNum, setGuestsNum ] = React.useState(0);
-    const [ minGrade, setMinGrade ] = React.useState(0);
-    const [ maxGrade, setMaxGrade ] = React.useState(5);
+    const [ GradeMin, setGradeMin ] = React.useState(0);
+    const [ GradeMax, setGradeMax ] = React.useState(5);
     const [ WiFi, setWiFi ] = React.useState(false);
     const [ Kitchen, setKitchen ] = React.useState(false);
     const [ AC, setAC ] = React.useState(false);
@@ -267,24 +266,32 @@ function ListSearchedAvailabilityGuest(props) {
                 data.StartDate = new Date(Date.parse(data.StartDate))
                 data.EndDate = new Date(Date.parse(data.EndDate))   
                 data.GuestsNum = parseInt(data.NumGuests)
+                data.GradeMin = parseInt(data.GradeMin)
+                data.GradeMax = parseInt(data.GradeMax)
                 setStartDate(data.StartDate)
                 setEndDate(data.EndDate)
                 setGuestsNum(data.NumGuests)
-                setMinGrade(data.minGrade)
-                setMaxGrade(data.maxGrade)
-                setWiFi(data.WiFi)
-                setKitchen(data.Kitchen)
-                setAC(data.AC)
-                setParkingLot(data.ParkingLot)
-                setProminentHost(data.ProminentHost)
+                setGradeMin(data.GradeMin)
+                setGradeMax(data.GradeMax)
+                data.WiFi = WiFi
+                data.Kitchen = Kitchen
+                data.AC = AC
+                data.ParkingLot = ParkingLot
+                data.ProminentHost = ProminentHost
                 console.log('Data', data)
 
                 await axiosApi
                 .post('/availability/filter', data)
                 .then((response) => {
                     console.log("Res", response)
+                    if (response.data == null){
+                        setAccomodation([]);
+                        setError(true);
+                        setEr("There is no acommodations for choosen parameters!");
+                    }else{
                     setAccomodation(response.data);
                     setError(false)
+                }
                 }).catch(er => {
                     console.log(er.response);
                     setError(true)
@@ -403,46 +410,50 @@ function ListSearchedAvailabilityGuest(props) {
                         </Grid>
                         <Grid item xs={12} md={2}>
                             <Typography>
-                                Wifi:</Typography>
-                            <CheckBox
-                                name="Wifi"
-                                control={control}
-                                rules={{ required: "This field is required" }}
+                                WiFi:</Typography>
+                            <Checkbox
+                                name="WiFi"
+                                checked={WiFi}
+                                onChange={(e) => setWiFi(e.target.checked)}
                             />
                         </Grid>
                         <Grid item xs={12} md={2}>
                             <Typography>
                                 Kitchen:</Typography>
-                            <CheckBox
-                                name="Kitcheh"
-                                control={control}
+                            <Checkbox
+                                name="Kitchen"
+                                checked={Kitchen}
+                                onChange={(e) => setKitchen(e.target.checked)}
                                 rules={{ required: "This field is required" }}
                             />
                         </Grid>
                         <Grid item xs={12} md={2}>
                             <Typography>
                                 AC:</Typography>
-                            <CheckBox
+                            <Checkbox
                                 name="AC"
-                                control={control}
+                                checked={AC}
+                                onChange={(e) => setAC(e.target.checked)}
                                 rules={{ required: "This field is required" }}
                             />
                         </Grid>
                         <Grid item xs={12} md={2}>
                             <Typography>
                                 ParkingLot:</Typography>
-                            <CheckBox
+                            <Checkbox
                                 name="ParkingLot"
-                                control={control}
+                                checked={ParkingLot}
+                                onChange={(e) => setParkingLot(e.target.checked)}
                                 rules={{ required: "This field is required" }}
                             />
                         </Grid>
                         <Grid item xs={12} md={2}>
                             <Typography>
                                 Prominent Host:</Typography>
-                            <CheckBox
+                            <Checkbox
                                 name="ProminentHost"
-                                control={control}
+                                checked={ProminentHost}
+                                onChange={(e) => setProminentHost(e.target.checked)}
                                 rules={{ required: "This field is required" }}
                             />
                         </Grid>
