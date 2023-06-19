@@ -32,64 +32,119 @@ const RenderCancelReservation = (params) => {
                 size="small"
                 style={{ marginLeft: 16 }}
                 onClick={() => {
+                    let HostId = ""
+                    let prominent = false
                     axiosApi
-                    .put(`/accommodation/reservation/cancel/`+params.row.ReservationId)
-                    .then((response) => {
-                        console.log("AAA")
-                        console.log(response.data)
-
-                        axiosApi
                         .get('/accommodation/all/64580a2e9f857372a34602c2')
                         .then((response2) => {
                             console.log("dobavio sve acc")
                                 response2.data.forEach(accommodation =>{
                                     if(accommodation.Name == params.row.Name){
-                                        axiosApi
-                                        .get('/user/notificationsOn/'+accommodation.HostId)
-                                        .then((response3) => {
-                                            console.log("upao u dobavljanje notOn za hosta", response3.data)
+                                       HostId = accommodation.HostId
+                                       console.log("Host id", HostId)
 
-                                            response3.data.forEach(nottificationON =>{
-                                                console.log(nottificationON.Type,nottificationON.on)
-                                                if(nottificationON.Type == "CANCEL_ACC" && nottificationON.on){
-                                                    console.log("pravi not")
-                                                    let userId = accommodation.HostId
-                                                    let type = "CANCEL_ACC"
-                                                    let message = "Reservation in "+params.row.Name+" has been canceled."
-                                                    const d={
-                                                        userId,
-                                                        type,
-                                                        message
-                                                    }
+                                       axiosApi
+                                       .get('/user/prominent/'+HostId)
+                                       .then((response1) => {
+                                           //console.log("RESP AFTER PROMINENT",response1)
+                                           prominent = response1.data;
+                                           console.log('PROMINENT', prominent)
+                                           //////////////////////////Boze pomozi
+                                           axiosApi
+                                           .put(`/accommodation/reservation/cancel/`+params.row.ReservationId)
+                                           .then((response) => {
+                                               console.log("AAA")
+                                               console.log(response.data)
+                       
+                                               axiosApi
+                                               .get('/user/prominent/'+HostId)
+                                               .then((response1) => {
+                                                   //console.log("RESP AFTER PROMINENT",response1)
+                                                            if(prominent != response1.data){
+                                                            axiosApi
+                                                                .get('/user/notificationsOn/'+HostId)
+                                                                .then((response3) => {
+                                                                    console.log("upao u dobavljanje notOn za hosta", response3.data)
+                                
+                                                                    response3.data.forEach(nottificationON =>{
+                                                                        console.log(nottificationON.Type,nottificationON.on)
+                                                                        if(nottificationON.Type == "PROMINENT" && nottificationON.on){
+                                                                            console.log("pravi not")
+                                                                            let userId = HostId
+                                                                            let type = "PROMINENT"
+                                                                            let message = "Your prominent host status has been changed."
+                                                                            const d={
+                                                                                userId,
+                                                                                type,
+                                                                                message
+                                                                            }
+                                                                            axiosApi
+                                                                            .post(`/user/notification`,d)
+                                                                            .then((response) => {
+                                                                                
+                                                                            }).catch(er => {
+                                                                                console.log(er.response);
+                                                                            });
+                                                                        }
+                                                                    })
+                                                                    }).catch(er => {
+                                                                        console.log('greska u notificationOn') 
+                                                                    });
+                                                            }
+                                                            //console.log('PROMINENT', prominent)
+                                                        });
+                       
+                                              
                                                     axiosApi
-                                                    .post(`/user/notification`,d)
-                                                    .then((response) => {
-                                                        
-                                                    }).catch(er => {
-                                                        console.log(er.response);
-                                                    });
-                                                }
-                                            })
+                                                    .get('/user/notificationsOn/'+HostId)
+                                                    .then((response3) => {
+                                                        console.log("upao u dobavljanje notOn za hosta", response3.data)
+                            
+                                                        response3.data.forEach(nottificationON =>{
+                                                            console.log(nottificationON.Type,nottificationON.on)
+                                                            if(nottificationON.Type == "CANCEL_ACC" && nottificationON.on){
+                                                                console.log("pravi not")
+                                                                let userId = HostId
+                                                                let type = "CANCEL_ACC"
+                                                                let message = "Reservation in "+params.row.Name+" has been canceled."
+                                                                const d={
+                                                                    userId,
+                                                                    type,
+                                                                    message
+                                                                }
+                                                                axiosApi
+                                                                .post(`/user/notification`,d)
+                                                                .then((response) => {
+                                                                    
+                                                                }).catch(er => {
+                                                                    console.log(er.response);
+                                                                });
+                                                            }
+                                                        })
+                            
+                                                        }).catch(er => {
+                                                            console.log('greska u notificationOn') 
+                                                        });
+                                                           
+                       
+                       
+                                               
+                       
+                                               refreshPage();
+                                           }).catch(er => {
+                                               console.log(er.response);
+                                           });
 
+                                           ////////////////////////////////
+                                       });
 
-
-                                            }).catch(er => {
-                                                console.log('greska u notificationOn') 
-                                            });
                                     }
-                                });
+                                })
+                            })
 
-                            }).catch(er => {
-                                console.log('greska u notificationOn') 
-                            });
+                            
 
-
-                        
-
-                        refreshPage();
-                    }).catch(er => {
-                        console.log(er.response);
-                    });
+                    
                 }}
             >
                 Cancel
@@ -162,6 +217,8 @@ function AcceptedReservationsList(props) {
     const [ error, setError ] = React.useState(false);
     const [er, setEr] = React.useState("");
     const navigate = useNavigate();
+    const [prominent, setProminent] = useState(false);
+
     useEffect(() => {
         getData();
       //  onSubmit();
@@ -181,6 +238,8 @@ function AcceptedReservationsList(props) {
                 console.log(er.response);
                 setReservations([]);
             });
+
+    
         }catch (err) {
                 console.log(err)
                 setReservations([]);
