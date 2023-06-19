@@ -81,7 +81,7 @@ func (server *Server) Start() {
 	server.initDeleteUserHandler(accommodation_service, availability_service, replyPublisher, commandSubscriber)
 
 	accommodation_handler := api.NewAccommodationHandler(accommodation_service, availability_service, grade_service, user_client, reservation_client)
-	availability_handler := api.NewAvailabilityHandler(accommodation_service, availability_service, grade_service, user_client, reservation_client)
+	availability_handler := api.NewAvailabilityHandler(accommodation_service, availability_service, grade_service, user_client, reservation_client, accommodation_handler)
 
 	global_handler := api.NewGlobalHandler(accommodation_handler, availability_handler)
 

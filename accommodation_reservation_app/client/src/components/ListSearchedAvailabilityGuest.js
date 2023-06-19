@@ -16,6 +16,7 @@ import moment from "moment";
 import CloseIcon from "@mui/icons-material/Close";
 import Alert from "@mui/material/Alert";
 import Collapse from "@mui/material/Collapse";
+import { CheckBox } from "@mui/icons-material";
 
 
 /*const RenderMakeReservation = (params) => {
@@ -246,6 +247,13 @@ function ListSearchedAvailabilityGuest(props) {
     const [ startDate, setStartDate ] = React.useState("");
     const [ endDate, setEndDate ] = React.useState("");
     const [ guestsNum, setGuestsNum ] = React.useState(0);
+    const [ minGrade, setMinGrade ] = React.useState(0);
+    const [ maxGrade, setMaxGrade ] = React.useState(5);
+    const [ WiFi, setWiFi ] = React.useState(false);
+    const [ Kitchen, setKitchen ] = React.useState(false);
+    const [ AC, setAC ] = React.useState(false);
+    const [ ParkingLot, setParkingLot ] = React.useState(false);
+    const [ ProminentHost, setProminentHost ] = React.useState(false);
 
     useEffect(() => {
       //  getData();
@@ -262,10 +270,17 @@ function ListSearchedAvailabilityGuest(props) {
                 setStartDate(data.StartDate)
                 setEndDate(data.EndDate)
                 setGuestsNum(data.NumGuests)
+                setMinGrade(data.minGrade)
+                setMaxGrade(data.maxGrade)
+                setWiFi(data.WiFi)
+                setKitchen(data.Kitchen)
+                setAC(data.AC)
+                setParkingLot(data.ParkingLot)
+                setProminentHost(data.ProminentHost)
                 console.log('Data', data)
 
                 await axiosApi
-                .post('/availability/search', data)
+                .post('/availability/filter', data)
                 .then((response) => {
                     console.log("Res", response)
                     setAccomodation(response.data);
@@ -301,9 +316,9 @@ function ListSearchedAvailabilityGuest(props) {
                     container
                     rowSpacing={2}
                     marginTop={2}
-                    sx={{ padding: "0px 0px 10px 180px", textAlign: "left" }}
+                    sx={{ padding: "0px 30px 5px 30px", textAlign: "left" }}
                 >
-                    <Grid container spacing={5}>
+                    <Grid container spacing={3}>
                         <Grid item xs={12} md={2}>
                             <Typography>
                                 Choose start date:</Typography>
@@ -352,15 +367,94 @@ function ListSearchedAvailabilityGuest(props) {
 
                             />
                         </Grid>
+                        <Grid item xs={12} md={2}>
+                            <Typography>
+                                Min Grade:</Typography>
+                            <InputTextField
+                                name="GradeMin"
+                                control={control}
+                                type="number"
+                                min="0"
+                                rules={{
+                                    required: "This field is required",
+                                    min: {
+                                      value: 0,
+                                      message: "The value cannot be less that 1"
+                                    }
+                                  }}
+                            />
+                        </Grid>
+                        <Grid item xs={12} md={2}>
+                            <Typography>
+                                Max Grade:</Typography>
+                            <InputTextField
+                                name="GradeMax"
+                                control={control}
+                                type="number"
+                                min="0"
+                                rules={{
+                                    required: "This field is required",
+                                    min: {
+                                      value: 0,
+                                      message: "The value cannot be less that 1"
+                                    }
+                                  }}
+                            />
+                        </Grid>
+                        <Grid item xs={12} md={2}>
+                            <Typography>
+                                Wifi:</Typography>
+                            <CheckBox
+                                name="Wifi"
+                                control={control}
+                                rules={{ required: "This field is required" }}
+                            />
+                        </Grid>
+                        <Grid item xs={12} md={2}>
+                            <Typography>
+                                Kitchen:</Typography>
+                            <CheckBox
+                                name="Kitcheh"
+                                control={control}
+                                rules={{ required: "This field is required" }}
+                            />
+                        </Grid>
+                        <Grid item xs={12} md={2}>
+                            <Typography>
+                                AC:</Typography>
+                            <CheckBox
+                                name="AC"
+                                control={control}
+                                rules={{ required: "This field is required" }}
+                            />
+                        </Grid>
+                        <Grid item xs={12} md={2}>
+                            <Typography>
+                                ParkingLot:</Typography>
+                            <CheckBox
+                                name="ParkingLot"
+                                control={control}
+                                rules={{ required: "This field is required" }}
+                            />
+                        </Grid>
+                        <Grid item xs={12} md={2}>
+                            <Typography>
+                                Prominent Host:</Typography>
+                            <CheckBox
+                                name="ProminentHost"
+                                control={control}
+                                rules={{ required: "This field is required" }}
+                            />
+                        </Grid>
                     </Grid>
                         <Button
                             type="submit"
                             variant="contained"
                             sx={{
                                 background: "#5B63F5",
-                                marginTop: "30px",
+                                marginTop: "110px",
                                 marginRight: "50px",
-                                marginLeft: "1000px",
+                                marginLeft: "1270px",
                                 marginBottom: "5px",
                                 width: "160px",
                                 height: "40px",

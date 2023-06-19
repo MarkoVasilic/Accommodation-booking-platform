@@ -84,5 +84,5 @@ func (handler *GlobalHandler) DeleteAccommodationGrade(ctx context.Context, requ
 }
 
 func (handler *GlobalHandler) FilterAvailability(ctx context.Context, request *pb.FilterAvailabilityRequest) (*pb.FilterAvailabilityResponse, error) {
-	return handler.accommodationHandler.FilterAvailability(ctx, request)
+	return handler.availabilityHandler.FilterAvailability(ctx, request)
 }
