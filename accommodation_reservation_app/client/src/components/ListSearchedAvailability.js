@@ -16,6 +16,8 @@ import moment from "moment";
 import CloseIcon from "@mui/icons-material/Close";
 import Alert from "@mui/material/Alert";
 import Collapse from "@mui/material/Collapse";
+import Checkbox from '@mui/material/Checkbox';
+
 
 function formatPrice(pricePerGuest) {
     var IsPricePerGuest = ""
@@ -118,6 +120,13 @@ function ListSearchedAvailability(props) {
     const [ error, setError ] = React.useState(false);
     const [er, setEr] = React.useState("");
     let navigate = useNavigate();
+    const [ GradeMin, setGradeMin ] = React.useState(0);
+    const [ GradeMax, setGradeMax ] = React.useState(5);
+    const [ WiFi, setWiFi ] = React.useState(false);
+    const [ Kitchen, setKitchen ] = React.useState(false);
+    const [ AC, setAC ] = React.useState(false);
+    const [ ParkingLot, setParkingLot ] = React.useState(false);
+    const [ ProminentHost, setProminentHost ] = React.useState(false);
 
     useEffect(() => {
         //getData();
@@ -130,13 +139,31 @@ function ListSearchedAvailability(props) {
             data.StartDate = new Date(Date.parse(data.StartDate))
             data.EndDate = new Date(Date.parse(data.EndDate))   
             data.GuestsNum = parseInt(data.GuestsNum)
+            data.GradeMin = parseInt(data.GradeMin)
+            data.GradeMax = parseInt(data.GradeMax)
+            setGradeMin(data.GradeMin)
+            setGradeMax(data.GradeMax)
+            data.WiFi = WiFi
+            data.Kitchen = Kitchen
+            data.AC = AC
+            data.ParkingLot = ParkingLot
+            data.ProminentHost = ProminentHost
+            console.log('Data', data)
+            
             
             await axiosApi
             //url drugi staviti
-            .post('/availability/search', data)
+            .post('/availability/filter', data)
             .then((response) => {
                 console.log("REs", response)
+                if (response.data == null) {
+                    setAccomodation([]);
+                    setError(true);
+                    setEr("There is no accommodations for choosen parameters!")
+                }else{
                 setAccomodation(response.data);
+                setError(false);
+                }
             }).catch(er => {
                 console.log(er.response);
                 setAccomodation([]);
@@ -166,9 +193,9 @@ function ListSearchedAvailability(props) {
                     container
                     rowSpacing={2}
                     marginTop={2}
-                    sx={{ padding: "0px 0px 10px 180px", textAlign: "left" }}
+                    sx={{ padding: "0px 30px 5px 30px", textAlign: "left" }}
                 >
-                    <Grid container spacing={5}>
+                    <Grid container spacing={3}>
                         <Grid item xs={12} md={2}>
                             <Typography>
                                 Choose start date:</Typography>
@@ -214,18 +241,101 @@ function ListSearchedAvailability(props) {
                                       message: "The value cannot be less that 1"
                                     }
                                   }}
-
+                            />
+                        </Grid>
+                            <Grid item xs={12} md={2}>
+                            <Typography>
+                                Min Grade:</Typography>
+                            <InputTextField
+                                name="GradeMin"
+                                control={control}
+                                type="number"
+                                min="0"
+                                rules={{
+                                    required: "This field is required",
+                                    min: {
+                                      value: 0,
+                                      message: "The value cannot be less that 1"
+                                    }
+                                  }}
+                            />
+                        </Grid>
+                        <Grid item xs={12} md={2}>
+                            <Typography>
+                                Max Grade:</Typography>
+                            <InputTextField
+                                name="GradeMax"
+                                control={control}
+                                type="number"
+                                min="0"
+                                rules={{
+                                    required: "This field is required",
+                                    min: {
+                                      value: 0,
+                                      message: "The value cannot be less that 1"
+                                    }
+                                  }}
+                            />
+                        </Grid>
+                        <Grid item xs={12} md={2}>
+                            <Typography>
+                                WiFi:</Typography>
+                            <Checkbox
+                                name="WiFi"
+                                checked={WiFi}
+                                onChange={(e) => setWiFi(e.target.checked)}
+                            />
+                        </Grid>
+                        <Grid item xs={12} md={2}>
+                            <Typography>
+                                Kitchen:</Typography>
+                            <Checkbox
+                                name="Kitchen"
+                                checked={Kitchen}
+                                onChange={(e) => setKitchen(e.target.checked)}
+                                rules={{ required: "This field is required" }}
+                            />
+                        </Grid>
+                        <Grid item xs={12} md={2}>
+                            <Typography>
+                                AC:</Typography>
+                            <Checkbox
+                                name="AC"
+                                checked={AC}
+                                onChange={(e) => setAC(e.target.checked)}
+                                rules={{ required: "This field is required" }}
+                            />
+                        </Grid>
+                        <Grid item xs={12} md={2}>
+                            <Typography>
+                                ParkingLot:</Typography>
+                            <Checkbox
+                                name="ParkingLot"
+                                checked={ParkingLot}
+                                onChange={(e) => setParkingLot(e.target.checked)}
+                                rules={{ required: "This field is required" }}
+                            />
+                        </Grid>
+                        <Grid item xs={12} md={2}>
+                            <Typography>
+                                Prominent Host:</Typography>
+                            <Checkbox
+                                name="ProminentHost"
+                                checked={ProminentHost}
+                                onChange={(e) => setProminentHost(e.target.checked)}
+                                rules={{ required: "This field is required" }}
                             />
                         </Grid>
                     </Grid>
+                    
                         <Button
                             type="submit"
                             variant="contained"
                             sx={{
                                 background: "#5B63F5",
-                                marginTop: "30px",
+                                marginTop: "110px",
                                 marginRight: "50px",
-                                marginLeft: "1000px",
+                                marginLeft: "1270px",
                                 marginBottom: "5px",
                                 width: "160px",
                                 height: "40px",
